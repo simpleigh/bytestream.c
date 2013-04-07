@@ -83,3 +83,9 @@ bs_free(BS *bs)
 	}
 	free(bs);
 }
+
+size_t
+bs_size(const BS *bs)
+{
+	return bs->cbBytes;
+}

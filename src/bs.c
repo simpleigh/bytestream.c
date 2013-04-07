@@ -12,12 +12,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-size_t
-bs_size(const BS *bs)
-{
-	return bs->cbBytes;
-}
-
 void
 bs_zero(BS *bs)
 {

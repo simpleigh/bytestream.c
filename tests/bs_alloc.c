@@ -1,4 +1,14 @@
+/*
+   ________        _____     ____________
+   ___  __ )____  ___  /_______  ___/_  /__________________ _______ ___
+   __  __  |_  / / /  __/  _ \____ \_  __/_  ___/  _ \  __ `/_  __ `__ \
+   _  /_/ /_  /_/ // /_ /  __/___/ // /_ _  /   /  __/ /_/ /_  / / / / /
+   /_____/ _\__, / \__/ \___//____/ \__/ /_/    \___/\__,_/ /_/ /_/ /_/
+           /____/
+*/
+
 #include "bs.h"
+#include "../src/bs_alloc.h"
 #include <check.h>
 #include <stdlib.h>
 
@@ -7,6 +17,61 @@ START_TEST(test_create)
 	BS *bs = bs_create();
 
 	fail_unless(bs_size(bs) == 0);
+	fail_unless(bs->cbBytes == 0);
+	fail_unless(bs->pbBytes == NULL);
+	fail_unless(bs->cbBuffer == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+static size_t test_create_sizes[3] = { 0, 1, 5 };
+
+START_TEST(test_create_size)
+{
+	size_t ibIndex, cbSize = test_create_sizes[_i];
+	BS *bs = bs_create_size(cbSize);
+
+	fail_unless(bs_size(bs) == cbSize);
+	fail_unless(bs->cbBytes == cbSize);
+	if (cbSize != 0) {
+		fail_unless(bs->pbBytes != NULL);
+	}
+	fail_unless(bs->cbBuffer == cbSize);
+
+	/* Confirm the allocation worked by trying to write to each byte */
+	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
+		bs_byte_set(bs, ibIndex, 0);
+	}
+
+	bs_free(bs);
+}
+END_TEST
+
+static size_t test_change_sizes[2] = { 1, 8 };
+
+START_TEST(test_change_size)
+{
+	size_t ibIndex, cbSize = test_change_sizes[_i];
+	BS *bs = bs_create_size(5);
+	BSresult result;
+	BSbyte *pbBytes;
+
+	pbBytes = bs->pbBytes;
+
+	result = bs_malloc(bs, cbSize);
+
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == cbSize);
+	fail_unless(bs->cbBytes == cbSize);
+	fail_unless(bs->pbBytes == pbBytes);
+	fail_unless(bs->cbBuffer == (cbSize > 5) ? cbSize : 5);
+
+	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
+		bs_byte_set(bs, ibIndex, 0);
+	}
+
+	bs_free(bs);
 }
 END_TEST
 
@@ -19,6 +84,8 @@ main(/* int argc, char **argv */)
 	int number_failed;
 
 	tcase_add_test(tc_core, test_create);
+	tcase_add_loop_test(tc_core, test_create_size, 0, 3);
+	tcase_add_loop_test(tc_core, test_change_size, 0, 2);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
