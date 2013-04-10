@@ -33,6 +33,7 @@ START_TEST(test_create)
 {
 	BS *bs = bs_create();
 
+	fail_unless(bs != NULL);
 	fail_unless(bs_size(bs) == 0);
 	fail_unless(bs->cbBytes == 0);
 	fail_unless(bs->pbBytes == NULL);
@@ -49,6 +50,7 @@ START_TEST(test_create_size)
 	size_t ibIndex, cbSize = test_create_sizes[_i];
 	BS *bs = bs_create_size(cbSize);
 
+	fail_unless(bs != NULL);
 	fail_unless(bs_size(bs) == cbSize);
 	fail_unless(bs->cbBytes == cbSize);
 	if (cbSize != 0) {
