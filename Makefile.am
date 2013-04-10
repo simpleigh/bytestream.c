@@ -57,6 +57,21 @@ bs_string_SOURCES = tests/bs_string.c include/bs.h
 bs_hex_SOURCES = tests/bs_hex.c include/bs.h
 bs_base64_SOURCES = tests/bs_base64.c include/bs.h
 
+# COVERAGE target, cleans everything out, compiles and runs tests, builds report
+coverage:
+	$(MAKE) V=0 clean
+	$(MAKE) V=0 CFLAGS='-g -fprofile-arcs -ftest-coverage'
+	$(MAKE) V=0 check
+	gcov .libs/*.gcda
+# TODO can we make the above line less fragile?
+
+# COVERAGE-CLEAN target
+coverage-clean:
+	-rm *.gcov
+	-rm *.gcno
+	-rm .libs/*.gcno
+	-rm .libs/*.gcda
+
 # DIST target
 EXTRA_DIST = autogen
 
