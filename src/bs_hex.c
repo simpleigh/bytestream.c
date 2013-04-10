@@ -58,7 +58,7 @@ bs_load_hex(BS *bs, const char *hex, size_t length)
 		return BS_INVALID;
 	}
 
-	result = bs_malloc(bs, length << 2);
+	result = bs_malloc(bs, length >> 1);
 	if (result != BS_OK) {
 		return result;
 	}

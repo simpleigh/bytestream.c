@@ -53,8 +53,13 @@ START_TEST(test_load_bad_character)
 }
 END_TEST
 
-static const char test_hex_in[] = "48656c6c6f";
-static const BSbyte test_hex_out[] = { 'H', 'e', 'l', 'l', 'o' };
+static const char
+test_hex_in[] = "0123456789abcdefABCDEF";
+
+static const BSbyte
+test_hex_out[] = {
+	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xAB, 0xCD, 0xEF
+};
 
 START_TEST(test_load)
 {
@@ -63,10 +68,11 @@ START_TEST(test_load)
 	BSresult result;
 
 	cbInput = strlen(test_hex_in);
+	cbOutput = cbInput >> 1;
 	result = bs_load_hex(bs, test_hex_in, cbInput);
 	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == cbOutput);
 
-	cbOutput = cbInput >> 1;
 	for (ibOutput = 0; ibOutput < cbOutput; ibOutput++) {
 		fail_unless(bs_byte_get(bs, ibOutput) == test_hex_out[ibOutput]);
 	}
