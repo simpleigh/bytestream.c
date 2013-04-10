@@ -52,10 +52,11 @@ base64_testcases[11] = {
 START_TEST(test_load)
 {
 	BS *bs = bs_create();
+	const char *base64 = base64_testcases[_i].base64;
 	BSresult result;
 	size_t ibByte;
 
-	result = bs_load_base64(bs, &(base64_testcases[_i].base64), 4);
+	result = bs_load_base64(bs, base64, 4);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == base64_testcases[_i].cbBytes);
 
@@ -88,6 +89,16 @@ START_TEST(test_load_many)
 }
 END_TEST
 
+START_TEST(test_bad_length)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_load_base64(bs, "123", 3);
+	fail_unless(result == BS_INVALID);
+}
+END_TEST
+
 static const char
 bad_chars[6] = { '!', '"', '#', '\0', 127, 255 };
 
@@ -99,8 +110,8 @@ START_TEST(test_bad_chars)
 
 	base64[1] = bad_chars[_i];
 	result = bs_load_base64(bs, base64, 4);
-
 	fail_unless(result == BS_INVALID);
+
 	bs_free(bs);
 }
 END_TEST
@@ -115,6 +126,7 @@ main(/* int argc, char **argv */)
 
 	tcase_add_loop_test(tc_core, test_load, 0, 11);
 	tcase_add_test(tc_core, test_load_many);
+	tcase_add_test(tc_core, test_bad_length);
 	tcase_add_loop_test(tc_core, test_bad_chars, 0, 6);
 
 	suite_add_tcase(s, tc_core);
