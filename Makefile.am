@@ -24,9 +24,15 @@
 
 ## Process this file with automake to produce Makefile.in
 
+# Global configuration
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -I$(srcdir)/include
 
+# Set these test parameters by default (remove for the main library)
+CFLAGS = @CHECK_CFLAGS@
+LDADD = libbs.la @CHECK_LIBS@
+
+# Main library
 include_HEADERS = include/bs.h
 lib_LTLIBRARIES = libbs.la
 libbs_la_SOURCES = include/bs.h    \
@@ -36,35 +42,25 @@ libbs_la_SOURCES = include/bs.h    \
                    src/bs_string.c \
                    src/bs_hex.c    \
                    src/bs_base64.c
+libbs_la_CFLAGS =
 
+# WARNINGS target, compiles with strict compiler setting
 warnings:
 	$(MAKE) V=0 CFLAGS='-g -O -Wall -Wextra -std=c89 -pedantic -Werror'
 
+# CHECK target, compiles and runs unit tests
 TESTS = bs_alloc bs bs_string bs_hex bs_base64
 check_PROGRAMS = $(TESTS)
-
 bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h src/bs_alloc.h
-bs_alloc_CFLAGS = @CHECK_CFLAGS@
-bs_alloc_LDADD = libbs.la @CHECK_LIBS@
-
 bs_SOURCES = tests/bs.c include/bs.h
-bs_CFLAGS = @CHECK_CFLAGS@
-bs_LDADD = libbs.la @CHECK_LIBS@
-
 bs_string_SOURCES = tests/bs_string.c include/bs.h
-bs_string_CFLAGS = @CHECK_CFLAGS@
-bs_string_LDADD = libbs.la @CHECK_LIBS@
-
 bs_hex_SOURCES = tests/bs_hex.c include/bs.h
-bs_hex_CFLAGS = @CHECK_CFLAGS@
-bs_hex_LDADD = libbs.la @CHECK_LIBS@
-
 bs_base64_SOURCES = tests/bs_base64.c include/bs.h
-bs_base64_CFLAGS = @CHECK_CFLAGS@
-bs_base64_LDADD = libbs.la @CHECK_LIBS@
 
+# DIST target
 EXTRA_DIST = autogen
 
+# MAINTAINER-CLEAN target
 MAINTAINERCLEANFILES = Makefile.in            \
                        aclocal.m4             \
                        build-aux/config.guess \
