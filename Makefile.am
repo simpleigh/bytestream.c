@@ -24,6 +24,9 @@
 
 ## Process this file with automake to produce Makefile.in
 
+ACLOCAL_AMFLAGS = -I m4
+AM_CPPFLAGS = -I$(srcdir)/include
+
 include_HEADERS = include/bs.h
 lib_LTLIBRARIES = libbs.la
 libbs_la_SOURCES = include/bs.h    \
@@ -37,7 +40,7 @@ libbs_la_SOURCES = include/bs.h    \
 warnings:
 	$(MAKE) V=0 CFLAGS='-g -O -Wall -Wextra -std=c89 -pedantic -Werror'
 
-TESTS = bs_alloc bs bs_string
+TESTS = bs_alloc bs bs_string bs_hex
 check_PROGRAMS = $(TESTS)
 
 bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h src/bs_alloc.h
@@ -52,8 +55,9 @@ bs_string_SOURCES = tests/bs_string.c include/bs.h
 bs_string_CFLAGS = @CHECK_CFLAGS@
 bs_string_LDADD = libbs.la @CHECK_LIBS@
 
-ACLOCAL_AMFLAGS = -I m4
-AM_CPPFLAGS = -I$(srcdir)/include
+bs_hex_SOURCES = tests/bs_hex.c include/bs.h
+bs_hex_CFLAGS = @CHECK_CFLAGS@
+bs_hex_LDADD = libbs.la @CHECK_LIBS@
 
 EXTRA_DIST = autogen
 

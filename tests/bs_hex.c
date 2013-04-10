@@ -27,74 +27,69 @@
 #include "bs.h"
 #include <check.h>
 #include <stdlib.h>
+#include <string.h>
 
-static unsigned char test_binary[5] = { '\x0', '\x1', '\x7f', '\x80', '\xff' };
-
-START_TEST(test_load_binary)
-{
-	BS *bs = bs_create();
-	BSresult result;
-	size_t ibIndex;
-
-	result = bs_load_binary(bs, test_binary, 5);
-	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 5);
-
-	for (ibIndex = 0; ibIndex < bs_size(bs); ibIndex++) {
-		fail_unless(bs_byte_get(bs, ibIndex) == test_binary[ibIndex]);
-	}
-
-	bs_free(bs);
-}
-END_TEST
-
-static char test_string[] = "\x0\x1\x7f";
-
-START_TEST(test_load_string)
-{
-	BS *bs = bs_create();
-	BSresult result;
-	size_t ibIndex;
-
-	result = bs_load_string(bs, test_string, 3);
-	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 3);
-
-	for (ibIndex = 0; ibIndex < bs_size(bs); ibIndex++) {
-		fail_unless(bs_byte_get(bs, ibIndex) == (BSbyte)test_string[ibIndex]);
-	}
-
-	bs_free(bs);
-}
-END_TEST
-
-static char test_bad_string[] = { -1, '\0' };
-
-START_TEST(test_load_bad_string)
+START_TEST(test_load_bad_length)
 {
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_string(bs, test_bad_string, 1);
+	result = bs_load_hex(bs, "123", 3);
 	fail_unless(result == BS_INVALID);
-	fail_unless(bs_size(bs) == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_load_bad_character)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_load_hex(bs, "123#", 4);
+	fail_unless(result == BS_INVALID);
+
+	bs_free(bs);
+}
+END_TEST
+
+static const char test_hex_in[] = "48656c6c6f";
+static const BSbyte test_hex_out[] = { 'H', 'e', 'l', 'l', 'o' };
+
+START_TEST(test_load)
+{
+	BS *bs = bs_create();
+	size_t cbInput, cbOutput, ibOutput;
+	BSresult result;
+
+	cbInput = strlen(test_hex_in);
+	result = bs_load_hex(bs, test_hex_in, cbInput);
+	fail_unless(result == BS_OK);
+
+	cbOutput = cbInput >> 1;
+	for (ibOutput = 0; ibOutput < cbOutput; ibOutput++) {
+		fail_unless(bs_byte_get(bs, ibOutput) == test_hex_out[ibOutput]);
+	}
+
+	bs_free(bs);
 }
 END_TEST
 
 int
 main(/* int argc, char **argv */)
 {
-	Suite *s = suite_create("Strings");
+	Suite *s = suite_create("Hex");
 	TCase *tc_core = tcase_create("Core");
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_load_binary);
-	tcase_add_test(tc_core, test_load_string);
-	tcase_add_test(tc_core, test_load_bad_string);
+	tcase_add_test(tc_core, test_load_bad_length);
+	tcase_add_test(tc_core, test_load_bad_character);
+	tcase_add_test(tc_core, test_load);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
+	srunner_set_fork_status(sr, CK_NOFORK);
 	srunner_run_all(sr, CK_NORMAL);
 	number_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);

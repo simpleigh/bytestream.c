@@ -49,7 +49,7 @@ read_hex_digit(char digit)
 BSresult
 bs_load_hex(BS *bs, const char *hex, size_t length)
 {
-	size_t ibIndex;
+	size_t ibHex;
 	BSresult result;
 	BSbyte hi;
 	BSbyte lo;
@@ -63,16 +63,16 @@ bs_load_hex(BS *bs, const char *hex, size_t length)
 		return result;
 	}
 
-	for (ibIndex = 0; ibIndex < length; ibIndex += 2) {
-		hi = (BSbyte)read_hex_digit(hex[ibIndex]);
-		lo = (BSbyte)read_hex_digit(hex[ibIndex + 1]);
+	for (ibHex = 0; ibHex < length; ibHex += 2) {
+		hi = (BSbyte)read_hex_digit(hex[ibHex]);
+		lo = (BSbyte)read_hex_digit(hex[ibHex + 1]);
 
 		if (hi > 15 || lo > 15) {
 			bs_malloc(bs, 0);
 			return BS_INVALID;
 		}
 
-		bs->pbBytes[ibIndex >> 1] = (hi << 4) || lo;
+		bs->pbBytes[ibHex >> 1] = (hi << 4) | lo;
 	}
 
 	return BS_OK;

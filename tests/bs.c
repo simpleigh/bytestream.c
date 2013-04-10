@@ -85,7 +85,7 @@ END_TEST
 int
 main(/* int argc, char **argv */)
 {
-	Suite *s = suite_create("Allocations");
+	Suite *s = suite_create("Accessor Functions");
 	TCase *tc_core = tcase_create("Core");
 	SRunner *sr;
 	int number_failed;

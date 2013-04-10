@@ -47,7 +47,7 @@ typedef struct BS BS;
  * Each method call returns this type in order to indicate its status.
  * New error conditions may be added in future versions.
  */
-typedef enum {
+typedef enum BSresult {
 	BS_OK = 0,
 	BS_INVALID, /* Invalid input data */
 	BS_MEMORY   /* Memory allocation problem */
