@@ -107,7 +107,8 @@ BSbyte bs_byte_set(BS *bs, size_t index, BSbyte byte);
  * Load binary data
  * Reads binary data into the byte stream.
  * Returns BS_OK if data is loaded correctly
- * Returns BS_MEMORY and leaves the byte stream untouched for memory issues
+ * Returns BS_MEMORY if memory cannot be allocated
+ * Do not attempt to use the bytestream if the return value is other than BS_OK.
  */
 BSresult bs_load_binary(BS *bs, const unsigned char *data, size_t length);
 
@@ -116,8 +117,9 @@ BSresult bs_load_binary(BS *bs, const unsigned char *data, size_t length);
  * Reads a string into the byte stream.
  * The string must only contain character values within [ 0, 127 ].
  * Returns BS_OK if the string is loaded correctly
- * Returns BS_MEMORY and leaves the byte stream untouched for memory issues
- * Returns BS_INVALID and empties the byte stream for out-of-range input
+ * Returns BS_MEMORY if memory cannot be allocated
+ * Returns BS_INVALID if an input character is not valid
+ * Do not attempt to use the bytestream if the return value is other than BS_OK.
  */
 BSresult bs_load_string(BS *bs, const char *string, size_t length);
 
@@ -127,9 +129,10 @@ BSresult bs_load_string(BS *bs, const char *string, size_t length);
  * Each pair of hex digits is read as a single byte.
  * Hex digits may be in upper or lowercase.
  * Returns BS_OK if the string is loaded correctly
- * Returns BS_MEMORY and leaves the byte stream untouched for memory issues
+ * Returns BS_MEMORY if memory cannot be allocated
  * Returns BS_INVALID if the input length is not even
- * Returns BS_INVALID and empties the byte stream for invalid hexadecimal digits
+ * Returns BS_INVALID if an input character is not valid
+ * Do not attempt to use the bytestream if the return value is other than BS_OK.
  */
 BSresult bs_load_hex(BS *bs, const char *hex, size_t length);
 
@@ -137,9 +140,10 @@ BSresult bs_load_hex(BS *bs, const char *hex, size_t length);
  * Load a base64-encoded string
  * Reads a base64-encoded string.
  * Returns BS_OK if the string is loaded correctly
- * Returns BS_MEMORY and leaves the byte stream untouched for memory issues
+ * Returns BS_MEMORY if memory cannot be allocated
  * Returns BS_INVALID if the input length is not a multiple of four
- * Returns BS_INVALID and empties the byte stream for invalid input data
+ * Returns BS_INVALID if an input character is not valid
+ * Do not attempt to use the bytestream if the return value is other than BS_OK.
  */
 BSresult bs_load_base64(BS *bs, const char *base64, size_t length);
 
