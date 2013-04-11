@@ -28,7 +28,8 @@
 #include <check.h>
 #include <stdlib.h>
 
-static unsigned char test_binary[5] = { '\x0', '\x1', '\x7f', '\x80', '\xff' };
+static unsigned char
+test_binary[5] = { '\x0', '\x1', '\x7f', '\x80', '\xff' };
 
 START_TEST(test_load_binary)
 {
@@ -48,7 +49,51 @@ START_TEST(test_load_binary)
 }
 END_TEST
 
-static char test_string[] = "\x0\x1\x7f";
+START_TEST(test_save_binary)
+{
+	BS *bs = bs_create();
+	unsigned char *data;
+	size_t length;
+	BSresult result;
+	size_t ibIndex;
+
+	bs_load_binary(bs, test_binary, 5);
+
+	result = bs_save_binary(bs, &data, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(data != NULL);
+	fail_unless(length == 5);
+
+	for (ibIndex = 0; ibIndex < length; ibIndex++) {
+		fail_unless(bs_byte_get(bs, ibIndex) == test_binary[ibIndex]);
+	}
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_empty_binary)
+{
+	BS *bs = bs_create();
+	unsigned char *data;
+	size_t length;
+	BSresult result;
+
+	result = bs_save_binary(bs, &data, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(data == NULL);
+	fail_unless(length == 0);
+
+	result = bs_load_binary(bs, NULL, 0);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+static char
+test_string[] = "\x0\x1\x7f";
 
 START_TEST(test_load_string)
 {
@@ -90,6 +135,8 @@ main(/* int argc, char **argv */)
 	int number_failed;
 
 	tcase_add_test(tc_core, test_load_binary);
+	tcase_add_test(tc_core, test_save_binary);
+	tcase_add_test(tc_core, test_empty_binary);
 	tcase_add_test(tc_core, test_load_string);
 	tcase_add_test(tc_core, test_load_bad_string);
 

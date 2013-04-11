@@ -31,7 +31,7 @@
 BSresult
 bs_load_binary(BS *bs, const unsigned char *data, size_t length)
 {
-	size_t ibIndex;
+	size_t ibStream;
 	BSresult result;
 
 	result = bs_malloc(bs, length);
@@ -39,8 +39,32 @@ bs_load_binary(BS *bs, const unsigned char *data, size_t length)
 		return result;
 	}
 
-	for (ibIndex = 0; ibIndex < length; ibIndex++) {
-		bs->pbBytes[ibIndex] = data[ibIndex];
+	for (ibStream = 0; ibStream < length; ibStream++) {
+		bs->pbBytes[ibStream] = data[ibStream];
+	}
+
+	return BS_OK;
+}
+
+BSresult
+bs_save_binary(const BS *bs, unsigned char **data, size_t *length)
+{
+	size_t ibStream;
+
+	*length = bs_size(bs);
+	if (*length == 0) {
+		*data = NULL;
+		return BS_OK;
+	}
+
+	*data = malloc(*length * sizeof(**data));
+	if (*data == NULL) {
+		*length = 0;
+		return BS_MEMORY;
+	}
+
+	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
+		(*data)[ibStream] = bs->pbBytes[ibStream];
 	}
 
 	return BS_OK;
@@ -49,7 +73,7 @@ bs_load_binary(BS *bs, const unsigned char *data, size_t length)
 BSresult
 bs_load_string(BS *bs, const char *string, size_t length)
 {
-	size_t ibIndex;
+	size_t ibStream;
 	BSresult result;
 
 	result = bs_malloc(bs, length);
@@ -57,12 +81,12 @@ bs_load_string(BS *bs, const char *string, size_t length)
 		return result;
 	}
 
-	for (ibIndex = 0; ibIndex < length; ibIndex++) {
-		if (string[ibIndex] < 0) { /* Negative values not allowed */
+	for (ibStream = 0; ibStream < length; ibStream++) {
+		if (string[ibStream] < 0) { /* Negative values not allowed */
 			bs_malloc(bs, 0);
 			return BS_INVALID;
 		}
-		bs->pbBytes[ibIndex] = (BSbyte)string[ibIndex];
+		bs->pbBytes[ibStream] = (BSbyte)string[ibStream];
 	}
 
 	return BS_OK;

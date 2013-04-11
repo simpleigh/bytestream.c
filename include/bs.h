@@ -113,6 +113,17 @@ BSbyte bs_byte_set(BS *bs, size_t index, BSbyte byte);
 BSresult bs_load_binary(BS *bs, const unsigned char *data, size_t length);
 
 /**
+ * Save binary data
+ * Writes the byte stream as binary data.
+ * Space for the binary data will be allocated, and should be freed when no
+ * longer required.
+ * Returns BS_OK if data is loaded correctly
+ * Returns BS_MEMORY if memory cannot be allocated
+ * The bytestream is not touched by this operation.
+ */
+BSresult bs_save_binary(const BS *bs, unsigned char **data, size_t *length);
+
+/**
  * Load a string
  * Reads a string into the byte stream.
  * The string must only contain character values within [ 0, 127 ].
