@@ -29,6 +29,11 @@
 #include <assert.h>
 #include <stdlib.h>
 
+
+/* **************** */
+/* * EXTERNAL API * */
+/* **************** */
+
 BS *
 bs_create(void)
 {
@@ -45,6 +50,48 @@ bs_create(void)
 
 	return bs;
 }
+
+BS *
+bs_create_size(size_t length)
+{
+	BS *bs;
+	BSresult result;
+
+	bs = bs_create();
+	if (bs == NULL) {
+		return bs;
+	}
+
+	if (length > 0) {
+		result = bs_malloc(bs, length);
+		if (result != BS_OK) {
+			bs_free(bs);
+			return NULL;
+		}
+	}
+
+	return bs;
+}
+
+void
+bs_free(BS *bs)
+{
+	if ((bs->cbBuffer > 0) && (bs->pbBytes != NULL)) {
+		free(bs->pbBytes);
+	}
+	free(bs);
+}
+
+size_t
+bs_size(const BS *bs)
+{
+	return bs->cbBytes;
+}
+
+
+/* **************** */
+/* * INTERNAL API * */
+/* **************** */
 
 BSresult
 bs_malloc(BS *bs, size_t cbSize)
@@ -70,28 +117,6 @@ bs_malloc(BS *bs, size_t cbSize)
 	return BS_OK;
 }
 
-BS *
-bs_create_size(size_t length)
-{
-	BS *bs;
-	BSresult result;
-
-	bs = bs_create();
-	if (bs == NULL) {
-		return bs;
-	}
-
-	if (length > 0) {
-		result = bs_malloc(bs, length);
-		if (result != BS_OK) {
-			bs_free(bs);
-			return NULL;
-		}
-	}
-
-	return bs;
-}
-
 BSresult
 bs_malloc_output(size_t cbBytes, void **ppbOutput, size_t *pcbOutput)
 {
@@ -109,19 +134,4 @@ bs_malloc_output(size_t cbBytes, void **ppbOutput, size_t *pcbOutput)
 	}
 
 	return BS_OK;
-}
-
-void
-bs_free(BS *bs)
-{
-	if ((bs->cbBuffer > 0) && (bs->pbBytes != NULL)) {
-		free(bs->pbBytes);
-	}
-	free(bs);
-}
-
-size_t
-bs_size(const BS *bs)
-{
-	return bs->cbBytes;
 }
