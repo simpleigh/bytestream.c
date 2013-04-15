@@ -46,4 +46,15 @@ struct BS {
  */
 BSresult bs_malloc(BS *bs, size_t cbSize);
 
+/**
+ * Allocate external memory
+ * Allocates memory for external data output and sets up output variables.
+ * Attempts to allocate CBBYTES bytes and writes allocation data to pointers:
+ *  - ppbOutput : pointer to variable which takes the buffer location pointer
+ *  - pcbOutput : pointer to variable which takes the buffer size
+ * Returns BS_OK if memory was allocated correctly
+ * Returns BS_MEMORY for memory issues and saves NULL and 0 respectively
+ */
+BSresult bs_malloc_output(size_t cbBytes, void **ppbOutput, size_t *pcbOutput);
+
 #endif /* __BS_ALLOC_H */

@@ -92,6 +92,25 @@ bs_create_size(size_t length)
 	return bs;
 }
 
+BSresult
+bs_malloc_output(size_t cbBytes, void **ppbOutput, size_t *pcbOutput)
+{
+	*pcbOutput = cbBytes;
+
+	if (cbBytes == 0) {
+		*ppbOutput = NULL;
+		return BS_OK;
+	}
+
+	*ppbOutput = malloc(cbBytes);
+	if (*ppbOutput == NULL) {
+		*pcbOutput = 0;
+		return BS_MEMORY;
+	}
+
+	return BS_OK;
+}
+
 void
 bs_free(BS *bs)
 {

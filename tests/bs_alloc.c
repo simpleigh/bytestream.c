@@ -53,7 +53,9 @@ START_TEST(test_create_size)
 	fail_unless(bs != NULL);
 	fail_unless(bs_size(bs) == cbSize);
 	fail_unless(bs->cbBytes == cbSize);
-	if (cbSize != 0) {
+	if (cbSize == 0) {
+		fail_unless(bs->pbBytes == NULL);
+	} else {
 		fail_unless(bs->pbBytes != NULL);
 	}
 	fail_unless(bs->cbBuffer == cbSize);
@@ -94,6 +96,31 @@ START_TEST(test_change_size)
 }
 END_TEST
 
+START_TEST(test_allocate_output)
+{
+	size_t cbSize = test_create_sizes[_i], cbOutput, ibIndex;
+	BSbyte *pbOutput;
+	BSresult result;
+
+	result = bs_malloc_output(cbSize, &pbOutput, &cbOutput);
+
+	fail_unless(result == BS_OK);
+	fail_unless(cbOutput == cbSize);
+	if (cbSize == 0) {
+		fail_unless(pbOutput == NULL);
+	} else {
+		fail_unless(pbOutput != NULL);
+	}
+
+	/* Confirm the allocation worked by trying to write to each byte */
+	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
+		pbOutput[ibIndex] = ibIndex;
+	}
+
+	free(pbOutput);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -105,6 +132,7 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_create);
 	tcase_add_loop_test(tc_core, test_create_size, 0, 3);
 	tcase_add_loop_test(tc_core, test_change_size, 0, 2);
+	tcase_add_loop_test(tc_core, test_allocate_output, 0, 3);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
