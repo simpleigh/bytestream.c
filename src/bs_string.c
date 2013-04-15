@@ -89,3 +89,36 @@ bs_load_string(BS *bs, const char *string, size_t length)
 
 	return BS_OK;
 }
+
+BSresult
+bs_save_string(const BS *bs, char **string, size_t *length)
+{
+	size_t ibStream;
+	BSresult result;
+	char c;
+
+	result = bs_malloc_output(
+		(bs_size(bs) * sizeof(**string)) + 1,
+		(void **) string,
+		length
+	);
+	if (result != BS_OK) {
+		return result;
+	}
+
+	*length = *length - 1; /* Return the length without leading zero */
+	(*string)[*length] = '\0';
+
+	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
+		c = bs_byte_get(bs, ibStream);
+		if ((c < 32) || (c > 126)) {
+			free(*string);
+			*string = NULL;
+			*length = 0;
+			return BS_INVALID;
+		}
+		(*string)[ibStream] = c;
+	}
+
+	return BS_OK;
+}

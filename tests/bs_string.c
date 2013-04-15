@@ -27,6 +27,7 @@
 #include "bs.h"
 #include <check.h>
 #include <stdlib.h>
+#include <string.h>
 
 static unsigned char
 test_binary[5] = { '\x0', '\x1', '\x7f', '\x80', '\xff' };
@@ -98,12 +99,13 @@ test_string[] = "\x0\x1\x7f";
 START_TEST(test_load_string)
 {
 	BS *bs = bs_create();
+	size_t cbString = strlen(test_string);
 	BSresult result;
 	size_t ibIndex;
 
-	result = bs_load_string(bs, test_string, 3);
+	result = bs_load_string(bs, test_string, cbString);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 3);
+	fail_unless(bs_size(bs) == cbString);
 
 	for (ibIndex = 0; ibIndex < bs_size(bs); ibIndex++) {
 		fail_unless(bs_byte_get(bs, ibIndex) == (BSbyte)test_string[ibIndex]);
@@ -126,6 +128,35 @@ START_TEST(test_load_bad_string)
 }
 END_TEST
 
+static char
+test_string_clean[] = "\x32Hello\x126";
+
+START_TEST(test_save_string)
+{
+	BS *bs = bs_create();
+	size_t cbString = strlen(test_string_clean);
+	char *string;
+	size_t length;
+	BSresult result;
+	size_t ibIndex;
+
+	bs_load_string(bs, test_string_clean, cbString);
+
+	result = bs_save_string(bs, &string, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(string != NULL);
+	fail_unless(length == cbString);
+	fail_unless(string[cbString] == '\0');
+	fail_unless(strlen(string) == cbString);
+
+	for (ibIndex = 0; ibIndex < length; ibIndex++) {
+		fail_unless(
+			bs_byte_get(bs, ibIndex) == (BSbyte)test_string_clean[ibIndex]
+		);
+	}
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -139,9 +170,11 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_empty_binary);
 	tcase_add_test(tc_core, test_load_string);
 	tcase_add_test(tc_core, test_load_bad_string);
+	tcase_add_test(tc_core, test_save_string);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
+	srunner_set_fork_status(sr, CK_NOFORK);
 	srunner_run_all(sr, CK_NORMAL);
 	number_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
