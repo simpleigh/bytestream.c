@@ -71,7 +71,7 @@ coverage:
 	$(MAKE) V=0 clean
 	$(MAKE) V=0 CFLAGS='-g -fprofile-arcs -ftest-coverage'
 	$(MAKE) V=0 check
-	gcov .libs/*.gcda
+	gcov --object-directory .libs src/*
 # TODO can we make the above line less fragile?
 
 
