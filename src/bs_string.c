@@ -50,17 +50,15 @@ BSresult
 bs_save_binary(const BS *bs, unsigned char **data, size_t *length)
 {
 	size_t ibStream;
+	BSresult result;
 
-	*length = bs_size(bs);
-	if (*length == 0) {
-		*data = NULL;
-		return BS_OK;
-	}
-
-	*data = malloc(*length * sizeof(**data));
-	if (*data == NULL) {
-		*length = 0;
-		return BS_MEMORY;
+	result = bs_malloc_output(
+		bs_size(bs) * sizeof(**data),
+		(void **) data,
+		length
+	);
+	if (result != BS_OK) {
+		return result;
 	}
 
 	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
