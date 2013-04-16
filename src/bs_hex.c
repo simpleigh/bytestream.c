@@ -101,7 +101,7 @@ bs_save_hex(const BS *bs, char **hex, size_t *length)
 	(*hex)[*length] = '\0';
 
 	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
-		bByte = bs_get_byte(bs, ibStream);
+		bByte = bs->pbBytes[ibStream];
 		(*hex)[2 * ibStream]     = hex_encoding_table[bByte >> 4];
 		(*hex)[2 * ibStream + 1] = hex_encoding_table[bByte & 0xF];
 	}

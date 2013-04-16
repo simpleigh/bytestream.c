@@ -110,7 +110,7 @@ bs_save_string(const BS *bs, char **string, size_t *length)
 	(*string)[*length] = '\0';
 
 	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
-		c = bs_get_byte(bs, ibStream);
+		c = bs->pbBytes[ibStream];
 		if ((c < 32) || (c > 126)) {
 			free(*string);
 			*string = NULL;
