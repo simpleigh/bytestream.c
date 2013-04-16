@@ -102,16 +102,13 @@ bs_save_string(const BS *bs, char **string, size_t *length)
 	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(
-		(bs_size(bs) * sizeof(**string)) + 1,
+		(bs_size(bs) * sizeof(**string)),
 		(void **) string,
 		length
 	);
 	if (result != BS_OK) {
 		return result;
 	}
-
-	*length = *length - 1; /* Return the length without leading zero */
-	(*string)[*length] = '\0';
 
 	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
 		c = bs->pbBytes[ibStream];

@@ -91,16 +91,13 @@ bs_save_hex(const BS *bs, char **hex, size_t *length)
 	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(
-		(2 * bs_size(bs) * sizeof(**hex)) + 1,
+		(2 * bs_size(bs) * sizeof(**hex)),
 		(void **) hex,
 		length
 	);
 	if (result != BS_OK) {
 		return result;
 	}
-
-	*length = *length - 1; /* Return the length without leading zero */
-	(*hex)[*length] = '\0';
 
 	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
 		bByte = bs->pbBytes[ibStream];

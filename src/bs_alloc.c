@@ -126,11 +126,12 @@ bs_malloc_output(size_t cbBytes, void **ppbOutput, size_t *pcbOutput)
 		return BS_OK;
 	}
 
-	*ppbOutput = malloc(cbBytes);
+	*ppbOutput = malloc(cbBytes + 1);
 	if (*ppbOutput == NULL) {
 		*pcbOutput = 0;
 		return BS_MEMORY;
 	}
+	((char *) *ppbOutput)[cbBytes] = '\0'; /* Guarantee null-termination */
 
 	return BS_OK;
 }
