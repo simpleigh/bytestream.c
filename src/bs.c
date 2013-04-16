@@ -46,7 +46,7 @@ bs_zero(BS *bs)
 }
 
 BSbyte
-bs_byte_get(const BS *bs, size_t index)
+bs_get_byte(const BS *bs, size_t index)
 {
 	assert(index < bs_size(bs));
 	assert(bs->pbBytes != NULL);
@@ -55,7 +55,7 @@ bs_byte_get(const BS *bs, size_t index)
 }
 
 BSbyte
-bs_byte_set(BS *bs, size_t index, BSbyte byte)
+bs_set_byte(BS *bs, size_t index, BSbyte byte)
 {
 	assert(index < bs_size(bs));
 	assert(bs->pbBytes != NULL);

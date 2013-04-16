@@ -93,7 +93,7 @@ void bs_zero(BS *bs);
  * Streams are zero-indexed, and indices must be within [ 0, bs_size(bs) ).
  * An out-of-range index will lead to undefined behaviour.
  */
-BSbyte bs_byte_get(const BS *bs, size_t index);
+BSbyte bs_get_byte(const BS *bs, size_t index);
 
 /**
  * Set a byte
@@ -101,7 +101,7 @@ BSbyte bs_byte_get(const BS *bs, size_t index);
  * Streams are zero-indexed, and indices must be within [ 0, bs_size(bs) ).
  * An out-of-range index will lead to undefined behaviour.
  */
-BSbyte bs_byte_set(BS *bs, size_t index, BSbyte byte);
+BSbyte bs_set_byte(BS *bs, size_t index, BSbyte byte);
 
 /**
  * Load binary data

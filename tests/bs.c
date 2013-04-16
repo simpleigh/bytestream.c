@@ -37,13 +37,13 @@ START_TEST(test_zero)
 	BS *bs = bs_create_size(cbSize);
 
 	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
-		bs_byte_set(bs, ibIndex, 1);
+		bs_set_byte(bs, ibIndex, 1);
 	}
 
 	bs_zero(bs);
 
 	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
-		fail_unless(bs_byte_get(bs, ibIndex) == 0);
+		fail_unless(bs_get_byte(bs, ibIndex) == 0);
 	}
 
 	bs_free(bs);
@@ -60,8 +60,8 @@ START_TEST(test_get_set)
 
 	bs_zero(bs);
 	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
-		fail_unless(bs_byte_set(bs, ibIndex, bByte) == bByte);
-		fail_unless(bs_byte_get(bs, ibIndex) == bByte);
+		fail_unless(bs_set_byte(bs, ibIndex, bByte) == bByte);
+		fail_unless(bs_get_byte(bs, ibIndex) == bByte);
 	}
 
 	bs_free(bs);
@@ -71,14 +71,14 @@ END_TEST
 START_TEST(test_get_range)
 {
 	BS *bs = bs_create_size(5);
-	bs_byte_get(bs, 5);
+	bs_get_byte(bs, 5);
 }
 END_TEST
 
 START_TEST(test_set_range)
 {
 	BS *bs = bs_create_size(5);
-	bs_byte_get(bs, 5);
+	bs_get_byte(bs, 5);
 }
 END_TEST
 

@@ -43,7 +43,7 @@ START_TEST(test_load_binary)
 	fail_unless(bs_size(bs) == 5);
 
 	for (ibIndex = 0; ibIndex < bs_size(bs); ibIndex++) {
-		fail_unless(bs_byte_get(bs, ibIndex) == test_binary[ibIndex]);
+		fail_unless(bs_get_byte(bs, ibIndex) == test_binary[ibIndex]);
 	}
 
 	bs_free(bs);
@@ -66,7 +66,7 @@ START_TEST(test_save_binary)
 	fail_unless(length == 5);
 
 	for (ibIndex = 0; ibIndex < length; ibIndex++) {
-		fail_unless(bs_byte_get(bs, ibIndex) == test_binary[ibIndex]);
+		fail_unless(bs_get_byte(bs, ibIndex) == test_binary[ibIndex]);
 	}
 
 	free(data);
@@ -109,7 +109,7 @@ START_TEST(test_load_string)
 	fail_unless(bs_size(bs) == cbString);
 
 	for (ibIndex = 0; ibIndex < bs_size(bs); ibIndex++) {
-		fail_unless(bs_byte_get(bs, ibIndex) == (BSbyte)test_string[ibIndex]);
+		fail_unless(bs_get_byte(bs, ibIndex) == (BSbyte)test_string[ibIndex]);
 	}
 
 	bs_free(bs);
@@ -152,7 +152,7 @@ START_TEST(test_save_string)
 
 	for (ibIndex = 0; ibIndex < length; ibIndex++) {
 		fail_unless(
-			bs_byte_get(bs, ibIndex) == (BSbyte)test_string_clean[ibIndex]
+			bs_get_byte(bs, ibIndex) == (BSbyte)test_string_clean[ibIndex]
 		);
 	}
 

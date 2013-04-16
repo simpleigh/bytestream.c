@@ -62,7 +62,7 @@ START_TEST(test_create_size)
 
 	/* Confirm the allocation worked by trying to write to each byte */
 	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
-		bs_byte_set(bs, ibIndex, 0);
+		bs_set_byte(bs, ibIndex, 0);
 	}
 
 	bs_free(bs);
@@ -89,7 +89,7 @@ START_TEST(test_change_size)
 	fail_unless(bs->cbBuffer == (cbSize > 5) ? cbSize : 5);
 
 	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
-		bs_byte_set(bs, ibIndex, 0);
+		bs_set_byte(bs, ibIndex, 0);
 	}
 
 	bs_free(bs);

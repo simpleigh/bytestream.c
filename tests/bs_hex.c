@@ -74,7 +74,7 @@ START_TEST(test_load)
 	fail_unless(bs_size(bs) == cbOutput);
 
 	for (ibOutput = 0; ibOutput < cbOutput; ibOutput++) {
-		fail_unless(bs_byte_get(bs, ibOutput) == test_hex_out[ibOutput]);
+		fail_unless(bs_get_byte(bs, ibOutput) == test_hex_out[ibOutput]);
 	}
 
 	bs_free(bs);

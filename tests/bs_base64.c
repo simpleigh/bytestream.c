@@ -62,7 +62,7 @@ START_TEST(test_load)
 
 	for (ibByte = 0; ibByte < base64_testcases[_i].cbBytes; ibByte++) {
 		fail_unless(
-			bs_byte_get(bs, ibByte) == base64_testcases[_i].rgBytes[ibByte]
+			bs_get_byte(bs, ibByte) == base64_testcases[_i].rgBytes[ibByte]
 		);
 	}
 
@@ -82,7 +82,7 @@ START_TEST(test_load_many)
 	fail_unless(bs_size(bs) == 7);
 
 	for (ibByte = 0; ibByte < 7; ibByte++) {
-		fail_unless(bs_byte_get(bs, ibByte) == expected[ibByte]);
+		fail_unless(bs_get_byte(bs, ibByte) == expected[ibByte]);
 	}
 
 	bs_free(bs);
