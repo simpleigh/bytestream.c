@@ -26,9 +26,11 @@
 
 #include "bs.h"
 #include "bs_alloc.h"
+#include <assert.h>
 #include <stdlib.h>
 
-static const unsigned int base64_decoding_table[] = {
+static const unsigned int
+base64_decoding_table[] = {
 	                                            62, 99, 99, 99, 63,
 	52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 99, 99, 99, 77, 99, 99,
 	99,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
@@ -108,6 +110,70 @@ bs_load_base64(BS *bs, const char *base64, size_t length)
 			bs_malloc(bs, 0);
 			return result;
 		}
+
+		ibByteStream += 3;
+		ibBase64 += 4;
+	}
+
+	return BS_OK;
+}
+
+static const char
+base64_encoding_table[] =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+static void
+write_base64_bytes(const BSbyte *in, size_t length, char *out)
+{
+	assert(length > 0);
+
+	switch (length) {
+	case 1:
+		out[0] = base64_encoding_table[in[0] >> 2];
+		out[1] = base64_encoding_table[(in[0] & 0x3) << 4];
+		out[2] = '=';
+		out[3] = '=';
+		break;
+
+	case 2:
+		out[0] = base64_encoding_table[in[0] >> 2];
+		out[1] = base64_encoding_table[(in[0] & 0x3) << 4 | in[1] >> 4];
+		out[2] = base64_encoding_table[(in[1] & 0xF) << 2];
+		out[3] = '=';
+		break;
+
+	default:
+		out[0] = base64_encoding_table[in[0] >> 2];
+		out[1] = base64_encoding_table[(in[0] & 0x3) << 4 | in[1] >> 4];
+		out[2] = base64_encoding_table[(in[1] & 0xF) << 2 | in[2] >> 6];
+		out[3] = base64_encoding_table[in[2] & 0x3F];
+		break;
+	}
+}
+
+BSresult
+bs_save_base64(const BS *bs, char **base64, size_t *length)
+{
+	size_t cbByteStream = bs_size(bs), ibBase64 = 0, ibByteStream = 0;
+	BSresult result;
+
+	BS_ASSERT_VALID(bs)
+
+	result = bs_malloc_output(
+		((cbByteStream + 2) / 3 * 4) * sizeof(**base64),
+		(void **) base64,
+		length
+	);
+	if (result != BS_OK) {
+		return result;
+	}
+
+	while (ibByteStream < cbByteStream) {
+		write_base64_bytes(
+			bs->pbBytes + ibByteStream,
+			cbByteStream - ibByteStream,
+			*base64 + ibBase64
+		);
 
 		ibByteStream += 3;
 		ibBase64 += 4;

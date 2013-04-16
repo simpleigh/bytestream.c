@@ -70,6 +70,29 @@ START_TEST(test_load)
 }
 END_TEST
 
+START_TEST(test_save)
+{
+	BS *bs = bs_create();
+	size_t cbString = 4;
+	char *base64;
+	size_t length;
+	BSresult result;
+
+	bs_load_base64(bs, base64_testcases[_i].base64, cbString);
+
+	result = bs_save_base64(bs, &base64, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(base64 != NULL);
+	fail_unless(length == cbString);
+	fail_unless(base64[cbString] == '\0');
+	fail_unless(strlen(base64) == cbString);
+	fail_unless(strcmp(base64, base64_testcases[_i].base64) == 0);
+
+	free(base64);
+	bs_free(bs);
+}
+END_TEST
+
 START_TEST(test_load_many)
 {
 	BS *bs = bs_create();
@@ -85,6 +108,29 @@ START_TEST(test_load_many)
 		fail_unless(bs_get_byte(bs, ibByte) == expected[ibByte]);
 	}
 
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_save_many)
+{
+	BS *bs = bs_create();
+	char *base64;
+	size_t length;
+	BSresult result;
+	char expected[] = "ZWFzdXJlLg==";
+
+	bs_load_base64(bs, expected, 12);
+
+	result = bs_save_base64(bs, &base64, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(base64 != NULL);
+	fail_unless(length == 12);
+	fail_unless(base64[12] == '\0');
+	fail_unless(strlen(base64) == 12);
+	fail_unless(strcmp(base64, expected) == 0);
+
+	free(base64);
 	bs_free(bs);
 }
 END_TEST
@@ -125,7 +171,9 @@ main(/* int argc, char **argv */)
 	int number_failed;
 
 	tcase_add_loop_test(tc_core, test_load, 0, 11);
+	tcase_add_loop_test(tc_core, test_save, 0, 11);
 	tcase_add_test(tc_core, test_load_many);
+	tcase_add_test(tc_core, test_save_many);
 	tcase_add_test(tc_core, test_bad_length);
 	tcase_add_loop_test(tc_core, test_bad_chars, 0, 6);
 
