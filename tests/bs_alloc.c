@@ -102,7 +102,7 @@ START_TEST(test_allocate_output)
 	BSbyte *pbOutput;
 	BSresult result;
 
-	result = bs_malloc_output(cbSize, &pbOutput, &cbOutput);
+	result = bs_malloc_output(cbSize, (void **)&pbOutput, &cbOutput);
 
 	fail_unless(result == BS_OK);
 	fail_unless(cbOutput == cbSize);
