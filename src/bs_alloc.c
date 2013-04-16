@@ -98,8 +98,7 @@ bs_malloc(BS *bs, size_t cbSize)
 {
 	BSbyte *pbNewBytes;
 
-	assert((bs->pbBytes != NULL) || (bs->cbBuffer == 0));
-	assert(bs->cbBytes <= bs->cbBuffer);
+	BS_ASSERT_VALID(bs)
 
 	if (cbSize <= bs->cbBuffer) { /* Buffer already long enough */
 		bs->cbBytes = cbSize;

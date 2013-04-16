@@ -52,6 +52,8 @@ bs_save_binary(const BS *bs, unsigned char **data, size_t *length)
 	size_t ibStream;
 	BSresult result;
 
+	BS_ASSERT_VALID(bs)
+
 	result = bs_malloc_output(
 		bs_size(bs) * sizeof(**data),
 		(void **) data,
@@ -96,6 +98,8 @@ bs_save_string(const BS *bs, char **string, size_t *length)
 	size_t ibStream;
 	BSresult result;
 	char c;
+
+	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(
 		(bs_size(bs) * sizeof(**string)) + 1,

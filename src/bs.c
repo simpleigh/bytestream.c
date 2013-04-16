@@ -34,6 +34,8 @@ bs_zero(BS *bs)
 {
 	size_t ibIndex;
 
+	BS_ASSERT_VALID(bs)
+
 	if (bs_size(bs) == 0) {
 		return;
 	}
@@ -48,8 +50,8 @@ bs_zero(BS *bs)
 BSbyte
 bs_get_byte(const BS *bs, size_t index)
 {
+	BS_ASSERT_VALID(bs)
 	assert(index < bs_size(bs));
-	assert(bs->pbBytes != NULL);
 
 	return bs->pbBytes[index];
 }
@@ -57,8 +59,8 @@ bs_get_byte(const BS *bs, size_t index)
 BSbyte
 bs_set_byte(BS *bs, size_t index, BSbyte byte)
 {
+	BS_ASSERT_VALID(bs)
 	assert(index < bs_size(bs));
-	assert(bs->pbBytes != NULL);
 
 	return bs->pbBytes[index] = byte;
 }

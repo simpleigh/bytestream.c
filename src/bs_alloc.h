@@ -28,12 +28,22 @@
 #define __BS_ALLOC_H
 
 #include "bs.h"
+#include <assert.h>
 
 struct BS {
 	size_t cbBytes;
 	BSbyte *pbBytes;
 	size_t cbBuffer;
 };
+
+/**
+ * Check BS valid
+ * Simple macro to check that a BS has been initialised correctly.
+ * Implemented as a macro so it can be optimised away with NDEBUG.
+ */
+#define BS_ASSERT_VALID(bs) \
+	assert(((bs)->pbBytes != NULL) || ((bs)->cbBuffer == 0)); \
+	assert((bs)->cbBytes <= (bs)->cbBuffer);
 
 /**
  * Allocate internal memory

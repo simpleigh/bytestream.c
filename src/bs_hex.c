@@ -88,6 +88,8 @@ bs_save_hex(const BS *bs, char **hex, size_t *length)
 	BSresult result;
 	BSbyte bByte;
 
+	BS_ASSERT_VALID(bs)
+
 	result = bs_malloc_output(
 		(2 * bs_size(bs) * sizeof(**hex)) + 1,
 		(void **) hex,
