@@ -58,6 +58,9 @@ START_TEST(test_combine_short_operand)
 	fail_unless(
 		memcmp(short_operand_counts, short_operand_counts_target, 3) == 0
 	);
+
+	bs_free(bs);
+	bs_free(operand);
 }
 END_TEST
 
@@ -91,20 +94,24 @@ START_TEST(test_combine_long_operand)
 	fail_unless(
 		memcmp(long_operand_counts, long_operand_counts_target, 5) == 0
 	);
+
+	bs_free(bs);
+	bs_free(operand);
 }
 END_TEST
 
 struct combine_testcase_struct {
-	BSresult (*combine_function)(BS *bs, const BS *operand);
+	BSresult (*combine_function) (BS *bs, const BS *operand);
 	char output[17];
 };
 
 static const struct combine_testcase_struct
-combine_testcases[4] = {
+combine_testcases[5] = {
 	{ bs_combine_xor, "ab9889cd32676754" },
 	{ bs_combine_or,  "abbbcdefbbefefff" },
 	{ bs_combine_and, "00234422898888ab" },
-	{ bs_combine_add, "abde1111447777aa" }
+	{ bs_combine_add, "abde1111447777aa" },
+	{ bs_combine_sub, "576879bdcedf2334" },
 };
 
 START_TEST(test_combine_functions)
@@ -129,6 +136,10 @@ START_TEST(test_combine_functions)
 	fail_unless(hex != NULL);
 	fail_unless(length == 16);
 	fail_unless(strcmp(hex, combine_testcases[_i].output) == 0);
+
+	free(hex);
+	bs_free(bs);
+	bs_free(operand);
 }
 END_TEST
 
@@ -142,7 +153,7 @@ main(/* int argc, char **argv */)
 
 	tcase_add_test(tc_core, test_combine_short_operand);
 	tcase_add_test(tc_core, test_combine_long_operand);
-	tcase_add_loop_test(tc_core, test_combine_functions, 0, 4);
+	tcase_add_loop_test(tc_core, test_combine_functions, 0, 5);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

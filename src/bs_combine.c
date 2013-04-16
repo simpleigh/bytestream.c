@@ -77,6 +77,12 @@ add_byte(BSbyte byte1, BSbyte byte2)
 	return byte1 + byte2;
 }
 
+static BSbyte
+sub_byte(BSbyte byte1, BSbyte byte2)
+{
+	return byte1 - byte2;
+}
+
 BSresult
 bs_combine_xor(BS *bs, const BS *operand)
 {
@@ -99,4 +105,10 @@ BSresult
 bs_combine_add(BS *bs, const BS *operand)
 {
 	return bs_combine(bs, operand, add_byte);
+}
+
+BSresult
+bs_combine_sub(BS *bs, const BS *operand)
+{
+	return bs_combine(bs, operand, sub_byte);
 }

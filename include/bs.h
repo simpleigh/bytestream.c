@@ -254,4 +254,10 @@ BSresult bs_combine_and(BS *bs, const BS *operand);
  */
 BSresult bs_combine_add(BS *bs, const BS *operand);
 
+/**
+ * Subtract two byte streams
+ * Subtraction overflows naturally (i.e. 0 - 1 = 255).
+ */
+BSresult bs_combine_sub(BS *bs, const BS *operand);
+
 #endif /* __BS_H */
