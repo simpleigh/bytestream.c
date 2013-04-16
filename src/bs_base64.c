@@ -27,7 +27,6 @@
 #include "bs.h"
 #include "bs_alloc.h"
 #include <assert.h>
-#include <stdlib.h>
 
 static const unsigned int
 base64_decoding_table[] = {
