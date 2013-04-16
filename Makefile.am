@@ -39,34 +39,39 @@ libbs_la_SOURCES = include/bs.h     \
                    src/bs_string.c  \
                    src/bs_hex.c     \
                    src/bs_base64.c  \
+                   src/bs_filter.c  \
                    src/bs_combine.c
 
 
 # CHECK target, compiles and runs unit tests
-TESTS = bs_alloc bs bs_string bs_hex bs_base64 bs_combine
+TESTS = bs_alloc bs bs_string bs_hex bs_base64 bs_filter bs_combine
 check_PROGRAMS = $(TESTS)
 
 bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h src/bs_alloc.h
 bs_alloc_CFLAGS = @CHECK_CFLAGS@
 bs_alloc_LDADD = libbs.la @CHECK_LIBS@
 
-bs_SOURCES = tests/bs.c include/bs.h src/bs_alloc.h
+bs_SOURCES = tests/bs.c include/bs.h
 bs_CFLAGS = @CHECK_CFLAGS@
 bs_LDADD = libbs.la @CHECK_LIBS@
 
-bs_string_SOURCES = tests/bs_string.c include/bs.h src/bs_alloc.h
+bs_string_SOURCES = tests/bs_string.c include/bs.h
 bs_string_CFLAGS = @CHECK_CFLAGS@
 bs_string_LDADD = libbs.la @CHECK_LIBS@
 
-bs_hex_SOURCES = tests/bs_hex.c include/bs.h src/bs_alloc.h
+bs_hex_SOURCES = tests/bs_hex.c include/bs.h
 bs_hex_CFLAGS = @CHECK_CFLAGS@
 bs_hex_LDADD = libbs.la @CHECK_LIBS@
 
-bs_base64_SOURCES = tests/bs_base64.c include/bs.h src/bs_alloc.h
+bs_base64_SOURCES = tests/bs_base64.c include/bs.h
 bs_base64_CFLAGS = @CHECK_CFLAGS@
 bs_base64_LDADD = libbs.la @CHECK_LIBS@
 
-bs_combine_SOURCES = tests/bs_combine.c include/bs.h src/bs_alloc.h
+bs_filter_SOURCES = tests/bs_filter.c include/bs.h
+bs_filter_CFLAGS = @CHECK_CFLAGS@
+bs_filter_LDADD = libbs.la @CHECK_LIBS@
+
+bs_combine_SOURCES = tests/bs_combine.c include/bs.h
 bs_combine_CFLAGS = @CHECK_CFLAGS@
 bs_combine_LDADD = libbs.la @CHECK_LIBS@
 
