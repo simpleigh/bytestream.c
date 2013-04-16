@@ -94,7 +94,20 @@ START_TEST(test_combine_long_operand)
 }
 END_TEST
 
-START_TEST(test_combine_xor)
+struct combine_testcase_struct {
+	BSresult (*combine_function)(BS *bs, const BS *operand);
+	char output[17];
+};
+
+static const struct combine_testcase_struct
+combine_testcases[4] = {
+	{ bs_combine_xor, "ab9889cd32676754" },
+	{ bs_combine_or,  "abbbcdefbbefefff" },
+	{ bs_combine_and, "00234422898888ab" },
+	{ bs_combine_add, "abde1111447777aa" }
+};
+
+START_TEST(test_combine_functions)
 {
 	BS *bs = bs_create(), *operand = bs_create();
 	BSresult result;
@@ -107,7 +120,7 @@ START_TEST(test_combine_xor)
 	result = bs_load_hex(operand, "aabbcc", 6);
 	fail_unless(result == BS_OK);
 
-	result = bs_combine_xor(bs, operand);
+	result = combine_testcases[_i].combine_function(bs, operand);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 8);
 
@@ -115,21 +128,21 @@ START_TEST(test_combine_xor)
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
 	fail_unless(length == 16);
-	fail_unless(strcmp(hex, "ab9889cd32676754") == 0);
+	fail_unless(strcmp(hex, combine_testcases[_i].output) == 0);
 }
 END_TEST
 
 int
 main(/* int argc, char **argv */)
 {
-	Suite *s = suite_create("Combintaions");
+	Suite *s = suite_create("Combinations");
 	TCase *tc_core = tcase_create("Core");
 	SRunner *sr;
 	int number_failed;
 
 	tcase_add_test(tc_core, test_combine_short_operand);
 	tcase_add_test(tc_core, test_combine_long_operand);
-	tcase_add_test(tc_core, test_combine_xor);
+	tcase_add_loop_test(tc_core, test_combine_functions, 0, 4);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

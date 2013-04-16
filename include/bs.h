@@ -211,8 +211,23 @@ BSresult bs_combine(BS *bs, const BS *operand,
 
 /**
  * XOR two byte streams
- * Combines two byte streams by XORing them together.
  */
 BSresult bs_combine_xor(BS *bs, const BS *operand);
+
+/**
+ * OR two byte streams
+ */
+BSresult bs_combine_or(BS *bs, const BS *operand);
+
+/**
+ * AND two byte streams
+ */
+BSresult bs_combine_and(BS *bs, const BS *operand);
+
+/**
+ * Add two byte streams
+ * Addition overflows naturally (i.e. 255 + 1 = 0).
+ */
+BSresult bs_combine_add(BS *bs, const BS *operand);
 
 #endif /* __BS_H */

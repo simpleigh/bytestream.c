@@ -59,8 +59,44 @@ xor_byte(BSbyte byte1, BSbyte byte2)
 	return byte1 ^ byte2;
 }
 
+static BSbyte
+or_byte(BSbyte byte1, BSbyte byte2)
+{
+	return byte1 | byte2;
+}
+
+static BSbyte
+and_byte(BSbyte byte1, BSbyte byte2)
+{
+	return byte1 & byte2;
+}
+
+static BSbyte
+add_byte(BSbyte byte1, BSbyte byte2)
+{
+	return byte1 + byte2;
+}
+
 BSresult
 bs_combine_xor(BS *bs, const BS *operand)
 {
 	return bs_combine(bs, operand, xor_byte);
+}
+
+BSresult
+bs_combine_or(BS *bs, const BS *operand)
+{
+	return bs_combine(bs, operand, or_byte);
+}
+
+BSresult
+bs_combine_and(BS *bs, const BS *operand)
+{
+	return bs_combine(bs, operand, and_byte);
+}
+
+BSresult
+bs_combine_add(BS *bs, const BS *operand)
+{
+	return bs_combine(bs, operand, add_byte);
 }
