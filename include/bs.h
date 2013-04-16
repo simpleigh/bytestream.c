@@ -196,4 +196,23 @@ BSresult bs_load_base64(BS *bs, const char *base64, size_t length);
  */
 BSresult bs_save_base64(const BS *bs, char **base64, size_t *length);
 
+/**
+ * Combine two byte streams
+ * Applies an operand byte stream based on an operation. OPERAND is duplicated
+ * or truncated to match the length of the input BS. Its bytes are then combined
+ * with the input BS using the supplied OPERATION.
+ * This provides a simple way, for example, to XOR two streams together.
+ * Common operations are available through library functions defined below.
+ * Returns BS_OK if all bytes are combined successfully
+ * The operation should return the combination of BYTE1 and BYTE2.
+ */
+BSresult bs_combine(BS *bs, const BS *operand,
+	BSbyte operation(BSbyte byte1, BSbyte byte2));
+
+/**
+ * XOR two byte streams
+ * Combines two byte streams by XORing them together.
+ */
+BSresult bs_combine_xor(BS *bs, const BS *operand);
+
 #endif /* __BS_H */

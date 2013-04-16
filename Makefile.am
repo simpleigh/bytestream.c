@@ -32,13 +32,14 @@ AM_CPPFLAGS = -I$(srcdir)/include
 # Main library
 include_HEADERS = include/bs.h
 lib_LTLIBRARIES = libbs.la
-libbs_la_SOURCES = include/bs.h    \
-                   src/bs_alloc.h  \
-                   src/bs_alloc.c  \
-                   src/bs.c        \
-                   src/bs_string.c \
-                   src/bs_hex.c    \
-                   src/bs_base64.c
+libbs_la_SOURCES = include/bs.h     \
+                   src/bs_alloc.h   \
+                   src/bs_alloc.c   \
+                   src/bs.c         \
+                   src/bs_string.c  \
+                   src/bs_hex.c     \
+                   src/bs_base64.c  \
+                   src/bs_combine.c
 
 
 # CHECK target, compiles and runs unit tests
