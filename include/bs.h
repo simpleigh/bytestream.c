@@ -136,7 +136,7 @@ BSresult bs_save_binary(const BS *bs, unsigned char **data, size_t *length);
 BSresult bs_load_string(BS *bs, const char *string, size_t length);
 
 /**
- * Saves a string
+ * Save a string
  * Writes the byte stream as a string.
  * Space for the string will be allocated, and should be freed when no longer
  * required.
@@ -160,6 +160,18 @@ BSresult bs_save_string(const BS *bs, char **string, size_t *length);
  * Do not attempt to use the bytestream if the return value is other than BS_OK.
  */
 BSresult bs_load_hex(BS *bs, const char *hex, size_t length);
+
+/**
+ * Save a hexadecimal string
+ * Writes the byte stream as a hexadecimal string.
+ * Space for the string will be allocated, and should be freed when no longer
+ * required.
+ * Provides the length of the string excluding the terminating null byte ('\0').
+ * Returns BS_OK if data is saved correctly
+ * Returns BS_MEMORY if memory cannot be allocated
+ * The bytestream is not touched by this operation.
+ */
+BSresult bs_save_hex(const BS *bs, char **hex, size_t *length);
 
 /**
  * Load a base64-encoded string

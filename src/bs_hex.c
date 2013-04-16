@@ -77,3 +77,34 @@ bs_load_hex(BS *bs, const char *hex, size_t length)
 
 	return BS_OK;
 }
+
+static const char
+hex_encoding_table[] = "0123456789abcdef";
+
+BSresult
+bs_save_hex(const BS *bs, char **hex, size_t *length)
+{
+	size_t ibStream;
+	BSresult result;
+	BSbyte bByte;
+
+	result = bs_malloc_output(
+		(2 * bs_size(bs) * sizeof(**hex)) + 1,
+		(void **) hex,
+		length
+	);
+	if (result != BS_OK) {
+		return result;
+	}
+
+	*length = *length - 1; /* Return the length without leading zero */
+	(*hex)[*length] = '\0';
+
+	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
+		bByte = bs_byte_get(bs, ibStream);
+		(*hex)[2 * ibStream]     = hex_encoding_table[bByte >> 4];
+		(*hex)[2 * ibStream + 1] = hex_encoding_table[bByte & 0xF];
+	}
+
+	return BS_OK;
+}

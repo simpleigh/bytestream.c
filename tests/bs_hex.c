@@ -81,6 +81,32 @@ START_TEST(test_load)
 }
 END_TEST
 
+static const char
+test_hex_return[] = "0123456789abcdefabcdef";
+
+START_TEST(test_save)
+{
+	BS *bs = bs_create();
+	size_t cbString = strlen(test_hex_in);
+	char *hex;
+	size_t length;
+	BSresult result;
+
+	bs_load_hex(bs, test_hex_in, cbString);
+
+	result = bs_save_hex(bs, &hex, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(hex != NULL);
+	fail_unless(length == cbString);
+	fail_unless(hex[cbString] == '\0');
+	fail_unless(strlen(hex) == cbString);
+	fail_unless(strcmp(hex, test_hex_return) == 0);
+
+	free(hex);
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -92,6 +118,7 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_load_bad_length);
 	tcase_add_test(tc_core, test_load_bad_character);
 	tcase_add_test(tc_core, test_load);
+	tcase_add_test(tc_core, test_save);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
