@@ -69,6 +69,7 @@ START_TEST(test_save_binary)
 		fail_unless(bs_byte_get(bs, ibIndex) == test_binary[ibIndex]);
 	}
 
+	free(data);
 	bs_free(bs);
 }
 END_TEST
@@ -154,6 +155,9 @@ START_TEST(test_save_string)
 			bs_byte_get(bs, ibIndex) == (BSbyte)test_string_clean[ibIndex]
 		);
 	}
+
+	free(string);
+	bs_free(bs);
 }
 END_TEST
 
