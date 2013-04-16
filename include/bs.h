@@ -207,7 +207,7 @@ BSresult bs_save_base64(const BS *bs, char **base64, size_t *length);
  * The operation should return the combination of BYTE1 and BYTE2.
  */
 BSresult bs_combine(BS *bs, const BS *operand,
-	BSbyte operation(BSbyte byte1, BSbyte byte2));
+	BSbyte (*operation) (BSbyte byte1, BSbyte byte2));
 
 /**
  * XOR two byte streams

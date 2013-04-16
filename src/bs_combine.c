@@ -29,7 +29,7 @@
 
 BSresult
 bs_combine(BS *bs, const BS *operand,
-	BSbyte operation(BSbyte byte1, BSbyte byte2))
+	BSbyte (*operation) (BSbyte byte1, BSbyte byte2))
 {
 	size_t cbByteStream = bs_size(bs), cbOperand = bs_size(operand);
 	size_t ibByteStream = 0, ibOperand = 0;
