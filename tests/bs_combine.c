@@ -46,12 +46,15 @@ START_TEST(test_combine_short_operand)
 	BS *bs = bs_create_size(5);
 	BS *operand = bs_create_size(3);
 	size_t ibOperand;
+	BSresult result;
 
 	for (ibOperand = 0; ibOperand < 3; ibOperand++) {
 		bs_set_byte(operand, ibOperand, (BSbyte) ibOperand);
 	}
 
-	bs_combine(bs, operand, short_operand_operation);
+	result = bs_combine(bs, operand, short_operand_operation);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 5);
 	fail_unless(
 		memcmp(short_operand_counts, short_operand_counts_target, 3) == 0
 	);
@@ -76,32 +79,60 @@ START_TEST(test_combine_long_operand)
 	BS *bs = bs_create_size(3);
 	BS *operand = bs_create_size(5);
 	size_t ibOperand;
+	BSresult result;
 
 	for (ibOperand = 0; ibOperand < 3; ibOperand++) {
 		bs_set_byte(operand, ibOperand, (BSbyte) ibOperand);
 	}
 
-	bs_combine(bs, operand, long_operand_operation);
+	result = bs_combine(bs, operand, long_operand_operation);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 3);
 	fail_unless(
 		memcmp(long_operand_counts, long_operand_counts_target, 5) == 0
 	);
 }
 END_TEST
 
+START_TEST(test_combine_xor)
+{
+	BS *bs = bs_create(), *operand = bs_create();
+	BSresult result;
+	char *hex;
+	size_t length;
+
+	result = bs_load_hex(bs, "0123456789abcdef", 16);
+	fail_unless(result == BS_OK);
+
+	result = bs_load_hex(operand, "aabbcc", 6);
+	fail_unless(result == BS_OK);
+
+	result = bs_combine_xor(bs, operand);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 8);
+
+	result = bs_save_hex(bs, &hex, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(hex != NULL);
+	fail_unless(length == 16);
+	fail_unless(strcmp(hex, "ab9889cd32676754") == 0);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
-	Suite *s = suite_create("Hex");
+	Suite *s = suite_create("Combintaions");
 	TCase *tc_core = tcase_create("Core");
 	SRunner *sr;
 	int number_failed;
 
 	tcase_add_test(tc_core, test_combine_short_operand);
 	tcase_add_test(tc_core, test_combine_long_operand);
+	tcase_add_test(tc_core, test_combine_xor);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
-	srunner_set_fork_status(sr, CK_NOFORK);
 	srunner_run_all(sr, CK_NORMAL);
 	number_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
