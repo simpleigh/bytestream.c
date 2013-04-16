@@ -102,7 +102,7 @@ bs_save_string(const BS *bs, char **string, size_t *length)
 	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(
-		(bs_size(bs) * sizeof(**string)),
+		bs_size(bs) * sizeof(**string),
 		(void **) string,
 		length
 	);
