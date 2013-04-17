@@ -130,7 +130,7 @@ START_TEST(test_load_bad_string)
 END_TEST
 
 static char
-test_string_clean[] = "\x32Hello\x126";
+test_string_clean[] = " Hello~"; /* ' ' = 32, '~' = 126 */
 
 START_TEST(test_save_string)
 {
@@ -161,6 +161,29 @@ START_TEST(test_save_string)
 }
 END_TEST
 
+static BSbyte
+test_invalid_characters[4] = { '\0', 31, 127, 255 };
+
+START_TEST(test_save_invalid_string)
+{
+	BS *bs = bs_create();
+	BSresult result;
+	char *string;
+	size_t length;
+
+	result = bs_load_binary(bs, test_invalid_characters + _i, 1);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 1);
+
+	result = bs_save_string(bs, &string, &length);
+	fail_unless(result == BS_INVALID);
+	fail_unless(string == NULL);
+	fail_unless(length == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -175,10 +198,10 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_load_string);
 	tcase_add_test(tc_core, test_load_bad_string);
 	tcase_add_test(tc_core, test_save_string);
+	tcase_add_loop_test(tc_core, test_save_invalid_string, 0, 4);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
-	srunner_set_fork_status(sr, CK_NOFORK);
 	srunner_run_all(sr, CK_NORMAL);
 	number_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);
