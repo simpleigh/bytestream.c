@@ -76,6 +76,19 @@ BS *bs_create_size(size_t length);
 void bs_free(BS *bs);
 
 /**
+ * Set the internal buffer
+ * Sets the internal buffer of bytes to point to a new location.
+ * Bytes are stored within an internal buffer, and loading data usually involves
+ * looping over input to copy bytes across. This method simply sets the
+ * bytestream to point at a new memory location and is therefore much quicker.
+ * Once a buffer has been passed over to the byte stream it's now owned by that
+ * stream and shouldn't be freed or realloc'd. Use with care!
+ * Returns BS_OK if the buffer can be used correctly
+ * Returns BS_INVALID if the supplied buffer is NULL or length is zero
+ */
+BSresult bs_set_buffer(BS *bs, void *buffer, size_t length);
+
+/**
  * Calculate the length of a byte stream
  * Returns the number of bytes held in a byte stream.
  */

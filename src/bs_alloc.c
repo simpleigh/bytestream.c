@@ -88,6 +88,24 @@ bs_size(const BS *bs)
 	return bs->cbBytes;
 }
 
+BSresult
+bs_set_buffer(BS *bs, void *buffer, size_t length)
+{
+	if (buffer == NULL || length == 0) {
+		return BS_INVALID;
+	}
+
+	if ((bs->cbBuffer > 0) && (bs->pbBytes != NULL)) {
+		free(bs->pbBytes);
+	}
+
+	bs->cbBytes = length;
+	bs->pbBytes = buffer;
+	bs->cbBuffer = length;
+
+	return BS_OK;
+}
+
 
 /* **************** */
 /* * INTERNAL API * */
