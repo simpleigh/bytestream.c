@@ -68,7 +68,7 @@ BS *bs_create(void);
  */
 BS *bs_create_size(size_t length);
 
-/*
+/**
  * Free a byte stream
  * Frees all memory used by a byte stream.
  * Once a stream pointer has been freed then it should not be reused.
@@ -81,7 +81,7 @@ void bs_free(BS *bs);
  */
 size_t bs_size(const BS *bs);
 
-/*
+/**
  * Zero a byte stream
  * Sets all bytes in a byte stream to zero.
  */
