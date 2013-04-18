@@ -49,7 +49,7 @@ START_TEST(test_filter)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_binary(bs, byte_values, 10);
+	result = bs_load(bs, byte_values, 10);
 	fail_unless(result == BS_OK);
 
 	result = bs_filter(bs, operation);

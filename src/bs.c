@@ -64,3 +64,45 @@ bs_set_byte(BS *bs, size_t index, BSbyte byte)
 
 	return bs->pbBytes[index] = byte;
 }
+
+BSresult
+bs_load(BS *bs, const BSbyte *data, size_t length)
+{
+	size_t ibData;
+	BSresult result;
+
+	result = bs_malloc(bs, length);
+	if (result != BS_OK) {
+		return result;
+	}
+
+	for (ibData = 0; ibData < length; ibData++) {
+		bs->pbBytes[ibData] = data[ibData];
+	}
+
+	return BS_OK;
+}
+
+BSresult
+bs_save(const BS *bs, BSbyte **data, size_t *length)
+{
+	size_t ibStream;
+	BSresult result;
+
+	BS_ASSERT_VALID(bs);
+
+	result = bs_malloc_output(
+		bs_size(bs) * sizeof(**data),
+		(void **) data,
+		length
+	);
+	if (result != BS_OK) {
+		return result;
+	}
+
+	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
+		(*data)[ibStream] = bs->pbBytes[ibStream];
+	}
+
+	return BS_OK;
+}

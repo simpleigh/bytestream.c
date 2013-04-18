@@ -82,6 +82,64 @@ START_TEST(test_set_range)
 }
 END_TEST
 
+static char
+load_data[] = { '\x0', '\x1', '\x7f', '\x80', '\xff' };
+
+static size_t
+load_length = 5;
+
+START_TEST(test_load)
+{
+	BS *bs = bs_create();
+	BSresult result;
+	size_t ibIndex;
+
+	result = bs_load(bs, (BSbyte *)load_data, load_length);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == load_length);
+
+	for (ibIndex = 0; ibIndex < load_length; ibIndex++) {
+		fail_unless(bs_get_byte(bs, ibIndex) == (BSbyte)load_data[ibIndex]);
+	}
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_load_empty)
+{
+	BS *bs = bs_create();
+	BSresult result;
+	BSbyte *data;
+
+	result = bs_load(bs, data, 0);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_save)
+{
+	BS *bs = bs_create();
+	BSbyte *data;
+	size_t length;
+	BSresult result;
+
+	bs_load(bs, (BSbyte *)load_data, load_length);
+
+	result = bs_save(bs, &data, &length);
+	fail_unless(result == BS_OK);
+	fail_unless(data != NULL);
+	fail_unless(length == load_length);
+	fail_unless(strncmp(data, load_data, load_length) == 0);
+
+	free(data);
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -94,6 +152,9 @@ main(/* int argc, char **argv */)
 	tcase_add_loop_test(tc_core, test_get_set, 0, 2);
 	tcase_add_test_raise_signal(tc_core, test_get_range, SIGABRT);
 	tcase_add_test_raise_signal(tc_core, test_set_range, SIGABRT);
+	tcase_add_test(tc_core, test_load);
+	tcase_add_test(tc_core, test_load_empty);
+	tcase_add_test(tc_core, test_save);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
