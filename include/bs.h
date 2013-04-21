@@ -223,9 +223,15 @@ BSresult bs_walk_not(BS *bs);
  * Common operations are available through library functions defined below.
  * Returns BS_OK if all bytes are combined successfully
  * The operation should return the combination of BYTE1 and BYTE2.
+ * The pointer to additional user data will be passed on each call to OPERATION,
+ * and can be used to persist information between calls.
  */
-BSresult bs_combine(BS *bs, const BS *operand,
-	BSbyte (*operation) (BSbyte byte1, BSbyte byte2));
+BSresult bs_combine(
+	BS *bs,
+	const BS *operand,
+	BSbyte (*operation) (BSbyte byte1, BSbyte byte2, void *data),
+	void *data
+);
 
 /**
  * XOR two byte streams

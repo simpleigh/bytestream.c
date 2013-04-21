@@ -27,9 +27,14 @@
 #include "bs.h"
 #include "bs_alloc.h"
 
+#include <stddef.h>
+
 BSresult
-bs_combine(BS *bs, const BS *operand,
-	BSbyte (*operation) (BSbyte byte1, BSbyte byte2))
+bs_combine(
+	BS *bs,
+	const BS *operand,
+	BSbyte (*operation) (BSbyte byte1, BSbyte byte2, void *data),
+	void *data)
 {
 	size_t cbByteStream = bs_size(bs), cbOperand = bs_size(operand);
 	size_t ibByteStream = 0, ibOperand = 0;
@@ -40,7 +45,8 @@ bs_combine(BS *bs, const BS *operand,
 	while (ibByteStream < cbByteStream) {
 		bs->pbBytes[ibByteStream] = operation(
 			bs->pbBytes[ibByteStream],
-			operand->pbBytes[ibOperand]
+			operand->pbBytes[ibOperand],
+			data
 		);
 
 		ibByteStream++;
@@ -54,61 +60,66 @@ bs_combine(BS *bs, const BS *operand,
 }
 
 static BSbyte
-xor_byte(BSbyte byte1, BSbyte byte2)
+xor_byte(BSbyte byte1, BSbyte byte2, void *data)
 {
+	assert(data == NULL);
 	return byte1 ^ byte2;
 }
 
 static BSbyte
-or_byte(BSbyte byte1, BSbyte byte2)
+or_byte(BSbyte byte1, BSbyte byte2, void *data)
 {
+	assert(data == NULL);
 	return byte1 | byte2;
 }
 
 static BSbyte
-and_byte(BSbyte byte1, BSbyte byte2)
+and_byte(BSbyte byte1, BSbyte byte2, void *data)
 {
+	assert(data == NULL);
 	return byte1 & byte2;
 }
 
 static BSbyte
-add_byte(BSbyte byte1, BSbyte byte2)
+add_byte(BSbyte byte1, BSbyte byte2, void *data)
 {
+	assert(data == NULL);
 	return byte1 + byte2;
 }
 
 static BSbyte
-sub_byte(BSbyte byte1, BSbyte byte2)
+sub_byte(BSbyte byte1, BSbyte byte2, void *data)
 {
+	assert(data == NULL);
 	return byte1 - byte2;
 }
 
 BSresult
 bs_combine_xor(BS *bs, const BS *operand)
 {
-	return bs_combine(bs, operand, xor_byte);
+	return bs_combine(bs, operand, xor_byte, NULL);
 }
 
 BSresult
 bs_combine_or(BS *bs, const BS *operand)
 {
-	return bs_combine(bs, operand, or_byte);
+	return bs_combine(bs, operand, or_byte, NULL);
 }
 
 BSresult
 bs_combine_and(BS *bs, const BS *operand)
 {
-	return bs_combine(bs, operand, and_byte);
+	return bs_combine(bs, operand, and_byte, NULL);
 }
 
 BSresult
 bs_combine_add(BS *bs, const BS *operand)
 {
-	return bs_combine(bs, operand, add_byte);
+	return bs_combine(bs, operand, add_byte, NULL);
 }
 
 BSresult
 bs_combine_sub(BS *bs, const BS *operand)
 {
-	return bs_combine(bs, operand, sub_byte);
+	return bs_combine(bs, operand, sub_byte, NULL);
 }
