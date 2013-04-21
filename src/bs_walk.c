@@ -27,52 +27,61 @@
 #include "bs.h"
 #include "bs_alloc.h"
 
+#include <assert.h>
+#include <stddef.h>
+
 BSresult
-bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte))
+bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte, void *data), void *data)
 {
 	size_t ibByteStream;
 
 	BS_ASSERT_VALID(bs);
 
 	for (ibByteStream = 0; ibByteStream < bs_size(bs); ibByteStream++) {
-		bs->pbBytes[ibByteStream] = operation(bs->pbBytes[ibByteStream]);
+		bs->pbBytes[ibByteStream] = operation(bs->pbBytes[ibByteStream], data);
 	}
 
 	return BS_OK;
 }
 
 static BSbyte
-uppercase_byte(BSbyte byte)
+uppercase_byte(BSbyte byte, void *data)
 {
+	assert(data == NULL);
+
 	return (byte >= 'a' && byte <= 'z') ? byte - 'a' + 'A' : byte;
 }
 
 static BSbyte
-lowercase_byte(BSbyte byte)
+lowercase_byte(BSbyte byte, void *data)
 {
+	assert(data == NULL);
+
 	return (byte >= 'A' && byte <= 'Z') ? byte - 'A' + 'a' : byte;
 }
 
 static BSbyte
-not_byte(BSbyte byte)
+not_byte(BSbyte byte, void *data)
 {
+	assert(data == NULL);
+
 	return ~byte;
 }
 
 BSresult
 bs_walk_uppercase(BS *bs)
 {
-	return bs_walk(bs, uppercase_byte);
+	return bs_walk(bs, uppercase_byte, NULL);
 }
 
 BSresult
 bs_walk_lowercase(BS *bs)
 {
-	return bs_walk(bs, lowercase_byte);
+	return bs_walk(bs, lowercase_byte, NULL);
 }
 
 BSresult
 bs_walk_not(BS *bs)
 {
-	return bs_walk(bs, not_byte);
+	return bs_walk(bs, not_byte, NULL);
 }
