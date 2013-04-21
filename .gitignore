@@ -1,2 +1,17 @@
+.deps/
+build-aux/
+m4/
+
 .cproject
 .project
+
+aclocal.m4
+config.h
+config.h.in
+config.log
+config.status
+configure
+libtool
+Makefile
+Makefile.in
+stamp-h1
