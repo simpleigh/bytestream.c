@@ -185,28 +185,28 @@ BSresult bs_load_base64(BS *bs, const char *base64, size_t length);
 BSresult bs_save_base64(const BS *bs, char **base64, size_t *length);
 
 /**
- * Filters a byte stream
+ * Walks a byte stream
  * Applies an OPERATION to each byte in a byte stream.
  * Common operation are available through library functions defined below.
- * Returns BS_OK if all bytes are filtered successfully
- * The operation should return the filtered value.
+ * Returns BS_OK if all bytes are processed successfully
+ * The OPERATION should return the new value for each byte.
  */
-BSresult bs_filter(BS *bs, BSbyte (*operation) (BSbyte byte));
+BSresult bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte));
 
 /**
  * Make characters uppercase
  */
-BSresult bs_filter_uppercase(BS *bs);
+BSresult bs_walk_uppercase(BS *bs);
 
 /**
  * Make characters lowercase
  */
-BSresult bs_filter_lowercase(BS *bs);
+BSresult bs_walk_lowercase(BS *bs);
 
 /**
  * NOT each byte
  */
-BSresult bs_filter_not(BS *bs);
+BSresult bs_walk_not(BS *bs);
 
 /**
  * Combine two byte streams

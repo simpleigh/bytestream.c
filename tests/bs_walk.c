@@ -44,7 +44,7 @@ operation(BSbyte byte)
 	return 0;
 }
 
-START_TEST(test_filter)
+START_TEST(test_walk)
 {
 	BS *bs = bs_create();
 	BSresult result;
@@ -52,7 +52,7 @@ START_TEST(test_filter)
 	result = bs_load(bs, byte_values, 10);
 	fail_unless(result == BS_OK);
 
-	result = bs_filter(bs, operation);
+	result = bs_walk(bs, operation);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 10);
 	fail_unless(
@@ -63,43 +63,43 @@ START_TEST(test_filter)
 }
 END_TEST
 
-struct filter_testcase_struct {
-	BSresult (*filter_function) (BS *bs);
+struct walk_testcase_struct {
+	BSresult (*walk_function) (BS *bs);
 	char input[3];
 	char output[3];
 };
 
-static const struct filter_testcase_struct
-filter_testcases[16] = {
-	{ bs_filter_uppercase, "00", "00" },
-	{ bs_filter_uppercase, "61", "41" },
-	{ bs_filter_uppercase, "7a", "5a" },
-	{ bs_filter_uppercase, "ff", "ff" },
-	{ bs_filter_lowercase, "00", "00" },
-	{ bs_filter_lowercase, "41", "61" },
-	{ bs_filter_lowercase, "5a", "7a" },
-	{ bs_filter_lowercase, "ff", "ff" },
-	{ bs_filter_not,       "01", "fe" },
-	{ bs_filter_not,       "23", "dc" },
-	{ bs_filter_not,       "45", "ba" },
-	{ bs_filter_not,       "67", "98" },
-	{ bs_filter_not,       "89", "76" },
-	{ bs_filter_not,       "ab", "54" },
-	{ bs_filter_not,       "cd", "32" },
-	{ bs_filter_not,       "ef", "10" },
+static const struct walk_testcase_struct
+walk_testcases[16] = {
+	{ bs_walk_uppercase, "00", "00" },
+	{ bs_walk_uppercase, "61", "41" },
+	{ bs_walk_uppercase, "7a", "5a" },
+	{ bs_walk_uppercase, "ff", "ff" },
+	{ bs_walk_lowercase, "00", "00" },
+	{ bs_walk_lowercase, "41", "61" },
+	{ bs_walk_lowercase, "5a", "7a" },
+	{ bs_walk_lowercase, "ff", "ff" },
+	{ bs_walk_not,       "01", "fe" },
+	{ bs_walk_not,       "23", "dc" },
+	{ bs_walk_not,       "45", "ba" },
+	{ bs_walk_not,       "67", "98" },
+	{ bs_walk_not,       "89", "76" },
+	{ bs_walk_not,       "ab", "54" },
+	{ bs_walk_not,       "cd", "32" },
+	{ bs_walk_not,       "ef", "10" },
 };
 
-START_TEST(test_filter_functions)
+START_TEST(test_walk_functions)
 {
 	BS *bs = bs_create();
 	BSresult result;
 	char *hex;
 	size_t length;
 
-	result = bs_load_hex(bs, filter_testcases[_i].input, 2);
+	result = bs_load_hex(bs, walk_testcases[_i].input, 2);
 	fail_unless(result == BS_OK);
 
-	result = filter_testcases[_i].filter_function(bs);
+	result = walk_testcases[_i].walk_function(bs);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 1);
 
@@ -107,7 +107,7 @@ START_TEST(test_filter_functions)
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
 	fail_unless(length == 2);
-	fail_unless(strcmp(hex, filter_testcases[_i].output) == 0);
+	fail_unless(strcmp(hex, walk_testcases[_i].output) == 0);
 
 	free(hex);
 	bs_free(bs);
@@ -117,13 +117,13 @@ END_TEST
 int
 main(/* int argc, char **argv */)
 {
-	Suite *s = suite_create("Filters");
+	Suite *s = suite_create("Walking");
 	TCase *tc_core = tcase_create("Core");
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_filter);
-	tcase_add_loop_test(tc_core, test_filter_functions, 0, 16);
+	tcase_add_test(tc_core, test_walk);
+	tcase_add_loop_test(tc_core, test_walk_functions, 0, 16);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
