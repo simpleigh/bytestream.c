@@ -260,4 +260,9 @@ BSresult bs_combine_add(BS *bs, const BS *operand);
  */
 BSresult bs_combine_sub(BS *bs, const BS *operand);
 
+/**
+ * Calculate the Hamming distance between two byte streams
+ */
+BSresult bs_hamming(BS *bs1, const BS *bs2, unsigned int *distance);
+
 #endif /* __BS_H */
