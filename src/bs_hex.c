@@ -90,7 +90,7 @@ bs_save_hex(const BS *bs, char **hex, size_t *length)
 	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(
-		2 * bs_size(bs) * sizeof(**hex),
+		2 * bs->cbBytes * sizeof(**hex),
 		(void **) hex,
 		length
 	);
@@ -98,7 +98,7 @@ bs_save_hex(const BS *bs, char **hex, size_t *length)
 		return result;
 	}
 
-	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
+	for (ibStream = 0; ibStream < bs->cbBytes; ibStream++) {
 		bByte = bs->pbBytes[ibStream];
 		(*hex)[2 * ibStream]     = hex_encoding_table[bByte >> 4];
 		(*hex)[2 * ibStream + 1] = hex_encoding_table[bByte & 0xF];

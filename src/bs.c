@@ -36,13 +36,13 @@ bs_zero(BS *bs)
 
 	BS_ASSERT_VALID(bs)
 
-	if (bs_size(bs) == 0) {
+	if (bs->cbBytes == 0) {
 		return;
 	}
 
 	assert(bs->pbBytes != NULL);
 
-	for (ibIndex = 0; ibIndex < bs_size(bs); ibIndex++) {
+	for (ibIndex = 0; ibIndex < bs->cbBytes; ibIndex++) {
 		bs->pbBytes[ibIndex] = 0;
 	}
 }
@@ -51,7 +51,7 @@ BSbyte
 bs_get_byte(const BS *bs, size_t index)
 {
 	BS_ASSERT_VALID(bs)
-	assert(index < bs_size(bs));
+	assert(index < bs->cbBytes);
 
 	return bs->pbBytes[index];
 }
@@ -60,7 +60,7 @@ BSbyte
 bs_set_byte(BS *bs, size_t index, BSbyte byte)
 {
 	BS_ASSERT_VALID(bs)
-	assert(index < bs_size(bs));
+	assert(index < bs->cbBytes);
 
 	return bs->pbBytes[index] = byte;
 }
@@ -92,7 +92,7 @@ bs_save(const BS *bs, BSbyte **data, size_t *length)
 	BS_ASSERT_VALID(bs);
 
 	result = bs_malloc_output(
-		bs_size(bs) * sizeof(**data),
+			bs->cbBytes * sizeof(**data),
 		(void **) data,
 		length
 	);
@@ -100,7 +100,7 @@ bs_save(const BS *bs, BSbyte **data, size_t *length)
 		return result;
 	}
 
-	for (ibStream = 0; ibStream < bs_size(bs); ibStream++) {
+	for (ibStream = 0; ibStream < bs->cbBytes; ibStream++) {
 		(*data)[ibStream] = bs->pbBytes[ibStream];
 	}
 

@@ -37,7 +37,7 @@ bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte, void *data), void *data)
 
 	BS_ASSERT_VALID(bs);
 
-	for (ibByteStream = 0; ibByteStream < bs_size(bs); ibByteStream++) {
+	for (ibByteStream = 0; ibByteStream < bs->cbBytes; ibByteStream++) {
 		bs->pbBytes[ibByteStream] = operation(bs->pbBytes[ibByteStream], data);
 	}
 

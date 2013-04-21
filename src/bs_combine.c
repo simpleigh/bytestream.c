@@ -36,13 +36,12 @@ bs_combine(
 	BSbyte (*operation) (BSbyte byte1, BSbyte byte2, void *data),
 	void *data)
 {
-	size_t cbByteStream = bs_size(bs), cbOperand = bs_size(operand);
 	size_t ibByteStream = 0, ibOperand = 0;
 
 	BS_ASSERT_VALID(bs);
 	BS_ASSERT_VALID(operand);
 
-	while (ibByteStream < cbByteStream) {
+	while (ibByteStream < bs->cbBytes) {
 		bs->pbBytes[ibByteStream] = operation(
 			bs->pbBytes[ibByteStream],
 			operand->pbBytes[ibOperand],
@@ -51,7 +50,7 @@ bs_combine(
 
 		ibByteStream++;
 		ibOperand++;
-		if (ibOperand == cbOperand) {
+		if (ibOperand == operand->cbBytes) {
 			ibOperand = 0;
 		}
 	}

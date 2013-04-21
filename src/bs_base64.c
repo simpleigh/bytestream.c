@@ -153,7 +153,7 @@ write_base64_bytes(const BSbyte *in, size_t length, char *out)
 BSresult
 bs_save_base64(const BS *bs, char **base64, size_t *length)
 {
-	size_t cbByteStream = bs_size(bs), ibBase64 = 0, ibByteStream = 0;
+	size_t cbByteStream = bs->cbBytes, ibBase64 = 0, ibByteStream = 0;
 	BSresult result;
 
 	BS_ASSERT_VALID(bs)
