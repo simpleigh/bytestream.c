@@ -35,11 +35,9 @@ static unsigned int
 short_operand_counts_target[3] = { 2, 2, 1 };
 
 static BSbyte
-short_operand_operation(BSbyte byte1, BSbyte byte2, void *data)
+short_operand_operation(BSbyte byte1, BSbyte byte2)
 {
-	unsigned int *pCount = (unsigned int *) data;
 	short_operand_counts[byte2]++;
-	(*pCount)++;
 	return 0;
 }
 
@@ -49,16 +47,14 @@ START_TEST(test_combine_short_operand)
 	BS *operand = bs_create_size(3);
 	size_t ibOperand;
 	BSresult result;
-	unsigned int count = 0;
 
 	for (ibOperand = 0; ibOperand < 3; ibOperand++) {
 		bs_set_byte(operand, ibOperand, (BSbyte) ibOperand);
 	}
 
-	result = bs_combine(bs, operand, short_operand_operation, (void *) &count);
+	result = bs_combine(bs, operand, short_operand_operation);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 5);
-	fail_unless(count == 5);
 	fail_unless(
 		memcmp(short_operand_counts, short_operand_counts_target, 3) == 0
 	);
@@ -75,11 +71,9 @@ static unsigned int
 long_operand_counts_target[5] = { 1, 1, 1, 0, 0};
 
 static BSbyte
-long_operand_operation(BSbyte byte1, BSbyte byte2, void *data)
+long_operand_operation(BSbyte byte1, BSbyte byte2)
 {
-	unsigned int *pCount = (unsigned int *) data;
 	long_operand_counts[byte2]++;
-	(*pCount)++;
 	return 0;
 }
 
@@ -89,16 +83,14 @@ START_TEST(test_combine_long_operand)
 	BS *operand = bs_create_size(5);
 	size_t ibOperand;
 	BSresult result;
-	unsigned int count = 0;
 
 	for (ibOperand = 0; ibOperand < 3; ibOperand++) {
 		bs_set_byte(operand, ibOperand, (BSbyte) ibOperand);
 	}
 
-	result = bs_combine(bs, operand, long_operand_operation, (void *) &count);
+	result = bs_combine(bs, operand, long_operand_operation);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 3);
-	fail_unless(count == 3);
 	fail_unless(
 		memcmp(long_operand_counts, long_operand_counts_target, 5) == 0
 	);
