@@ -28,6 +28,58 @@
 #include <check.h>
 #include <stdlib.h>
 
+#ifndef UNUSED
+#define UNUSED(x) (void)(x)
+#endif
+
+static unsigned int
+byte_counts_target[3] = { 1, 4, 5 };
+
+static BSresult
+accumulate_operation(BSbyte byte, void *data)
+{
+	unsigned int *pbCounts = (unsigned int *) data;
+	pbCounts[byte]++;
+	return BS_OK;
+}
+
+START_TEST(test_accumulate)
+{
+	BS *bs = bs_create();
+	BSresult result;
+	unsigned int byte_counts[3] = { 0, 0, 0 };
+
+	result = bs_load(bs, "\x0\x1\x2\x1\x1\x1\x2\x2\x2\x2", 10);
+	fail_unless(result == BS_OK);
+
+	result = bs_accumulate(bs, accumulate_operation, &byte_counts);
+	fail_unless(result == BS_OK);
+	fail_unless(memcmp(byte_counts, byte_counts_target, 3 * sizeof(int)) == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+static BSresult
+accumulate_bad_operation(BSbyte byte, void *data)
+{
+	UNUSED(byte);
+	UNUSED(data);
+	return 999;
+}
+
+START_TEST(test_accumulate_invalid)
+{
+	BS *bs = bs_create_size(1);
+	BSresult result;
+
+	result = bs_accumulate(bs, accumulate_bad_operation, &result);
+	fail_unless(result == 999);
+
+	bs_free(bs);
+}
+END_TEST
+
 struct accumulate_test_case {
 	BSbyte byte;
 	unsigned int sum;
@@ -154,6 +206,8 @@ main(/* int argc, char **argv */)
 	SRunner *sr;
 	int number_failed;
 
+	tcase_add_test(tc_core, test_accumulate);
+	tcase_add_test(tc_core, test_accumulate_invalid);
 	tcase_add_test(tc_core, test_sum_starts_zero);
 	tcase_add_loop_test(tc_core, test_sum, 0, 16);
 	tcase_add_test(tc_core, test_sum_long);
