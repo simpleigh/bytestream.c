@@ -45,7 +45,7 @@ libbs_la_SOURCES = include/bs.h        \
 
 
 # CHECK target, compiles and runs unit tests
-TESTS = bs_alloc bs bs_hex bs_base64 bs_walk bs_combine bs_misc
+TESTS = bs_alloc bs bs_hex bs_base64 bs_walk bs_combine bs_accumulate bs_compare
 check_PROGRAMS = $(TESTS)
 
 bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h src/bs_alloc.h
@@ -72,9 +72,13 @@ bs_combine_SOURCES = tests/bs_combine.c include/bs.h
 bs_combine_CFLAGS = @CHECK_CFLAGS@
 bs_combine_LDADD = libbs.la @CHECK_LIBS@
 
-bs_misc_SOURCES = tests/bs_misc.c include/bs.h
-bs_misc_CFLAGS = @CHECK_CFLAGS@
-bs_misc_LDADD = libbs.la @CHECK_LIBS@
+bs_accumulate_SOURCES = tests/bs_accumulate.c include/bs.h
+bs_accumulate_CFLAGS = @CHECK_CFLAGS@
+bs_accumulate_LDADD = libbs.la @CHECK_LIBS@
+
+bs_compare_SOURCES = tests/bs_compare.c include/bs.h
+bs_compare_CFLAGS = @CHECK_CFLAGS@
+bs_compare_LDADD = libbs.la @CHECK_LIBS@
 
 # COVERAGE target, cleans everything out, compiles and runs tests, builds report
 coverage:
