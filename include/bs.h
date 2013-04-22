@@ -118,6 +118,26 @@ BSbyte bs_get_byte(const BS *bs, size_t index);
 BSbyte bs_set_byte(BS *bs, size_t index, BSbyte byte);
 
 /**
+ * Load data
+ * Reads data into the byte stream.
+ * Returns BS_OK if data is loaded correctly
+ * Returns BS_MEMORY if memory cannot be allocated
+ * Do not attempt to use the bytestream if the return value is other than BS_OK.
+ */
+BSresult bs_load(BS *bs, const BSbyte *data, size_t length);
+
+/**
+ * Save data
+ * Writes out data from the byte stream.
+ * Space for the data will be allocated, and should be freed when no longer
+ * required.
+ * Returns BS_OK if data is saved correctly
+ * Returns BS_MEMORY if memory cannot be allocated
+ * The bytestream is not touched by this operation.
+ */
+BSresult bs_save(const BS *bs, BSbyte **data, size_t *length);
+
+/**
  * Process a stream of data
  * Reads DATA, calling OPERATION each time the byte stream becomes full.
  * DATA may be longer or shorter than the byte stream:
@@ -141,7 +161,7 @@ BSresult bs_stream(
  * Returns BS_OK if data is saved correctly, or no bytes are queued
  * Returns failure code from the underlying operation if errors occur
  */
-BSresult bs_flush_stream(BS *bs, BSresult (*operation) (const BS *bs));
+BSresult bs_stream_flush(BS *bs, BSresult (*operation) (const BS *bs));
 
 /**
  * Clear stream state
@@ -151,27 +171,7 @@ BSresult bs_flush_stream(BS *bs, BSresult (*operation) (const BS *bs));
  * Returns BS_OK if data is saved correctly
  * Returns BS_MEMORY if memory cannot be allocated
  */
-BSresult bs_empty_stream(BS *bs, BSbyte **data, size_t *length);
-
-/**
- * Load data
- * Reads data into the byte stream.
- * Returns BS_OK if data is loaded correctly
- * Returns BS_MEMORY if memory cannot be allocated
- * Do not attempt to use the bytestream if the return value is other than BS_OK.
- */
-BSresult bs_load(BS *bs, const BSbyte *data, size_t length);
-
-/**
- * Save data
- * Writes out data from the byte stream.
- * Space for the data will be allocated, and should be freed when no longer
- * required.
- * Returns BS_OK if data is saved correctly
- * Returns BS_MEMORY if memory cannot be allocated
- * The bytestream is not touched by this operation.
- */
-BSresult bs_save(const BS *bs, BSbyte **data, size_t *length);
+BSresult bs_stream_empty(BS *bs, BSbyte **data, size_t *length);
 
 /**
  * Load a hexadecimal string

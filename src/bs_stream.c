@@ -81,7 +81,7 @@ bs_stream(
 }
 
 BSresult
-bs_flush_stream(BS *bs, BSresult (*operation) (const BS *bs))
+bs_stream_flush(BS *bs, BSresult (*operation) (const BS *bs))
 {
 	BS *bsOutput;
 
@@ -97,7 +97,7 @@ bs_flush_stream(BS *bs, BSresult (*operation) (const BS *bs))
 }
 
 BSresult
-bs_empty_stream(BS *bs, BSbyte **data, size_t *length)
+bs_stream_empty(BS *bs, BSbyte **data, size_t *length)
 {
 	BSresult result;
 
