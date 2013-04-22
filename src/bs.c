@@ -118,12 +118,21 @@ bs_stream(
 	return BS_OK;
 }
 
-/*
 BSresult
 bs_flush_stream(BS *bs, BSresult (*operation) (const BS *bs))
 {
+	BS *bsOutput;
+
+	if (bs->cbStream == 0) {
+		return BS_OK;
+	}
+
+	bsOutput = bs_create_size(bs->cbStream);
+	memcpy(bsOutput->pbBytes, bs->pbBytes, bs->cbStream);
+	bs->cbStream = 0;
+
+	return operation(bsOutput);
 }
-*/
 
 BSresult
 bs_empty_stream(BS *bs, BSbyte **data, size_t *length)
