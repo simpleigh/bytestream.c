@@ -38,11 +38,9 @@ static unsigned int
 byte_counts_target[3] = { 1, 4, 5 };
 
 static BSbyte
-operation(BSbyte byte, void *data)
+operation(BSbyte byte)
 {
-	unsigned int *pCount = (unsigned int *) data;
 	byte_counts[byte]++;
-	(*pCount)++;
 	return 0;
 }
 
@@ -50,15 +48,13 @@ START_TEST(test_walk)
 {
 	BS *bs = bs_create();
 	BSresult result;
-	unsigned int count = 0;
 
 	result = bs_load(bs, byte_values, 10);
 	fail_unless(result == BS_OK);
 
-	result = bs_walk(bs, operation, (void *) &count);
+	result = bs_walk(bs, operation);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 10);
-	fail_unless(count == 10);
 	fail_unless(
 		memcmp(byte_counts, byte_counts_target, 3) == 0
 	);

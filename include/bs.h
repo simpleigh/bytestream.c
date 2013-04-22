@@ -190,14 +190,8 @@ BSresult bs_save_base64(const BS *bs, char **base64, size_t *length);
  * Common operation are available through library functions defined below.
  * Returns BS_OK if all bytes are processed successfully
  * The OPERATION should return the new value for each byte.
- * The pointer to additional user data will be passed on each call to OPERATION,
- * and can be used to persist information between calls.
  */
-BSresult bs_walk(
-	BS *bs,
-	BSbyte (*operation) (BSbyte byte, void *data),
-	void *data
-);
+BSresult bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte));
 
 /**
  * Make characters uppercase
