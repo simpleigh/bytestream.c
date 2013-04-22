@@ -55,7 +55,7 @@ bs_save(const BS *bs, BSbyte **data, size_t *length)
 	BS_ASSERT_VALID(bs);
 
 	result = bs_malloc_output(
-			bs->cbBytes * sizeof(**data),
+		bs->cbBytes * sizeof(**data),
 		(void **) data,
 		length
 	);
