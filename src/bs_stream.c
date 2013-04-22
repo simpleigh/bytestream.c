@@ -129,7 +129,6 @@ bs_stream_empty(BS *bs, BSbyte **data, size_t *length)
 		}
 
 		memcpy(*data, bs->pbBytes, bs->cbStream);
-		*length = bs->cbStream;
 	}
 
 	bs->cbStream = 0;
