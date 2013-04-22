@@ -27,12 +27,58 @@
 #include "bs.h"
 #include "bs_alloc.h"
 
-static BSbyte
-hamming_callback(BSbyte byte1, BSbyte byte2, void *data)
+BSresult
+bs_compare(
+	const BS *bs1,
+	const BS *bs2,
+	BSresult (*operation) (BSbyte byte1, BSbyte byte2, void *data),
+	void *data
+)
 {
-	unsigned int *pDistance = (unsigned int *) data;
+	size_t ibByteStream = 0;
+	BSresult result;
 
-	*pDistance = *pDistance
+	BS_ASSERT_VALID(bs1);
+	BS_ASSERT_VALID(bs2);
+
+	if (bs1->cbBytes != bs2->cbBytes) {
+		return BS_INVALID;
+	}
+
+	for (ibByteStream = 0; ibByteStream < bs1->cbBytes; ibByteStream++) {
+		result = operation(
+			bs1->pbBytes[ibByteStream],
+			bs2->pbBytes[ibByteStream],
+			data
+		);
+
+		if (result != BS_OK) {
+			return result;
+		}
+	}
+
+	return BS_OK;
+}
+
+static BSresult
+compare_equal(BSbyte byte1, BSbyte byte2, void *data)
+{
+	UNUSED(data);
+
+	if (byte1 == byte2) {
+		return BS_OK;
+	} else {
+		return BS_INVALID;
+	}
+}
+
+static BSresult
+compare_hamming(BSbyte byte1, BSbyte byte2, void *data)
+{
+	unsigned int *piDistance = (unsigned int *) data;
+	unsigned int iOriginalDistance = *piDistance;
+
+	*piDistance = *piDistance
 	           + ((byte1 ^ byte2) & 128) / 128
 	           + ((byte1 ^ byte2) &  64) /  64
 	           + ((byte1 ^ byte2) &  32) /  32
@@ -42,15 +88,20 @@ hamming_callback(BSbyte byte1, BSbyte byte2, void *data)
 	           + ((byte1 ^ byte2) &   2) /   2
 	           + ((byte1 ^ byte2) &   1) /   1;
 
-	return byte1; /* Byte stream left unchanged */
-}
-
-BSresult bs_hamming(BS *bs1, const BS *bs2, unsigned int *distance)
-{
-	if (bs1->cbBytes != bs2->cbBytes) {
-		return BS_INVALID;
+	if (*piDistance < iOriginalDistance) {
+		return BS_OVERFLOW;
 	}
 
+	return BS_OK;
+}
+
+BSresult bs_compare_equal(const BS *bs1, const BS *bs2)
+{
+	return bs_compare(bs1, bs2, compare_equal, NULL);
+}
+
+BSresult bs_compare_hamming(const BS *bs1, const BS *bs2, unsigned int *distance)
+{
 	*distance = 0;
-	return bs_combine(bs1, bs2, hamming_callback, (void *) distance);
+	return bs_compare(bs1, bs2, compare_hamming, distance);
 }

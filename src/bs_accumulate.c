@@ -28,89 +28,75 @@
 #include "bs_alloc.h"
 
 BSresult
-bs_combine(
-	BS *bs,
-	const BS *operand,
-	BSbyte (*operation) (BSbyte byte1, BSbyte byte2)
+bs_accumulate(
+	const BS *bs,
+	BSresult (*operation) (BSbyte byte, void *data),
+	void *data
 )
 {
-	size_t ibByteStream = 0, ibOperand = 0;
+	size_t ibByteStream;
+	BSresult result;
 
 	BS_ASSERT_VALID(bs);
-	BS_ASSERT_VALID(operand);
 
-	while (ibByteStream < bs->cbBytes) {
-		bs->pbBytes[ibByteStream] = operation(
-			bs->pbBytes[ibByteStream],
-			operand->pbBytes[ibOperand]
-		);
-
-		ibByteStream++;
-		ibOperand++;
-		if (ibOperand == operand->cbBytes) {
-			ibOperand = 0;
+	for (ibByteStream = 0; ibByteStream < bs->cbBytes; ibByteStream++) {
+		result = operation(bs->pbBytes[ibByteStream], data);
+		if (result != BS_OK) {
+			return result;
 		}
 	}
 
 	return BS_OK;
 }
 
-static BSbyte
-xor_byte(BSbyte byte1, BSbyte byte2)
+static BSresult
+sum_byte(BSbyte byte, void *data)
 {
-	return byte1 ^ byte2;
+	unsigned int *piSum = (unsigned int *) data;
+	unsigned int iOriginalSum = *piSum;
+
+	*piSum += byte;
+
+	if (*piSum < iOriginalSum) {
+		return BS_OVERFLOW;
+	}
+
+	return BS_OK;
 }
 
-static BSbyte
-or_byte(BSbyte byte1, BSbyte byte2)
+static BSresult
+count_byte(BSbyte byte, void *data)
 {
-	return byte1 | byte2;
-}
+	unsigned int *piCount = (unsigned int *) data;
+	unsigned int iOriginalCount = *piCount;
 
-static BSbyte
-and_byte(BSbyte byte1, BSbyte byte2)
-{
-	return byte1 & byte2;
-}
+	*piCount = *piCount
+	         + (byte & 128)
+	         + (byte &  64)
+	         + (byte &  32)
+	         + (byte &  16)
+	         + (byte &   8)
+	         + (byte &   4)
+	         + (byte &   2)
+	         + (byte &   1);
 
-static BSbyte
-add_byte(BSbyte byte1, BSbyte byte2)
-{
-	return byte1 + byte2;
-}
+	if (*piCount < iOriginalCount) {
+		return BS_OVERFLOW;
+	}
 
-static BSbyte
-sub_byte(BSbyte byte1, BSbyte byte2)
-{
-	return byte1 - byte2;
-}
-
-BSresult
-bs_combine_xor(BS *bs, const BS *operand)
-{
-	return bs_combine(bs, operand, xor_byte);
-}
-
-BSresult
-bs_combine_or(BS *bs, const BS *operand)
-{
-	return bs_combine(bs, operand, or_byte);
+	return BS_OK;
 }
 
 BSresult
-bs_combine_and(BS *bs, const BS *operand)
+bs_accumulate_sum(const BS *bs, unsigned int *sum)
 {
-	return bs_combine(bs, operand, and_byte);
+	*sum = 0;
+	return bs_accumulate(bs, sum_byte, sum);
 }
 
 BSresult
-bs_combine_add(BS *bs, const BS *operand)
+bs_accumulate_bits(const BS *bs, unsigned int *count)
 {
-	return bs_combine(bs, operand, add_byte);
-}
-
-BSresult
-bs_combine_sub(BS *bs, const BS *operand)
-{
-	return bs_combine(bs, operand, sub_byte);
+	*count = 0;
+	return bs_accumulate(bs, count_byte, count);
 }

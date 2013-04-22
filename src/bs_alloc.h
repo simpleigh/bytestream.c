@@ -46,6 +46,11 @@ struct BS {
 	assert((bs)->cbBytes <= (bs)->cbBuffer);
 
 /**
+ * Mark unused function parameters
+ */
+#define UNUSED(x) (void)(x)
+
+/**
  * Allocate internal memory
  * Ensures that the byte stream's internal buffer is at least CBSIZE bytes long,
  * and sets the internal size to that value.

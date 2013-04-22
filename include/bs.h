@@ -49,8 +49,9 @@ typedef struct BS BS;
  */
 typedef enum BSresult {
 	BS_OK = 0,
-	BS_INVALID, /* Invalid input data */
-	BS_MEMORY   /* Memory allocation problem */
+	BS_INVALID,  /* Invalid input data */
+	BS_MEMORY,   /* Memory allocation problem */
+	BS_OVERFLOW  /* Integer overflow */
 } BSresult;
 
 /**
@@ -249,8 +250,61 @@ BSresult bs_combine_add(BS *bs, const BS *operand);
 BSresult bs_combine_sub(BS *bs, const BS *operand);
 
 /**
- * Calculate the Hamming distance between two byte streams
+ * Accumulate a single value from a byte stream
+ * Applies OPERATION to the byte stream, passing each byte in turn.
+ * A pointer to DATA is passed to the operation so that it can maintain its
+ * count between calls.
+ * Common operations are available through library functions defined below.
+ * Returns BS_OK if all bytes are read successfully
  */
-BSresult bs_hamming(BS *bs1, const BS *bs2, unsigned int *distance);
+BSresult bs_accumulate(
+	const BS *bs,
+	BSresult (*operation) (BSbyte byte, void *data),
+	void *data
+);
+
+/**
+ * Add a byte stream
+ * Adds all bytes together.
+ * Returns BS_OVERFLOW if the sum becomes too large
+ */
+BSresult bs_accumulate_sum(const BS *bs, unsigned int *sum);
+
+/**
+ * Count bits in a stream
+ * Counts all bits which are set in the stream.
+ * Returns BS_OVERFLOW if the count becomes too large
+ */
+BSresult bs_accumulate_bits(const BS *bs, unsigned int *count);
+
+/**
+ * Compare two byte streams
+ * Applies OPERATION to two byte streams, passing in a byte from each.
+ * A pointer to DATA is passed to the operation so that it can maintain its
+ * count between calls.
+ * Common operations are available through library functions defined below.
+ * Returns BS_OK if all bytes are compared successfully
+ * Returns BS_INVALID if the streams differ in length
+ */
+BSresult bs_compare(
+	const BS *bs1,
+	const BS *bs2,
+	BSresult (*operation) (BSbyte byte1, BSbyte byte2, void *data),
+	void *data
+);
+
+/**
+ * Compare two streams
+ * This abuses the return value in order to improve efficiency:
+ * Returns BS_OK if the streams are equal
+ * Returns BS_INVALID if they differ
+ */
+BSresult bs_compare_equal(const BS *bs1, const BS *bs2);
+
+/**
+ * Calculate the Hamming distance between two byte streams
+ * Returns BS_OVERFLOW if the distance becomes too large
+ */
+BSresult bs_compare_hamming(const BS *bs1, const BS *bs2, unsigned int *distance);
 
 #endif /* __BS_H */
