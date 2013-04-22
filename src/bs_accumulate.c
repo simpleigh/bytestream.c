@@ -71,14 +71,14 @@ count_byte(BSbyte byte, void *data)
 	unsigned int iOriginalCount = *piCount;
 
 	*piCount = *piCount
-	         + (byte & 128)
-	         + (byte &  64)
-	         + (byte &  32)
-	         + (byte &  16)
-	         + (byte &   8)
-	         + (byte &   4)
-	         + (byte &   2)
-	         + (byte &   1);
+	         + (byte & 128) / 128
+	         + (byte &  64) /  64
+	         + (byte &  32) /  32
+	         + (byte &  16) /  16
+	         + (byte &   8) /   8
+	         + (byte &   4) /   4
+	         + (byte &   2) /   2
+	         + (byte &   1) /   1;
 
 	if (*piCount < iOriginalCount) {
 		return BS_OVERFLOW;

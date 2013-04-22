@@ -28,6 +28,124 @@
 #include <check.h>
 #include <stdlib.h>
 
+struct accumulate_test_case {
+	BSbyte byte;
+	unsigned int sum;
+	unsigned int bits;
+};
+
+static struct accumulate_test_case
+accumulate_tests[16] = {
+	{ '\x00',   0, 0 },
+	{ '\x01',   1, 1 },
+	{ '\x02',   2, 1 },
+	{ '\x04',   4, 1 },
+	{ '\x08',   8, 1 },
+	{ '\x10',  16, 1 },
+	{ '\x20',  32, 1 },
+	{ '\x40',  64, 1 },
+	{ '\x80', 128, 1 },
+	{ '\x03',   3, 2 },
+	{ '\x07',   7, 3 },
+	{ '\x0F',  15, 4 },
+	{ '\x1F',  31, 5 },
+	{ '\x3F',  63, 6 },
+	{ '\x7F', 127, 7 },
+	{ '\xFF', 255, 8 },
+};
+
+START_TEST(test_sum_starts_zero)
+{
+	BS *bs = bs_create();
+	unsigned int sum = 999;
+	BSresult result;
+
+	result = bs_accumulate_sum(bs, &sum);
+	fail_unless(result == BS_OK);
+	fail_unless(sum == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_sum)
+{
+	BS *bs = bs_create_size(1);
+	unsigned int sum;
+	BSresult result;
+
+	bs_set_byte(bs, 0, accumulate_tests[_i].byte);
+
+	result = bs_accumulate_sum(bs, &sum);
+	fail_unless(result == BS_OK);
+	fail_unless(sum == accumulate_tests[_i].sum);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_sum_long)
+{
+	BS *bs = bs_create();
+	unsigned int sum;
+	BSresult result;
+
+	bs_load(bs, (BSbyte *) "Test input", 10);
+
+	result = bs_accumulate_sum(bs, &sum);
+	fail_unless(result == BS_OK);
+	fail_unless(sum == 1008);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_bits_starts_zero)
+{
+	BS *bs = bs_create();
+	unsigned int bits = 999;
+	BSresult result;
+
+	result = bs_accumulate_bits(bs, &bits);
+	fail_unless(result == BS_OK);
+	fail_unless(bits == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_bits)
+{
+	BS *bs = bs_create_size(1);
+	unsigned int bits;
+	BSresult result;
+
+	bs_set_byte(bs, 0, accumulate_tests[_i].byte);
+
+	result = bs_accumulate_bits(bs, &bits);
+	fail_unless(result == BS_OK);
+	fail_unless(bits == accumulate_tests[_i].bits);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_bits_long)
+{
+	BS *bs = bs_create();
+	unsigned int bits;
+	BSresult result;
+
+	bs_load(bs, (BSbyte *) "Test input", 10);
+
+	result = bs_accumulate_bits(bs, &bits);
+	fail_unless(result == BS_OK);
+	fail_unless(bits == 38);
+
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -36,6 +154,12 @@ main(/* int argc, char **argv */)
 	SRunner *sr;
 	int number_failed;
 
+	tcase_add_test(tc_core, test_sum_starts_zero);
+	tcase_add_loop_test(tc_core, test_sum, 0, 16);
+	tcase_add_test(tc_core, test_sum_long);
+	tcase_add_test(tc_core, test_bits_starts_zero);
+	tcase_add_loop_test(tc_core, test_bits, 0, 16);
+	tcase_add_test(tc_core, test_bits_long);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
