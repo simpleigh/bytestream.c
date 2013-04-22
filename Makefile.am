@@ -36,6 +36,7 @@ libbs_la_SOURCES = include/bs.h        \
                    src/bs_alloc.h      \
                    src/bs_alloc.c      \
                    src/bs.c            \
+                   src/bs_stream.c     \
                    src/bs_string.c     \
                    src/bs_walk.c       \
                    src/bs_combine.c    \
