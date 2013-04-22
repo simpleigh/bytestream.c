@@ -118,6 +118,33 @@ BSbyte bs_get_byte(const BS *bs, size_t index);
 BSbyte bs_set_byte(BS *bs, size_t index, BSbyte byte);
 
 /**
+ * Process a stream of data
+ * Reads DATA, calling OPERATION each time the byte stream becomes full.
+ * DATA may be longer or shorter than the byte stream:
+ *  - if it's longer then the operation will be called multiple times
+ *  - if it's shorter then the data will be queued until the stream is full
+ * If used correctly then a bursts of input easily can be processed in chunks.
+ * Returns BS_OK if data has been read and processed correctly
+ * Returns failure code from the underlying operation if errors occur
+ */
+BSresult bs_stream(
+	BS *bs,
+	const BSbyte *data,
+	size_t length,
+	BSresult (*operation) (const BS *bs)
+);
+
+/**
+ * Clear stream state
+ * Resets the internal streaming state, and returns any unprocessed bytes.
+ * Space for the data will be allocated, and should be freed when no longer
+ * required.
+ * Returns BS_OK if data is saved correctly
+ * Returns BS_MEMORY if memory cannot be allocated
+ */
+BSresult bs_empty_stream(BS *bs, BSbyte **data, size_t *length);
+
+/**
  * Load data
  * Reads data into the byte stream.
  * Returns BS_OK if data is loaded correctly

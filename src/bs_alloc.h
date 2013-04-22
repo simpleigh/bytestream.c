@@ -31,9 +31,10 @@
 #include <assert.h>
 
 struct BS {
-	size_t cbBytes;
-	BSbyte *pbBytes;
-	size_t cbBuffer;
+	size_t cbBytes;  /* Current length of the byte stream */
+	BSbyte *pbBytes; /* Byte stream buffer location */
+	size_t cbBuffer; /* Size of the buffer */
+	size_t cbStream; /* Count of queued bytes for a streaming operation */
 };
 
 /**

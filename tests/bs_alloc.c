@@ -38,6 +38,7 @@ START_TEST(test_create)
 	fail_unless(bs->cbBytes == 0);
 	fail_unless(bs->pbBytes == NULL);
 	fail_unless(bs->cbBuffer == 0);
+	fail_unless(bs->cbStream == 0);
 
 	bs_free(bs);
 }
@@ -59,6 +60,7 @@ START_TEST(test_create_size)
 		fail_unless(bs->pbBytes != NULL);
 	}
 	fail_unless(bs->cbBuffer == cbSize);
+	fail_unless(bs->cbStream == 0);
 
 	/* Confirm the allocation worked by trying to write to each byte */
 	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
@@ -80,6 +82,7 @@ START_TEST(test_set_buffer_on_empty_stream)
 	fail_unless(bs->cbBytes == 5);
 	fail_unless(bs->pbBytes == buffer);
 	fail_unless(bs->cbBuffer == 5);
+	fail_unless(bs->cbStream == 0);
 }
 END_TEST
 
@@ -94,6 +97,7 @@ START_TEST(test_set_buffer_on_full_stream)
 	fail_unless(bs->cbBytes == 5);
 	fail_unless(bs->pbBytes == buffer);
 	fail_unless(bs->cbBuffer == 5);
+	fail_unless(bs->cbStream == 0);
 }
 END_TEST
 
@@ -140,6 +144,7 @@ START_TEST(test_change_size)
 	fail_unless(bs->cbBytes == cbSize);
 	fail_unless(bs->pbBytes == pbBytes);
 	fail_unless(bs->cbBuffer == (cbSize > 5) ? cbSize : 5);
+	fail_unless(bs->cbStream == 0);
 
 	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
 		bs_set_byte(bs, ibIndex, 0);

@@ -47,6 +47,7 @@ bs_create(void)
 	bs->cbBytes = 0;
 	bs->pbBytes = NULL;
 	bs->cbBuffer = 0;
+	bs->cbStream = 0;
 
 	return bs;
 }
