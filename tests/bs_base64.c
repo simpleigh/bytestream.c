@@ -27,143 +27,6 @@
 #include "bs.h"
 #include <check.h>
 #include <stdlib.h>
-#include <string.h>
-
-static char
-load_data[] = { '\x0', '\x1', '\x7f', '\x80', '\xff' };
-
-static size_t
-load_length = 5;
-
-START_TEST(test_load)
-{
-	BS *bs = bs_create();
-	BSresult result;
-	size_t ibIndex;
-
-	result = bs_load(bs, (BSbyte *)load_data, load_length);
-	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == load_length);
-
-	for (ibIndex = 0; ibIndex < load_length; ibIndex++) {
-		fail_unless(bs_get_byte(bs, ibIndex) == (BSbyte)load_data[ibIndex]);
-	}
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_load_empty)
-{
-	BS *bs = bs_create();
-	BSresult result;
-	BSbyte *data;
-
-	result = bs_load(bs, data, 0);
-	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 0);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_save)
-{
-	BS *bs = bs_create();
-	BSbyte *data;
-	size_t length;
-	BSresult result;
-
-	bs_load(bs, (BSbyte *)load_data, load_length);
-
-	result = bs_save(bs, &data, &length);
-	fail_unless(result == BS_OK);
-	fail_unless(data != NULL);
-	fail_unless(length == load_length);
-	fail_unless(strncmp(data, load_data, load_length) == 0);
-
-	free(data);
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_hex_load_bad_length)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_load_hex(bs, "123", 3);
-	fail_unless(result == BS_INVALID);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_hex_load_bad_character)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_load_hex(bs, "123#", 4);
-	fail_unless(result == BS_INVALID);
-
-	bs_free(bs);
-}
-END_TEST
-
-static const char
-test_hex_in[] = "0123456789abcdefABCDEF";
-
-static const BSbyte
-test_hex_out[] = {
-	0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xAB, 0xCD, 0xEF
-};
-
-START_TEST(test_hex_load)
-{
-	BS *bs = bs_create();
-	size_t cbInput, cbOutput, ibOutput;
-	BSresult result;
-
-	cbInput = strlen(test_hex_in);
-	cbOutput = cbInput >> 1;
-	result = bs_load_hex(bs, test_hex_in, cbInput);
-	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == cbOutput);
-
-	for (ibOutput = 0; ibOutput < cbOutput; ibOutput++) {
-		fail_unless(bs_get_byte(bs, ibOutput) == test_hex_out[ibOutput]);
-	}
-
-	bs_free(bs);
-}
-END_TEST
-
-static const char
-test_hex_return[] = "0123456789abcdefabcdef";
-
-START_TEST(test_hex_save)
-{
-	BS *bs = bs_create();
-	size_t cbString = strlen(test_hex_in);
-	char *hex;
-	size_t length;
-	BSresult result;
-
-	bs_load_hex(bs, test_hex_in, cbString);
-
-	result = bs_save_hex(bs, &hex, &length);
-	fail_unless(result == BS_OK);
-	fail_unless(hex != NULL);
-	fail_unless(length == cbString);
-	fail_unless(hex[cbString] == '\0');
-	fail_unless(strlen(hex) == cbString);
-	fail_unless(strcmp(hex, test_hex_return) == 0);
-
-	free(hex);
-	bs_free(bs);
-}
-END_TEST
 
 struct base64_testcase_struct {
 	BSbyte rgBytes[3];
@@ -186,7 +49,7 @@ base64_testcases[11] = {
 	{ {   0,  16, 131 }, 3, "ABCD" },
 };
 
-START_TEST(test_b64_load)
+START_TEST(test_load)
 {
 	BS *bs = bs_create();
 	const char *base64 = base64_testcases[_i].base64;
@@ -207,7 +70,7 @@ START_TEST(test_b64_load)
 }
 END_TEST
 
-START_TEST(test_b64_save)
+START_TEST(test_save)
 {
 	BS *bs = bs_create();
 	size_t cbString = 4;
@@ -230,7 +93,7 @@ START_TEST(test_b64_save)
 }
 END_TEST
 
-START_TEST(test_b64_load_many)
+START_TEST(test_load_many)
 {
 	BS *bs = bs_create();
 	BSresult result;
@@ -249,7 +112,7 @@ START_TEST(test_b64_load_many)
 }
 END_TEST
 
-START_TEST(test_b64_save_many)
+START_TEST(test_save_many)
 {
 	BS *bs = bs_create();
 	char *base64;
@@ -272,7 +135,7 @@ START_TEST(test_b64_save_many)
 }
 END_TEST
 
-START_TEST(test_b64_bad_length)
+START_TEST(test_bad_length)
 {
 	BS *bs = bs_create();
 	BSresult result;
@@ -285,7 +148,7 @@ END_TEST
 static const char
 bad_chars[6] = { '!', '"', '#', '\0', 127, 255 };
 
-START_TEST(test_b64_bad_chars)
+START_TEST(test_bad_chars)
 {
 	BS *bs = bs_create();
 	char base64[] = "A*==";
@@ -302,24 +165,17 @@ END_TEST
 int
 main(/* int argc, char **argv */)
 {
-	Suite *s = suite_create("Strings");
+	Suite *s = suite_create("Base64");
 	TCase *tc_core = tcase_create("Core");
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_load);
-	tcase_add_test(tc_core, test_load_empty);
-	tcase_add_test(tc_core, test_save);
-	tcase_add_test(tc_core, test_hex_load_bad_length);
-	tcase_add_test(tc_core, test_hex_load_bad_character);
-	tcase_add_test(tc_core, test_hex_load);
-	tcase_add_test(tc_core, test_hex_save);
-	tcase_add_loop_test(tc_core, test_b64_load, 0, 11);
-	tcase_add_loop_test(tc_core, test_b64_save, 0, 11);
-	tcase_add_test(tc_core, test_b64_load_many);
-	tcase_add_test(tc_core, test_b64_save_many);
-	tcase_add_test(tc_core, test_b64_bad_length);
-	tcase_add_loop_test(tc_core, test_b64_bad_chars, 0, 6);
+	tcase_add_loop_test(tc_core, test_load, 0, 11);
+	tcase_add_loop_test(tc_core, test_save, 0, 11);
+	tcase_add_test(tc_core, test_load_many);
+	tcase_add_test(tc_core, test_save_many);
+	tcase_add_test(tc_core, test_bad_length);
+	tcase_add_loop_test(tc_core, test_bad_chars, 0, 6);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
