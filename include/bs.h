@@ -135,6 +135,15 @@ BSresult bs_stream(
 );
 
 /**
+ * Flush out streamed bytes
+ * Pushes any unprocessed bytes out to the supplied operation.
+ * The operation will not be called if no unprocessed bytes are queued.
+ * Returns BS_OK if data is saved correctly, or no bytes are queued
+ * Returns failure code from the underlying operation if errors occur
+ */
+BSresult bs_flush_stream(BS *bs, BSresult (*operation) (const BS *bs));
+
+/**
  * Clear stream state
  * Resets the internal streaming state, and returns any unprocessed bytes.
  * Space for the data will be allocated, and should be freed when no longer

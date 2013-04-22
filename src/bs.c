@@ -28,6 +28,7 @@
 #include "bs_alloc.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 void
 bs_zero(BS *bs)
@@ -63,4 +64,84 @@ bs_set_byte(BS *bs, size_t index, BSbyte byte)
 	assert(index < bs->cbBytes);
 
 	return bs->pbBytes[index] = byte;
+}
+
+BSresult
+bs_stream(
+	BS *bs,
+	const BSbyte *data,
+	size_t length,
+	BSresult (*operation) (const BS *bs)
+)
+{
+	size_t cbRemaining = length;
+	size_t cbSpace = bs->cbBytes - bs->cbStream;
+	BSresult result;
+
+	BS_ASSERT_VALID(bs)
+
+	/* If we're already streaming */
+	if (bs->cbStream > 0) {
+		if (cbSpace > length) { /* Not enough bytes to fill buffer */
+			memcpy(bs->pbBytes + bs->cbBytes, data, length);
+			bs->cbStream += length;
+			return BS_OK;
+		} else { /* Fill up and execute */
+			memcpy(bs->pbBytes + bs->cbBytes, data, cbSpace);
+			cbRemaining -= cbSpace;
+			bs->cbStream = 0;
+
+			result = operation(bs);
+			if (result != BS_OK) {
+				return result;
+			}
+		}
+	}
+
+	/* Loop over each chunk */
+	while (cbRemaining >= bs->cbBytes) {
+		memcpy(bs->pbBytes, data, cbSpace);
+		cbRemaining -= bs->cbBytes;
+
+		result = operation(bs);
+		if (result != BS_OK) {
+			return result;
+		}
+	}
+
+	/* Deal with any leftover data */
+	if (cbRemaining > 0) {
+		memcpy(bs->pbBytes, data, cbRemaining);
+		bs->cbStream = cbRemaining;
+	}
+
+	return BS_OK;
+}
+
+/*
+BSresult
+bs_flush_stream(BS *bs, BSresult (*operation) (const BS *bs))
+{
+}
+*/
+
+BSresult
+bs_empty_stream(BS *bs, BSbyte **data, size_t *length)
+{
+	BSresult result;
+
+	result = bs_malloc_output(
+		bs->cbStream * sizeof(BSbyte),
+		(void **) data,
+		length
+	);
+	if (result != BS_OK) {
+		return result;
+	}
+
+	memcpy(*data, bs->pbBytes, bs->cbStream);
+	*length = bs->cbStream;
+	bs->cbStream = 0;
+
+	return BS_OK;
 }
