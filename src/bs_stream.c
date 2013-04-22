@@ -26,6 +26,7 @@
 
 #include "bs.h"
 #include "bs_alloc.h"
+#include <stdlib.h>
 #include <string.h>
 
 BSresult
@@ -40,7 +41,13 @@ bs_stream(
 	size_t cbSpace = bs->cbBytes - bs->cbStream;
 	BSresult result;
 
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(data)
 	BS_ASSERT_VALID(bs)
+
+	if (length == 0) {
+		return BS_OK;
+	}
 
 	/* If we're already streaming */
 	if (bs->cbStream > 0) {
@@ -85,11 +92,18 @@ bs_stream_flush(BS *bs, BSresult (*operation) (const BS *bs))
 {
 	BS *bsOutput;
 
+	BS_CHECK_POINTER(bs)
+	BS_ASSERT_VALID(bs)
+
 	if (bs->cbStream == 0) {
 		return BS_OK;
 	}
 
 	bsOutput = bs_create_size(bs->cbStream);
+	if (bsOutput == NULL) {
+		return BS_MEMORY;
+	}
+
 	memcpy(bsOutput->pbBytes, bs->pbBytes, bs->cbStream);
 	bs->cbStream = 0;
 
@@ -101,17 +115,23 @@ bs_stream_empty(BS *bs, BSbyte **data, size_t *length)
 {
 	BSresult result;
 
-	result = bs_malloc_output(
-		bs->cbStream * sizeof(BSbyte),
-		(void **) data,
-		length
-	);
-	if (result != BS_OK) {
-		return result;
+	BS_CHECK_POINTER(bs)
+	BS_ASSERT_VALID(bs)
+
+	if (data != NULL && length != NULL) {
+		result = bs_malloc_output(
+			bs->cbStream * sizeof(BSbyte),
+			(void **) data,
+			length
+		);
+		if (result != BS_OK) {
+			return result;
+		}
+
+		memcpy(*data, bs->pbBytes, bs->cbStream);
+		*length = bs->cbStream;
 	}
 
-	memcpy(*data, bs->pbBytes, bs->cbStream);
-	*length = bs->cbStream;
 	bs->cbStream = 0;
 
 	return BS_OK;
