@@ -26,7 +26,6 @@
 
 #include "bs.h"
 #include <check.h>
-#include <signal.h>
 #include <stdlib.h>
 
 static size_t test_zero_sizes[] = { 0, 1, 5 };
@@ -68,20 +67,6 @@ START_TEST(test_get_set)
 }
 END_TEST
 
-START_TEST(test_get_range)
-{
-	BS *bs = bs_create_size(5);
-	bs_get_byte(bs, 5);
-}
-END_TEST
-
-START_TEST(test_set_range)
-{
-	BS *bs = bs_create_size(5);
-	bs_get_byte(bs, 5);
-}
-END_TEST
-
 static char
 load_data[] = { '\x0', '\x1', '\x7f', '\x80', '\xff' };
 
@@ -120,6 +105,28 @@ START_TEST(test_load_empty)
 }
 END_TEST
 
+START_TEST(test_load_null_bs)
+{
+	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	BSresult result;
+
+	result = bs_load(NULL, data, 5);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_load_null_data)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_load(bs, NULL, 5);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 START_TEST(test_save)
 {
 	BS *bs = bs_create();
@@ -140,6 +147,43 @@ START_TEST(test_save)
 }
 END_TEST
 
+START_TEST(test_save_null_bs)
+{
+	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	size_t length;
+	BSresult result;
+
+	result = bs_save(NULL, &data, &length);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_save_null_data)
+{
+	BS *bs = bs_create();
+	size_t length;
+	BSresult result;
+
+	result = bs_save(bs, NULL, &length);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_save_null_length)
+{
+	BS *bs = bs_create();
+	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	BSresult result;
+
+	result = bs_save(bs, &data, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -150,14 +194,18 @@ main(/* int argc, char **argv */)
 
 	tcase_add_loop_test(tc_core, test_zero, 0, 3);
 	tcase_add_loop_test(tc_core, test_get_set, 0, 2);
-	tcase_add_test_raise_signal(tc_core, test_get_range, SIGABRT);
-	tcase_add_test_raise_signal(tc_core, test_set_range, SIGABRT);
 	tcase_add_test(tc_core, test_load);
 	tcase_add_test(tc_core, test_load_empty);
+	tcase_add_test(tc_core, test_load_null_bs);
+	tcase_add_test(tc_core, test_load_null_data);
 	tcase_add_test(tc_core, test_save);
+	tcase_add_test(tc_core, test_save_null_bs);
+	tcase_add_test(tc_core, test_save_null_data);
+	tcase_add_test(tc_core, test_save_null_length);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
+	srunner_set_fork_status(sr, CK_NOFORK);
 	srunner_run_all(sr, CK_NORMAL);
 	number_failed = srunner_ntests_failed(sr);
 	srunner_free(sr);

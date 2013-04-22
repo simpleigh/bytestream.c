@@ -80,6 +80,15 @@ START_TEST(test_accumulate_invalid)
 }
 END_TEST
 
+START_TEST(test_accumulate_null_bs)
+{
+	BSresult result;
+
+	result = bs_accumulate(NULL, accumulate_operation, &result);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
 struct accumulate_test_case {
 	BSbyte byte;
 	unsigned int sum;
@@ -152,6 +161,28 @@ START_TEST(test_sum_long)
 }
 END_TEST
 
+START_TEST(test_sum_null_bs)
+{
+	unsigned int sum;
+	BSresult result;
+
+	result = bs_accumulate_sum(NULL, &sum);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_sum_null_sum)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_accumulate_sum(bs, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 START_TEST(test_bits_starts_zero)
 {
 	BS *bs = bs_create();
@@ -198,6 +229,28 @@ START_TEST(test_bits_long)
 }
 END_TEST
 
+START_TEST(test_bits_null_bs)
+{
+	unsigned int bits;
+	BSresult result;
+
+	result = bs_accumulate_bits(NULL, &bits);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_bits_null_sum)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_accumulate_bits(bs, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -208,12 +261,17 @@ main(/* int argc, char **argv */)
 
 	tcase_add_test(tc_core, test_accumulate);
 	tcase_add_test(tc_core, test_accumulate_invalid);
+	tcase_add_test(tc_core, test_accumulate_null_bs);
 	tcase_add_test(tc_core, test_sum_starts_zero);
 	tcase_add_loop_test(tc_core, test_sum, 0, 16);
 	tcase_add_test(tc_core, test_sum_long);
+	tcase_add_test(tc_core, test_sum_null_bs);
+	tcase_add_test(tc_core, test_sum_null_sum);
 	tcase_add_test(tc_core, test_bits_starts_zero);
 	tcase_add_loop_test(tc_core, test_bits, 0, 16);
 	tcase_add_test(tc_core, test_bits_long);
+	tcase_add_test(tc_core, test_bits_null_bs);
+	tcase_add_test(tc_core, test_bits_null_sum);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

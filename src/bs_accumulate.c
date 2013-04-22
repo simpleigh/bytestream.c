@@ -26,6 +26,7 @@
 
 #include "bs.h"
 #include "bs_alloc.h"
+#include <stdlib.h>
 
 BSresult
 bs_accumulate(
@@ -37,7 +38,8 @@ bs_accumulate(
 	size_t ibByteStream;
 	BSresult result;
 
-	BS_ASSERT_VALID(bs);
+	BS_CHECK_POINTER(bs)
+	BS_ASSERT_VALID(bs)
 
 	for (ibByteStream = 0; ibByteStream < bs->cbBytes; ibByteStream++) {
 		result = operation(bs->pbBytes[ibByteStream], data);
@@ -53,7 +55,11 @@ static BSresult
 sum_byte(BSbyte byte, void *data)
 {
 	unsigned int *piSum = (unsigned int *) data;
-	unsigned int iOriginalSum = *piSum;
+	unsigned int iOriginalSum;
+
+	assert(piSum != NULL);
+
+	iOriginalSum = *piSum;
 
 	*piSum += byte;
 
@@ -68,7 +74,11 @@ static BSresult
 count_byte(BSbyte byte, void *data)
 {
 	unsigned int *piCount = (unsigned int *) data;
-	unsigned int iOriginalCount = *piCount;
+	unsigned int iOriginalCount;
+
+	assert(piCount != NULL);
+
+	iOriginalCount = *piCount;
 
 	*piCount = *piCount
 	         + (byte & 128) / 128
@@ -90,13 +100,21 @@ count_byte(BSbyte byte, void *data)
 BSresult
 bs_accumulate_sum(const BS *bs, unsigned int *sum)
 {
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(sum)
+
 	*sum = 0;
+
 	return bs_accumulate(bs, sum_byte, sum);
 }
 
 BSresult
 bs_accumulate_bits(const BS *bs, unsigned int *count)
 {
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(count)
+
 	*count = 0;
+
 	return bs_accumulate(bs, count_byte, count);
 }

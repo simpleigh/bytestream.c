@@ -100,6 +100,30 @@ START_TEST(test_combine_long_operand)
 }
 END_TEST
 
+START_TEST(test_combine_null_bs1)
+{
+	BS *bs2 = bs_create();
+	BSresult result;
+
+	result = bs_combine(NULL, bs2, short_operand_operation);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs2);
+}
+END_TEST
+
+START_TEST(test_combine_null_bs2)
+{
+	BS *bs1 = bs_create();
+	BSresult result;
+
+	result = bs_combine(bs1, NULL, short_operand_operation);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs1);
+}
+END_TEST
+
 struct combine_testcase_struct {
 	BSresult (*combine_function) (BS *bs, const BS *operand);
 	char output[17];
@@ -143,6 +167,38 @@ START_TEST(test_combine_functions)
 }
 END_TEST
 
+static BSresult (*combine_functions[5]) (BS *bs, const BS *operand) = {
+	bs_combine_xor,
+	bs_combine_or,
+	bs_combine_and,
+	bs_combine_add,
+	bs_combine_sub
+};
+
+START_TEST(test_combine_functions_null_bs1)
+{
+	BS *bs2 = bs_create();
+	BSresult result;
+
+	result = combine_functions[_i](NULL, bs2);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs2);
+}
+END_TEST
+
+START_TEST(test_combine_functions_null_bs2)
+{
+	BS *bs1 = bs_create();
+	BSresult result;
+
+	result = combine_functions[_i](bs1, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs1);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -153,7 +209,11 @@ main(/* int argc, char **argv */)
 
 	tcase_add_test(tc_core, test_combine_short_operand);
 	tcase_add_test(tc_core, test_combine_long_operand);
+	tcase_add_test(tc_core, test_combine_null_bs1);
+	tcase_add_test(tc_core, test_combine_null_bs2);
 	tcase_add_loop_test(tc_core, test_combine_functions, 0, 5);
+	tcase_add_loop_test(tc_core, test_combine_functions_null_bs1, 0, 5);
+	tcase_add_loop_test(tc_core, test_combine_functions_null_bs2, 0, 5);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

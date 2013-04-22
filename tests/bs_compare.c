@@ -103,6 +103,30 @@ START_TEST(test_compare_differing_lengths)
 }
 END_TEST
 
+START_TEST(test_compare_null_bs1)
+{
+	BS *bs2 = bs_create();
+	BSresult result;
+
+	result = bs_compare(NULL, bs2, compare_operation, &result);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs2);
+}
+END_TEST
+
+START_TEST(test_compare_null_bs2)
+{
+	BS *bs1 = bs_create();
+	BSresult result;
+
+	result = bs_compare(bs1, NULL, compare_operation, &result);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs1);
+}
+END_TEST
+
 START_TEST(test_equal_zero_length)
 {
 	BS *bs1 = bs_create(), *bs2 = bs_create();
@@ -145,6 +169,30 @@ START_TEST(test_neq_is_neq)
 
 	bs_free(bs1);
 	bs_free(bs2);
+}
+END_TEST
+
+START_TEST(test_equal_null_bs1)
+{
+	BS *bs2 = bs_create();
+	BSresult result;
+
+	result = bs_compare_equal(NULL, bs2);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs2);
+}
+END_TEST
+
+START_TEST(test_equal_null_bs2)
+{
+	BS *bs1 = bs_create();
+	BSresult result;
+
+	result = bs_compare_equal(bs1, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs1);
 }
 END_TEST
 
@@ -212,6 +260,45 @@ START_TEST(test_hamming_long)
 }
 END_TEST
 
+START_TEST(test_hamming_null_bs1)
+{
+	BS *bs2 = bs_create();
+	unsigned int distance;
+	BSresult result;
+
+	result = bs_compare_hamming(NULL, bs2, &distance);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs2);
+}
+END_TEST
+
+START_TEST(test_hamming_null_bs2)
+{
+	BS *bs1 = bs_create();
+	unsigned int distance;
+	BSresult result;
+
+	result = bs_compare_hamming(bs1, NULL, &distance);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs1);
+}
+END_TEST
+
+START_TEST(test_hamming_null_distance)
+{
+	BS *bs1 = bs_create(), *bs2 = bs_create();
+	BSresult result;
+
+	result = bs_compare_hamming(bs1, bs2, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs1);
+	bs_free(bs2);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -223,11 +310,18 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_compare);
 	tcase_add_test(tc_core, test_compare_invalid);
 	tcase_add_test(tc_core, test_compare_differing_lengths);
+	tcase_add_test(tc_core, test_compare_null_bs1);
+	tcase_add_test(tc_core, test_compare_null_bs2);
 	tcase_add_test(tc_core, test_equal_zero_length);
 	tcase_add_test(tc_core, test_equal_is_equal);
 	tcase_add_test(tc_core, test_neq_is_neq);
-	tcase_add_test(tc_core, test_hamming_long);
+	tcase_add_test(tc_core, test_equal_null_bs1);
+	tcase_add_test(tc_core, test_equal_null_bs2);
 	tcase_add_loop_test(tc_core, test_hamming_byte, 0, 18);
+	tcase_add_test(tc_core, test_hamming_long);
+	tcase_add_test(tc_core, test_hamming_null_bs1);
+	tcase_add_test(tc_core, test_hamming_null_bs2);
+	tcase_add_test(tc_core, test_hamming_null_distance);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

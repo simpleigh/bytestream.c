@@ -38,8 +38,10 @@ bs_compare(
 	size_t ibByteStream = 0;
 	BSresult result;
 
-	BS_ASSERT_VALID(bs1);
-	BS_ASSERT_VALID(bs2);
+	BS_CHECK_POINTER(bs1)
+	BS_CHECK_POINTER(bs2)
+	BS_ASSERT_VALID(bs1)
+	BS_ASSERT_VALID(bs2)
 
 	if (bs1->cbBytes != bs2->cbBytes) {
 		return BS_INVALID;
@@ -102,6 +104,9 @@ BSresult bs_compare_equal(const BS *bs1, const BS *bs2)
 
 BSresult bs_compare_hamming(const BS *bs1, const BS *bs2, unsigned int *distance)
 {
+	BS_CHECK_POINTER(distance)
+
 	*distance = 0;
+
 	return bs_compare(bs1, bs2, compare_hamming, distance);
 }

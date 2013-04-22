@@ -81,6 +81,28 @@ START_TEST(test_load)
 }
 END_TEST
 
+START_TEST(test_load_null_bs)
+{
+	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	BSresult result;
+
+	result = bs_load_hex(NULL, data, 5);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_load_null_data)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_load_hex(bs, NULL, 5);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 static const char
 test_hex_return[] = "0123456789abcdefabcdef";
 
@@ -107,6 +129,43 @@ START_TEST(test_save)
 }
 END_TEST
 
+START_TEST(test_save_null_bs)
+{
+	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	size_t length;
+	BSresult result;
+
+	result = bs_save_hex(NULL, &data, &length);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_save_null_data)
+{
+	BS *bs = bs_create();
+	size_t length;
+	BSresult result;
+
+	result = bs_save_hex(bs, NULL, &length);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_save_null_length)
+{
+	BS *bs = bs_create();
+	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	BSresult result;
+
+	result = bs_save_hex(bs, &data, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -118,7 +177,12 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_load_bad_length);
 	tcase_add_test(tc_core, test_load_bad_character);
 	tcase_add_test(tc_core, test_load);
+	tcase_add_test(tc_core, test_load_null_bs);
+	tcase_add_test(tc_core, test_load_null_data);
 	tcase_add_test(tc_core, test_save);
+	tcase_add_test(tc_core, test_save_null_bs);
+	tcase_add_test(tc_core, test_save_null_data);
+	tcase_add_test(tc_core, test_save_null_length);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

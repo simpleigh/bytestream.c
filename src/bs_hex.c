@@ -53,6 +53,9 @@ bs_load_hex(BS *bs, const char *hex, size_t length)
 	BSbyte hi;
 	BSbyte lo;
 
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(hex)
+
 	if (length & 1) {
 		return BS_INVALID;
 	}
@@ -87,6 +90,7 @@ bs_save_hex(const BS *bs, char **hex, size_t *length)
 	BSresult result;
 	BSbyte bByte;
 
+	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(

@@ -77,6 +77,8 @@ bs_create_size(size_t length)
 void
 bs_free(BS *bs)
 {
+	assert(bs != NULL);
+
 	if ((bs->cbBuffer > 0) && (bs->pbBytes != NULL)) {
 		free(bs->pbBytes);
 	}
@@ -86,13 +88,18 @@ bs_free(BS *bs)
 size_t
 bs_size(const BS *bs)
 {
+	assert(bs != NULL);
+
 	return bs->cbBytes;
 }
 
 BSresult
 bs_set_buffer(BS *bs, void *buffer, size_t length)
 {
-	if (buffer == NULL || length == 0) {
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(buffer)
+
+	if (length == 0) {
 		return BS_INVALID;
 	}
 
@@ -103,6 +110,7 @@ bs_set_buffer(BS *bs, void *buffer, size_t length)
 	bs->cbBytes = length;
 	bs->pbBytes = buffer;
 	bs->cbBuffer = length;
+	bs->cbStream = 0;
 
 	return BS_OK;
 }
@@ -117,6 +125,7 @@ bs_malloc(BS *bs, size_t cbSize)
 {
 	BSbyte *pbNewBytes;
 
+	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 
 	if (cbSize <= bs->cbBuffer) { /* Buffer already long enough */
@@ -132,12 +141,17 @@ bs_malloc(BS *bs, size_t cbSize)
 	bs->cbBytes = cbSize;
 	bs->pbBytes = pbNewBytes;
 	bs->cbBuffer = cbSize;
+	bs->cbStream = 0;
+
 	return BS_OK;
 }
 
 BSresult
 bs_malloc_output(size_t cbBytes, void **ppbOutput, size_t *pcbOutput)
 {
+	BS_CHECK_POINTER(ppbOutput);
+	BS_CHECK_POINTER(pcbOutput);
+
 	*pcbOutput = cbBytes;
 
 	if (cbBytes == 0) {

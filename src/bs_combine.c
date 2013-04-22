@@ -36,8 +36,10 @@ bs_combine(
 {
 	size_t ibByteStream = 0, ibOperand = 0;
 
-	BS_ASSERT_VALID(bs);
-	BS_ASSERT_VALID(operand);
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(operand)
+	BS_ASSERT_VALID(bs)
+	BS_ASSERT_VALID(operand)
 
 	while (ibByteStream < bs->cbBytes) {
 		bs->pbBytes[ibByteStream] = operation(

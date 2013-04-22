@@ -63,6 +63,15 @@ START_TEST(test_walk)
 }
 END_TEST
 
+START_TEST(test_walk_null_bs)
+{
+	BSresult result;
+
+	result = bs_walk(NULL, operation);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
 struct walk_testcase_struct {
 	BSresult (*walk_function) (BS *bs);
 	char input[3];
@@ -114,6 +123,21 @@ START_TEST(test_walk_functions)
 }
 END_TEST
 
+static BSresult (*walk_function[3]) (BS *bs) = {
+	bs_walk_uppercase,
+	bs_walk_lowercase,
+	bs_walk_not
+};
+
+START_TEST(test_walk_functions_null)
+{
+	BSresult result;
+
+	result = walk_function[_i](NULL);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -123,7 +147,9 @@ main(/* int argc, char **argv */)
 	int number_failed;
 
 	tcase_add_test(tc_core, test_walk);
+	tcase_add_test(tc_core, test_walk_null_bs);
 	tcase_add_loop_test(tc_core, test_walk_functions, 0, 16);
+	tcase_add_loop_test(tc_core, test_walk_functions_null, 0, 3);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

@@ -82,6 +82,9 @@ bs_load_base64(BS *bs, const char *base64, size_t length)
 	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
 	BSresult result;
 
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(base64)
+
 	if (length & 3) {
 		return BS_INVALID;
 	}
@@ -153,11 +156,13 @@ write_base64_bytes(const BSbyte *in, size_t length, char *out)
 BSresult
 bs_save_base64(const BS *bs, char **base64, size_t *length)
 {
-	size_t cbByteStream = bs->cbBytes, ibBase64 = 0, ibByteStream = 0;
+	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
 	BSresult result;
 
+	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 
+	cbByteStream = bs->cbBytes;
 	result = bs_malloc_output(
 		((cbByteStream + 2) / 3 * 4) * sizeof(**base64),
 		(void **) base64,

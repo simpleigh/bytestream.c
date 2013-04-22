@@ -32,7 +32,8 @@ bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte))
 {
 	size_t ibByteStream;
 
-	BS_ASSERT_VALID(bs);
+	BS_CHECK_POINTER(bs)
+	BS_ASSERT_VALID(bs)
 
 	for (ibByteStream = 0; ibByteStream < bs->cbBytes; ibByteStream++) {
 		bs->pbBytes[ibByteStream] = operation(bs->pbBytes[ibByteStream]);

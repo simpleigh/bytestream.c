@@ -35,6 +35,7 @@ bs_zero(BS *bs)
 {
 	size_t ibIndex;
 
+	assert(bs != NULL);
 	BS_ASSERT_VALID(bs)
 
 	if (bs->cbBytes == 0) {
@@ -51,6 +52,7 @@ bs_zero(BS *bs)
 BSbyte
 bs_get_byte(const BS *bs, size_t index)
 {
+	assert(bs != NULL);
 	BS_ASSERT_VALID(bs)
 	assert(index < bs->cbBytes);
 
@@ -60,6 +62,7 @@ bs_get_byte(const BS *bs, size_t index)
 BSbyte
 bs_set_byte(BS *bs, size_t index, BSbyte byte)
 {
+	assert(bs != NULL);
 	BS_ASSERT_VALID(bs)
 	assert(index < bs->cbBytes);
 
@@ -71,6 +74,13 @@ bs_load(BS *bs, const BSbyte *data, size_t length)
 {
 	size_t ibData;
 	BSresult result;
+
+	if (length == 0) {
+		return BS_OK;
+	}
+
+	BS_CHECK_POINTER(bs);
+	BS_CHECK_POINTER(data);
 
 	result = bs_malloc(bs, length);
 	if (result != BS_OK) {
@@ -90,10 +100,12 @@ bs_save(const BS *bs, BSbyte **data, size_t *length)
 	size_t ibStream;
 	BSresult result;
 
-	BS_ASSERT_VALID(bs);
+	BS_CHECK_POINTER(bs)
+
+	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(
-			bs->cbBytes * sizeof(**data),
+		bs->cbBytes * sizeof(**data),
 		(void **) data,
 		length
 	);
