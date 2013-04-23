@@ -33,20 +33,10 @@
 void
 bs_zero(BS *bs)
 {
-	size_t ibIndex;
-
 	assert(bs != NULL);
 	BS_ASSERT_VALID(bs)
 
-	if (bs->cbBytes == 0) {
-		return;
-	}
-
-	assert(bs->pbBytes != NULL);
-
-	for (ibIndex = 0; ibIndex < bs->cbBytes; ibIndex++) {
-		bs->pbBytes[ibIndex] = 0;
-	}
+	memset(bs->pbBytes, 0, bs->cbBytes);
 }
 
 BSbyte
@@ -72,24 +62,21 @@ bs_set_byte(BS *bs, size_t index, BSbyte byte)
 BSresult
 bs_load(BS *bs, const BSbyte *data, size_t length)
 {
-	size_t ibData;
 	BSresult result;
 
 	if (length == 0) {
 		return BS_OK;
 	}
 
-	BS_CHECK_POINTER(bs);
-	BS_CHECK_POINTER(data);
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(data)
 
 	result = bs_malloc(bs, length);
 	if (result != BS_OK) {
 		return result;
 	}
 
-	for (ibData = 0; ibData < length; ibData++) {
-		bs->pbBytes[ibData] = data[ibData];
-	}
+	memcpy(bs->pbBytes, data, length);
 
 	return BS_OK;
 }
@@ -97,11 +84,9 @@ bs_load(BS *bs, const BSbyte *data, size_t length)
 BSresult
 bs_save(const BS *bs, BSbyte **data, size_t *length)
 {
-	size_t ibStream;
 	BSresult result;
 
 	BS_CHECK_POINTER(bs)
-
 	BS_ASSERT_VALID(bs)
 
 	result = bs_malloc_output(
@@ -113,9 +98,7 @@ bs_save(const BS *bs, BSbyte **data, size_t *length)
 		return result;
 	}
 
-	for (ibStream = 0; ibStream < bs->cbBytes; ibStream++) {
-		(*data)[ibStream] = bs->pbBytes[ibStream];
-	}
+	memcpy(*data, bs->pbBytes, bs->cbBytes);
 
 	return BS_OK;
 }
