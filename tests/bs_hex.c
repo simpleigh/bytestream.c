@@ -131,7 +131,7 @@ END_TEST
 
 START_TEST(test_save_null_bs)
 {
-	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	char *data = (char *) 0xDEADBEEF;
 	size_t length;
 	BSresult result;
 
@@ -156,7 +156,7 @@ END_TEST
 START_TEST(test_save_null_length)
 {
 	BS *bs = bs_create();
-	BSbyte *data = (BSbyte *) 0xDEADBEEF;
+	char *data = (char *) 0xDEADBEEF;
 	BSresult result;
 
 	result = bs_save_hex(bs, &data, NULL);
