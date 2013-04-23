@@ -48,8 +48,10 @@ struct BS {
  * Implemented as a macro so it can be optimised away with NDEBUG.
  */
 #define BS_ASSERT_VALID(bs) \
+	assert((bs) != NULL); \
 	assert(((bs)->pbBytes != NULL) || ((bs)->cbBuffer == 0)); \
-	assert((bs)->cbBytes <= (bs)->cbBuffer);
+	assert((bs)->cbBytes <= (bs)->cbBuffer); \
+	assert(((bs)->cbStream < (bs)->cbBytes) || ((bs)->cbBytes == 0));
 
 /**
  * Mark unused function parameters
