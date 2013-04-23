@@ -25,7 +25,7 @@
 ## Process this file with autoconf to produce a configure script.
 
 AC_INIT([ByteStream], [0.1])
-AC_CONFIG_SRCDIR([src/bs.c])
+AC_CONFIG_SRCDIR([lib/bs.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])

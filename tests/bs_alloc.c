@@ -25,7 +25,7 @@
 */
 
 #include "bs.h"
-#include "../src/bs_alloc.h"
+#include "../lib/bs_alloc.h"
 #include <check.h>
 #include <stdlib.h>
 

@@ -33,23 +33,23 @@ AM_CPPFLAGS = -I$(srcdir)/include
 include_HEADERS = include/bs.h
 lib_LTLIBRARIES = libbs.la
 libbs_la_SOURCES = include/bs.h        \
-                   src/bs_alloc.h      \
-                   src/bs_alloc.c      \
-                   src/bs.c            \
-                   src/bs_stream.c     \
-                   src/bs_hex.c        \
-                   src/bs_base64.c     \
-                   src/bs_walk.c       \
-                   src/bs_combine.c    \
-                   src/bs_accumulate.c \
-                   src/bs_compare.c
+                   lib/bs_alloc.h      \
+                   lib/bs_alloc.c      \
+                   lib/bs.c            \
+                   lib/bs_stream.c     \
+                   lib/bs_hex.c        \
+                   lib/bs_base64.c     \
+                   lib/bs_walk.c       \
+                   lib/bs_combine.c    \
+                   lib/bs_accumulate.c \
+                   lib/bs_compare.c
 
 
 # CHECK target, compiles and runs unit tests
 TESTS = bs_alloc bs bs_stream bs_hex bs_base64 bs_walk bs_combine bs_accumulate bs_compare
 check_PROGRAMS = $(TESTS)
 
-bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h src/bs_alloc.h
+bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h lib/bs_alloc.h
 bs_alloc_CFLAGS = @CHECK_CFLAGS@
 bs_alloc_LDADD = libbs.la @CHECK_LIBS@
 
@@ -90,7 +90,7 @@ coverage:
 	$(MAKE) V=0 clean
 	$(MAKE) V=0 CFLAGS='-g -fprofile-arcs -ftest-coverage'
 	$(MAKE) V=0 check
-	gcov --object-directory .libs src/*
+	gcov --object-directory .libs lib/*
 # TODO can we make the above line less fragile?
 
 
