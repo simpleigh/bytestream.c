@@ -46,7 +46,7 @@ libbs_la_SOURCES = include/bs.h        \
 
 
 # CHECK target, compiles and runs unit tests
-TESTS = bs_alloc bs bs_hex bs_base64 bs_walk bs_combine bs_accumulate bs_compare
+TESTS = bs_alloc bs bs_stream bs_hex bs_base64 bs_walk bs_combine bs_accumulate bs_compare
 check_PROGRAMS = $(TESTS)
 
 bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h src/bs_alloc.h
@@ -56,6 +56,10 @@ bs_alloc_LDADD = libbs.la @CHECK_LIBS@
 bs_SOURCES = tests/bs.c include/bs.h
 bs_CFLAGS = @CHECK_CFLAGS@
 bs_LDADD = libbs.la @CHECK_LIBS@
+
+bs_stream_SOURCES = tests/bs_stream.c include/bs.h
+bs_stream_CFLAGS = @CHECK_CFLAGS@
+bs_stream_LDADD = libbs.la @CHECK_LIBS@
 
 bs_hex_SOURCES = tests/bs_hex.c include/bs.h
 bs_hex_CFLAGS = @CHECK_CFLAGS@

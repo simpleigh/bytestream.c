@@ -37,8 +37,7 @@ bs_stream(
 	BSresult (*operation) (const BS *bs)
 )
 {
-	size_t cbRemaining = length;
-	size_t cbSpace = bs->cbBytes - bs->cbStream;
+	size_t cbRemaining = length, cbSpace;
 	BSresult result;
 
 	BS_CHECK_POINTER(bs)
@@ -49,14 +48,20 @@ bs_stream(
 		return BS_OK;
 	}
 
+	if (bs->cbBytes == 0) {
+		return BS_INVALID;
+	}
+
+	cbSpace = bs->cbBytes - bs->cbStream;
+
 	/* If we're already streaming */
 	if (bs->cbStream > 0) {
 		if (cbSpace > length) { /* Not enough bytes to fill buffer */
-			memcpy(bs->pbBytes + bs->cbBytes, data, length);
+			memcpy(bs->pbBytes + bs->cbStream, data, length);
 			bs->cbStream += length;
 			return BS_OK;
 		} else { /* Fill up and execute */
-			memcpy(bs->pbBytes + bs->cbBytes, data, cbSpace);
+			memcpy(bs->pbBytes + bs->cbStream, data, cbSpace);
 			cbRemaining -= cbSpace;
 			bs->cbStream = 0;
 
@@ -69,7 +74,7 @@ bs_stream(
 
 	/* Loop over each chunk */
 	while (cbRemaining >= bs->cbBytes) {
-		memcpy(bs->pbBytes, data, cbSpace);
+		memcpy(bs->pbBytes, data + length - cbRemaining, cbSpace);
 		cbRemaining -= bs->cbBytes;
 
 		result = operation(bs);
@@ -80,7 +85,7 @@ bs_stream(
 
 	/* Deal with any leftover data */
 	if (cbRemaining > 0) {
-		memcpy(bs->pbBytes, data, cbRemaining);
+		memcpy(bs->pbBytes, data + length - cbRemaining, cbRemaining);
 		bs->cbStream = cbRemaining;
 	}
 
@@ -118,7 +123,7 @@ bs_stream_empty(BS *bs, BSbyte **data, size_t *length)
 	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 
-	if (data != NULL && length != NULL) {
+	if (data != NULL || length != NULL) {
 		result = bs_malloc_output(
 			bs->cbStream * sizeof(BSbyte),
 			(void **) data,
