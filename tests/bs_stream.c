@@ -28,91 +28,90 @@
 #include <check.h>
 #include <stdlib.h>
 
-static unsigned int
-cCalls = 0;
+#define UNUSED(x) (void)(x)
 
-static unsigned int
-cbWritten = 0;
-
-static char
-szData[31];
+struct operation_data {
+	unsigned int cCalls;
+	unsigned int cbWritten;
+	char szData[31];
+};
 
 static BSresult
-operation(const BS *bs)
+operation(const BS *bs, void *data)
 {
-	char *data;
+	struct operation_data *test_data = (struct operation_data *) data;
+	char *stream;
 	size_t length;
 
-	cCalls++;
-	cbWritten += bs_size(bs);
+	test_data->cCalls++;
+	test_data->cbWritten += bs_size(bs);
 
-	bs_save(bs, (BSbyte **) &data, &length);
-	strcat(szData, data);
+	bs_save(bs, (BSbyte **) &stream, &length);
+	strcat(test_data->szData, stream);
 
 	return BS_OK;
 }
 
 static BSbyte *
-data = (BSbyte *) "1234567890";
+stream = (BSbyte *) "1234567890";
 
 START_TEST(test_stream)
 {
+	struct operation_data data = { 0, 0, "" };
 	BS *bs = bs_create_size(5);
 	BSresult result;
 
-	szData[0] = '\0';
-
-	fail_unless(cCalls == 0);
-
-	result = bs_stream(bs, data, 10, operation);
+	result = bs_stream(bs, stream, 10, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 2);
-	fail_unless(cbWritten == 10);
+	fail_unless(data.cCalls == 2);
+	fail_unless(data.cbWritten == 10);
 
-	result = bs_stream(bs, data, 5, operation);
+	result = bs_stream(bs, stream, 5, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 3);
-	fail_unless(cbWritten == 15);
+	fail_unless(data.cCalls == 3);
+	fail_unless(data.cbWritten == 15);
 
-	result = bs_stream(bs, data, 2, operation);
+	result = bs_stream(bs, stream, 2, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 3);
-	fail_unless(cbWritten == 15);
+	fail_unless(data.cCalls == 3);
+	fail_unless(data.cbWritten == 15);
 
-	result = bs_stream(bs, data, 2, operation);
+	result = bs_stream(bs, stream, 2, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 3);
-	fail_unless(cbWritten == 15);
+	fail_unless(data.cCalls == 3);
+	fail_unless(data.cbWritten == 15);
 
-	result = bs_stream(bs, data, 0, operation);
+	result = bs_stream(bs, stream, 0, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 3);
-	fail_unless(cbWritten == 15);
+	fail_unless(data.cCalls == 3);
+	fail_unless(data.cbWritten == 15);
 
-	result = bs_stream(bs, data, 2, operation);
+	result = bs_stream(bs, stream, 2, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 4);
-	fail_unless(cbWritten == 20);
+	fail_unless(data.cCalls == 4);
+	fail_unless(data.cbWritten == 20);
 
-	result = bs_stream(bs, data, 6, operation);
+	result = bs_stream(bs, stream, 6, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 5);
-	fail_unless(cbWritten == 25);
+	fail_unless(data.cCalls == 5);
+	fail_unless(data.cbWritten == 25);
 
-	result = bs_stream(bs, data, 3, operation);
+	result = bs_stream(bs, stream, 3, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 6);
-	fail_unless(cbWritten == 30);
+	fail_unless(data.cCalls == 6);
+	fail_unless(data.cbWritten == 30);
 
-	fail_unless(strcmp(szData, "123456789012345121212123456123") == 0);
+	fail_unless(strcmp(data.szData, "123456789012345121212123456123") == 0);
 
 	bs_free(bs);
 }
 END_TEST
 
 static BSresult
-operation_invalid(const BS *bs)
+operation_invalid(const BS *bs, void *data)
 {
+	UNUSED(data);
+
 	return 999;
 }
 
@@ -121,13 +120,13 @@ START_TEST(test_stream_bad_operation)
 	BS *bs = bs_create_size(5);
 	BSresult result;
 
-	result = bs_stream(bs, data, 5, operation_invalid);
+	result = bs_stream(bs, stream, 5, operation_invalid, NULL);
 	fail_unless(result == 999);
 
-	result = bs_stream(bs, data, 2, operation_invalid);
+	result = bs_stream(bs, stream, 2, operation_invalid, NULL);
 	fail_unless(result == BS_OK);
 
-	result = bs_stream(bs, data, 3, operation_invalid);
+	result = bs_stream(bs, stream, 3, operation_invalid, NULL);
 	fail_unless(result == 999);
 
 	bs_free(bs);
@@ -139,7 +138,7 @@ START_TEST(test_stream_empty_bs)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_stream(bs, data, 5, operation);
+	result = bs_stream(bs, stream, 5, operation, NULL);
 	fail_unless(result == BS_INVALID);
 
 	bs_free(bs);
@@ -150,7 +149,7 @@ START_TEST(test_stream_null_bs)
 {
 	BSresult result;
 
-	result = bs_stream(NULL, data, 5, operation);
+	result = bs_stream(NULL, stream, 5, operation, NULL);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
@@ -160,7 +159,7 @@ START_TEST(test_stream_null_data)
 	BS *bs = bs_create_size(5);
 	BSresult result;
 
-	result = bs_stream(bs, NULL, 5, operation);
+	result = bs_stream(bs, NULL, 5, operation, NULL);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
@@ -169,37 +168,36 @@ END_TEST
 
 START_TEST(test_flush)
 {
+	struct operation_data data = { 0, 0, "" };
 	BS *bs = bs_create_size(5);
 	BSresult result;
 
-	fail_unless(cCalls == 0);
-
-	result = bs_stream(bs, data, 2, operation);
+	result = bs_stream(bs, stream, 2, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 0);
-	fail_unless(cbWritten == 0);
+	fail_unless(data.cCalls == 0);
+	fail_unless(data.cbWritten == 0);
 
-	result = bs_stream_flush(bs, operation);
+	result = bs_stream_flush(bs, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 1);
-	fail_unless(cbWritten == 2);
+	fail_unless(data.cCalls == 1);
+	fail_unless(data.cbWritten == 2);
 
-	result = bs_stream_flush(bs, operation);
+	result = bs_stream_flush(bs, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 1);
-	fail_unless(cbWritten == 2);
+	fail_unless(data.cCalls == 1);
+	fail_unless(data.cbWritten == 2);
 
-	result = bs_stream(bs, data, 4, operation);
+	result = bs_stream(bs, stream, 4, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 1);
-	fail_unless(cbWritten == 2);
+	fail_unless(data.cCalls == 1);
+	fail_unless(data.cbWritten == 2);
 
-	result = bs_stream_flush(bs, operation);
+	result = bs_stream_flush(bs, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 2);
-	fail_unless(cbWritten == 6);
+	fail_unless(data.cCalls == 2);
+	fail_unless(data.cbWritten == 6);
 
-	fail_unless(strcmp(szData, "121234") == 0);
+	fail_unless(strcmp(data.szData, "121234") == 0);
 
 	bs_free(bs);
 }
@@ -209,32 +207,31 @@ START_TEST(test_flush_null_bs)
 {
 	BSresult result;
 
-	result = bs_stream_flush(NULL, operation);
+	result = bs_stream_flush(NULL, operation, NULL);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
 
 START_TEST(test_empty_count)
 {
+	struct operation_data data = { 0, 0, "" };
 	BS *bs = bs_create_size(5);
 	BSresult result;
 
-	fail_unless(cCalls == 0);
-
-	result = bs_stream(bs, data, 2, operation);
+	result = bs_stream(bs, stream, 2, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 0);
-	fail_unless(cbWritten == 0);
+	fail_unless(data.cCalls == 0);
+	fail_unless(data.cbWritten == 0);
 
 	result = bs_stream_empty(bs, NULL, NULL);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 0);
-	fail_unless(cbWritten == 0);
+	fail_unless(data.cCalls == 0);
+	fail_unless(data.cbWritten == 0);
 
-	result = bs_stream(bs, data, 4, operation);
+	result = bs_stream(bs, stream, 4, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 0);
-	fail_unless(cbWritten == 0);
+	fail_unless(data.cCalls == 0);
+	fail_unless(data.cbWritten == 0);
 
 	bs_free(bs);
 }
@@ -242,20 +239,19 @@ END_TEST
 
 START_TEST(test_empty_data)
 {
+	struct operation_data data = { 0, 0, "" };
 	BS *bs = bs_create_size(5);
 	BSbyte *output;
 	size_t length;
 	BSresult result;
 
-	fail_unless(cCalls == 0);
-
-	result = bs_stream(bs, data, 2, operation);
+	result = bs_stream(bs, stream, 2, operation, &data);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 0);
+	fail_unless(data.cCalls == 0);
 
 	result = bs_stream_empty(bs, &output, &length);
 	fail_unless(result == BS_OK);
-	fail_unless(cCalls == 0);
+	fail_unless(data.cCalls == 0);
 	fail_unless(output[0] == '1');
 	fail_unless(output[1] == '2');
 	fail_unless(length == 2);

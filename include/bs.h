@@ -160,19 +160,21 @@ BSresult bs_save(const BS *bs, BSbyte **data, size_t *length);
 
 /**
  * Process a stream of data
- * Reads DATA, calling OPERATION each time the byte stream becomes full.
- * DATA may be longer or shorter than the byte stream:
+ * Reads STREAM, calling OPERATION each time the byte stream becomes full.
+ * STREAM may be longer or shorter than the byte stream:
  *  - if it's longer then the operation will be called multiple times
  *  - if it's shorter then the data will be queued until the stream is full
  * If used correctly then a bursts of input easily can be processed in chunks.
+ * The DATA pointer can be used to persist status between calls.
  * Returns BS_OK if data has been read and processed correctly
  * Returns failure code from the underlying operation if errors occur
  */
 BSresult bs_stream(
 	BS *bs,
-	const BSbyte *data,
+	const BSbyte *stream,
 	size_t length,
-	BSresult (*operation) (const BS *bs)
+	BSresult (*operation) (const BS *bs, void *data),
+	void *data
 );
 
 /**
@@ -182,7 +184,11 @@ BSresult bs_stream(
  * Returns BS_OK if data is saved correctly, or no bytes are queued
  * Returns failure code from the underlying operation if errors occur
  */
-BSresult bs_stream_flush(BS *bs, BSresult (*operation) (const BS *bs));
+BSresult bs_stream_flush(
+	BS *bs,
+	BSresult (*operation) (const BS *bs, void *data),
+	void *data
+);
 
 /**
  * Clear stream state

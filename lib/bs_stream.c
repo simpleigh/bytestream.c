@@ -32,16 +32,17 @@
 BSresult
 bs_stream(
 	BS *bs,
-	const BSbyte *data,
+	const BSbyte *stream,
 	size_t length,
-	BSresult (*operation) (const BS *bs)
+	BSresult (*operation) (const BS *bs, void *data),
+	void *data
 )
 {
 	size_t cbRemaining = length, cbSpace;
 	BSresult result;
 
 	BS_CHECK_POINTER(bs)
-	BS_CHECK_POINTER(data)
+	BS_CHECK_POINTER(stream)
 	BS_ASSERT_VALID(bs)
 
 	if (length == 0) {
@@ -57,15 +58,15 @@ bs_stream(
 	/* If we're already streaming */
 	if (bs->cbStream > 0) {
 		if (cbSpace > length) { /* Not enough bytes to fill buffer */
-			memcpy(bs->pbBytes + bs->cbStream, data, length);
+			memcpy(bs->pbBytes + bs->cbStream, stream, length);
 			bs->cbStream += length;
 			return BS_OK;
 		} else { /* Fill up and execute */
-			memcpy(bs->pbBytes + bs->cbStream, data, cbSpace);
+			memcpy(bs->pbBytes + bs->cbStream, stream, cbSpace);
 			cbRemaining -= cbSpace;
 			bs->cbStream = 0;
 
-			result = operation(bs);
+			result = operation(bs, data);
 			if (result != BS_OK) {
 				return result;
 			}
@@ -74,10 +75,10 @@ bs_stream(
 
 	/* Loop over each chunk */
 	while (cbRemaining >= bs->cbBytes) {
-		memcpy(bs->pbBytes, data + length - cbRemaining, cbSpace);
+		memcpy(bs->pbBytes, stream + length - cbRemaining, cbSpace);
 		cbRemaining -= bs->cbBytes;
 
-		result = operation(bs);
+		result = operation(bs, data);
 		if (result != BS_OK) {
 			return result;
 		}
@@ -85,7 +86,7 @@ bs_stream(
 
 	/* Deal with any leftover data */
 	if (cbRemaining > 0) {
-		memcpy(bs->pbBytes, data + length - cbRemaining, cbRemaining);
+		memcpy(bs->pbBytes, stream + length - cbRemaining, cbRemaining);
 		bs->cbStream = cbRemaining;
 	}
 
@@ -93,7 +94,11 @@ bs_stream(
 }
 
 BSresult
-bs_stream_flush(BS *bs, BSresult (*operation) (const BS *bs))
+bs_stream_flush(
+	BS *bs,
+	BSresult (*operation) (const BS *bs, void *data),
+	void *data
+)
 {
 	BS *bsOutput;
 
@@ -112,7 +117,7 @@ bs_stream_flush(BS *bs, BSresult (*operation) (const BS *bs))
 	memcpy(bsOutput->pbBytes, bs->pbBytes, bs->cbStream);
 	bs->cbStream = 0;
 
-	return operation(bsOutput);
+	return operation(bsOutput, data);
 }
 
 BSresult
