@@ -94,6 +94,19 @@ bs_size(const BS *bs)
 }
 
 BSresult
+bs_get_buffer(BS *bs, BSbyte **buffer)
+{
+	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(buffer)
+
+	BS_ASSERT_VALID(bs)
+
+	*buffer = bs->pbBytes;
+
+	return BS_OK;
+}
+
+BSresult
 bs_set_buffer(BS *bs, void *buffer, size_t length)
 {
 	BS_CHECK_POINTER(bs)
@@ -115,6 +128,18 @@ bs_set_buffer(BS *bs, void *buffer, size_t length)
 	return BS_OK;
 }
 
+BSresult
+bs_unset_buffer(BS *bs)
+{
+	BS_CHECK_POINTER(bs)
+
+	bs->cbBytes = 0;
+	bs->pbBytes = NULL;
+	bs->cbBuffer = 0;
+	bs->cbStream = 0;
+
+	return BS_OK;
+}
 
 /* **************** */
 /* * INTERNAL API * */

@@ -136,7 +136,7 @@ END_TEST
 
 START_TEST(test_allocate_output_null_pcb)
 {
-	void *pbOutput = (void *)0xDEADBEEF;
+	void *pbOutput = (void *) 0xDEADBEEF;
 	BSresult result;
 
 	result = bs_malloc_output(5, &pbOutput, NULL);
@@ -144,10 +144,62 @@ START_TEST(test_allocate_output_null_pcb)
 }
 END_TEST
 
+START_TEST(test_get_buffer_on_empty_stream)
+{
+	BS *bs = bs_create();
+	BSbyte *buffer;
+	BSresult result;
+
+	result = bs_get_buffer(bs, &buffer);
+	fail_unless(result == BS_OK);
+	fail_unless(buffer == NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_get_buffer_on_full_stream)
+{
+	BS *bs = bs_create_size(10);
+	BSbyte *buffer;
+	BSresult result;
+
+	result = bs_get_buffer(bs, &buffer);
+	fail_unless(result == BS_OK);
+	fail_unless(buffer != NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_get_buffer_null_bs)
+{
+	BSbyte *buffer = (BSbyte *) 0xdeadbeef;
+	size_t length;
+	BSresult result;
+
+	result = bs_get_buffer(NULL, &buffer);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_get_buffer_null_buffer)
+{
+	BS *bs = bs_create();
+	size_t length;
+	BSresult result;
+
+	result = bs_get_buffer(bs, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 START_TEST(test_set_buffer_on_empty_stream)
 {
 	BS *bs = bs_create();
-	BSbyte *buffer = (BSbyte *)0xdeadbeef;
+	BSbyte *buffer = (BSbyte *) 0xdeadbeef;
 	BSresult result;
 
 	result = bs_set_buffer(bs, buffer, 5);
@@ -156,13 +208,16 @@ START_TEST(test_set_buffer_on_empty_stream)
 	fail_unless(bs->pbBytes == buffer);
 	fail_unless(bs->cbBuffer == 5);
 	fail_unless(bs->cbStream == 0);
+
+	bs_unset_buffer(bs);
+	bs_free(bs);
 }
 END_TEST
 
 START_TEST(test_set_buffer_on_full_stream)
 {
 	BS *bs = bs_create_size(10);
-	BSbyte *buffer = (BSbyte *)0xdeadbeef;
+	BSbyte *buffer = (BSbyte *) 0xdeadbeef;
 	BSresult result;
 
 	result = bs_set_buffer(bs, buffer, 5);
@@ -171,12 +226,15 @@ START_TEST(test_set_buffer_on_full_stream)
 	fail_unless(bs->pbBytes == buffer);
 	fail_unless(bs->cbBuffer == 5);
 	fail_unless(bs->cbStream == 0);
+
+	bs_unset_buffer(bs);
+	bs_free(bs);
 }
 END_TEST
 
 START_TEST(test_set_buffer_on_null_bytestream)
 {
-	BSbyte *buffer = (BSbyte *)0xdeadbeef;
+	BSbyte *buffer = (BSbyte *) 0xdeadbeef;
 	BSresult result;
 
 	result = bs_set_buffer(NULL, buffer, 5);
@@ -199,13 +257,62 @@ END_TEST
 START_TEST(test_set_buffer_zero_length)
 {
 	BS *bs = bs_create();
-	BSbyte *buffer = (BSbyte *)0xdeadbeef;
+	BSbyte *buffer = (BSbyte *) 0xdeadbeef;
 	BSresult result;
 
 	result = bs_set_buffer(bs, buffer, 0);
 	fail_unless(result == BS_INVALID);
 
 	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_set_get_buffer)
+{
+	BS *bs = bs_create();
+	BSbyte *buffer = (BSbyte *) 0xdeadbeef;
+	BSresult result;
+
+	result = bs_set_buffer(bs, buffer, 10);
+	fail_unless(result == BS_OK);
+
+	buffer = NULL;
+	result = bs_get_buffer(bs, &buffer);
+	fail_unless(result == BS_OK);
+	fail_unless(buffer == 0xdeadbeef);
+
+	bs_unset_buffer(bs);
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_unset_buffer)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	bs->cbBytes = 10;
+	bs->pbBytes = (BSbyte *) 0xdeadbeef;
+	bs->cbBuffer = 20;
+	bs->cbStream = 5;
+
+	result = bs_unset_buffer(bs);
+	fail_unless(result == BS_OK);
+	fail_unless(bs->cbBytes == 0);
+	fail_unless(bs->pbBytes == NULL);
+	fail_unless(bs->cbBuffer == 0);
+	fail_unless(bs->cbStream == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_unset_buffer_null_bs)
+{
+	BSresult result;
+
+	result = bs_unset_buffer(NULL);
+	fail_unless(result == BS_NULL);
 }
 END_TEST
 
@@ -223,11 +330,18 @@ main(/* int argc, char **argv */)
 	tcase_add_loop_test(tc_core, test_allocate_output, 0, 3);
 	tcase_add_test(tc_core, test_allocate_output_null_ppb);
 	tcase_add_test(tc_core, test_allocate_output_null_pcb);
+	tcase_add_test(tc_core, test_get_buffer_on_empty_stream);
+	tcase_add_test(tc_core, test_get_buffer_on_full_stream);
+	tcase_add_test(tc_core, test_get_buffer_null_bs);
+	tcase_add_test(tc_core, test_get_buffer_null_buffer);
 	tcase_add_test(tc_core, test_set_buffer_on_empty_stream);
 	tcase_add_test(tc_core, test_set_buffer_on_full_stream);
 	tcase_add_test(tc_core, test_set_buffer_on_null_bytestream);
 	tcase_add_test(tc_core, test_set_buffer_null);
 	tcase_add_test(tc_core, test_set_buffer_zero_length);
+	tcase_add_test(tc_core, test_set_get_buffer);
+	tcase_add_test(tc_core, test_unset_buffer);
+	tcase_add_test(tc_core, test_unset_buffer_null_bs);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

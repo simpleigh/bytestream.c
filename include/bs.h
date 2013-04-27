@@ -78,23 +78,43 @@ BS *bs_create_size(size_t length);
 void bs_free(BS *bs);
 
 /**
+ * Calculate the length of a byte stream
+ * Returns the number of bytes held in a byte stream.
+ */
+size_t bs_size(const BS *bs);
+
+/**
+ * Get the internal buffer
+ * Retrieves a pointer to the internal buffer held by the byte stream.
+ * Passes NULL if the byte stream doesn't have a buffer allocated.
+ * The buffer remains under the control of the byte stream:
+ * you should not perform any memory operations on it (e.g. realloc / free).
+ * Returns BS_OK if the buffer address is passed correctly
+ */
+BSresult bs_get_buffer(BS *bs, BSbyte **buffer);
+
+/**
  * Set the internal buffer
  * Sets the internal buffer of bytes to point to a new location.
  * Bytes are stored within an internal buffer, and loading data usually involves
  * looping over input to copy bytes across. This method simply sets the
  * bytestream to point at a new memory location and is therefore much quicker.
- * Once a buffer has been passed over to the byte stream it's now owned by that
- * stream and shouldn't be freed or realloc'd. Use with care!
+ * Any previous buffer held by the stream will be freed.
+ * The buffer remains under the control of the byte stream:
+ * you should not perform any memory operations on it (e.g. realloc / free).
  * Returns BS_OK if the buffer can be used correctly
- * Returns BS_INVALID if the supplied buffer is NULL or length is zero
+ * Returns BS_INVALID if the supplied length is zero
  */
 BSresult bs_set_buffer(BS *bs, void *buffer, size_t length);
 
 /**
- * Calculate the length of a byte stream
- * Returns the number of bytes held in a byte stream.
+ * Clear the internal buffer
+ * Resets the internal buffer to NULL, forgetting about its contents.
+ * This is intended for use with the bs_set_buffer, allowing the buffer to be
+ * detached cleanly from the byte stream.
+ * Returns BS_OK if the buffer is detached successfully
  */
-size_t bs_size(const BS *bs);
+BSresult bs_unset_buffer(BS *bs);
 
 /**
  * Zero a byte stream
@@ -157,8 +177,8 @@ BSresult bs_stream(
 
 /**
  * Flush out streamed bytes
- * Pushes any unprocessed bytes out to the supplied operation.
- * The operation will not be called if no unprocessed bytes are queued.
+ * If any unprocessed bytes are left in the stream then this will empty it,
+ * calling the supplied operation to process them.
  * Returns BS_OK if data is saved correctly, or no bytes are queued
  * Returns failure code from the underlying operation if errors occur
  */
