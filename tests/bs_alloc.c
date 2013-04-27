@@ -279,7 +279,7 @@ START_TEST(test_set_get_buffer)
 	buffer = NULL;
 	result = bs_get_buffer(bs, &buffer);
 	fail_unless(result == BS_OK);
-	fail_unless(buffer == 0xdeadbeef);
+	fail_unless(buffer == (BSbyte *) 0xdeadbeef);
 
 	bs_unset_buffer(bs);
 	bs_free(bs);
