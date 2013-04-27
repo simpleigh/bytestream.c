@@ -94,7 +94,7 @@ bs_size(const BS *bs)
 }
 
 BSresult
-bs_get_buffer(BS *bs, BSbyte **buffer)
+bs_get_buffer(const BS *bs, BSbyte **buffer)
 {
 	BS_CHECK_POINTER(bs)
 	BS_CHECK_POINTER(buffer)

@@ -91,7 +91,7 @@ size_t bs_size(const BS *bs);
  * you should not perform any memory operations on it (e.g. realloc / free).
  * Returns BS_OK if the buffer address is passed correctly
  */
-BSresult bs_get_buffer(BS *bs, BSbyte **buffer);
+BSresult bs_get_buffer(const BS *bs, BSbyte **buffer);
 
 /**
  * Set the internal buffer
