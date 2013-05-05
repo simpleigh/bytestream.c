@@ -260,30 +260,19 @@ END_TEST
 START_TEST(test_unset_buffer)
 {
 	BS *bs = bs_create();
-	BSresult result;
 
 	bs->cbBytes = 10;
 	bs->pbBytes = (BSbyte *) 0xdeadbeef;
 	bs->cbBuffer = 20;
 	bs->cbStream = 5;
 
-	result = bs_unset_buffer(bs);
-	fail_unless(result == BS_OK);
+	bs_unset_buffer(bs);
 	fail_unless(bs->cbBytes == 0);
 	fail_unless(bs->pbBytes == NULL);
 	fail_unless(bs->cbBuffer == 0);
 	fail_unless(bs->cbStream == 0);
 
 	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_unset_buffer_null_bs)
-{
-	BSresult result;
-
-	result = bs_unset_buffer(NULL);
-	fail_unless(result == BS_NULL);
 }
 END_TEST
 
@@ -310,7 +299,6 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_set_buffer_zero_length);
 	tcase_add_test(tc_core, test_set_get_buffer);
 	tcase_add_test(tc_core, test_unset_buffer);
-	tcase_add_test(tc_core, test_unset_buffer_null_bs);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

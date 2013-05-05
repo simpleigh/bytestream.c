@@ -97,6 +97,7 @@ BSbyte *
 bs_get_buffer(const BS *bs)
 {
 	BS_ASSERT_VALID(bs)
+
 	return bs->pbBytes;
 }
 
@@ -122,17 +123,15 @@ bs_set_buffer(BS *bs, void *buffer, size_t length)
 	return BS_OK;
 }
 
-BSresult
+void
 bs_unset_buffer(BS *bs)
 {
-	BS_CHECK_POINTER(bs)
+	assert(bs != NULL);
 
 	bs->cbBytes = 0;
 	bs->pbBytes = NULL;
 	bs->cbBuffer = 0;
 	bs->cbStream = 0;
-
-	return BS_OK;
 }
 
 /* **************** */

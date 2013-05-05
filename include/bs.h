@@ -101,19 +101,16 @@ BSbyte *bs_get_buffer(const BS *bs);
  * Any previous buffer held by the stream will be freed.
  * The buffer remains under the control of the byte stream:
  * you should not perform any memory operations on it (e.g. realloc / free).
- * Returns BS_OK if the buffer can be used correctly
- * Returns BS_INVALID if the supplied length is zero
  */
 BSresult bs_set_buffer(BS *bs, void *buffer, size_t length);
 
 /**
- * Clear the internal buffer
+ * Remove the internal buffer
  * Resets the internal buffer to NULL, forgetting about its contents.
- * This is intended for use with the bs_set_buffer, allowing the buffer to be
- * detached cleanly from the byte stream.
- * Returns BS_OK if the buffer is detached successfully
+ * This is intended for use with the bs_set_buffer, allowing an attached buffer
+ * to be detached cleanly from the byte stream.
  */
-BSresult bs_unset_buffer(BS *bs);
+void bs_unset_buffer(BS *bs);
 
 /**
  * Zero a byte stream
