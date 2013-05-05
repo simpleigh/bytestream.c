@@ -25,7 +25,7 @@
 */
 
 #include "bs.h"
-#include "bs_alloc.h"
+#include "bs_internal.h"
 
 static BSbyte
 read_hex_digit(char digit)

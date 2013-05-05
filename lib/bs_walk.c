@@ -25,7 +25,7 @@
 */
 
 #include "bs.h"
-#include "bs_alloc.h"
+#include "bs_internal.h"
 
 BSresult
 bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte))
