@@ -99,51 +99,6 @@ START_TEST(test_change_size)
 }
 END_TEST
 
-START_TEST(test_allocate_output)
-{
-	size_t cbSize = test_create_sizes[_i], cbOutput, ibIndex;
-	BSbyte *pbOutput;
-	BSresult result;
-
-	result = bs_malloc_output(cbSize, (void **) &pbOutput, &cbOutput);
-
-	fail_unless(result == BS_OK);
-	fail_unless(cbOutput == cbSize);
-	if (cbSize == 0) {
-		fail_unless(pbOutput == NULL);
-	} else {
-		fail_unless(pbOutput != NULL);
-	}
-
-	/* Confirm the allocation worked by trying to write to each byte */
-	for (ibIndex = 0; ibIndex < cbSize; ibIndex++) {
-		pbOutput[ibIndex] = ibIndex;
-	}
-
-	free(pbOutput);
-}
-END_TEST
-
-START_TEST(test_allocate_output_null_ppb)
-{
-	size_t pcbOutput;
-	BSresult result;
-
-	result = bs_malloc_output(5, NULL, &pcbOutput);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_allocate_output_null_pcb)
-{
-	void *pbOutput = (void *) 0xDEADBEEF;
-	BSresult result;
-
-	result = bs_malloc_output(5, &pbOutput, NULL);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
 START_TEST(test_get_buffer_on_empty_stream)
 {
 	BS *bs = bs_create();
@@ -287,9 +242,6 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_create);
 	tcase_add_loop_test(tc_core, test_create_size, 0, 3);
 	tcase_add_loop_test(tc_core, test_change_size, 0, 2);
-	tcase_add_loop_test(tc_core, test_allocate_output, 0, 3);
-	tcase_add_test(tc_core, test_allocate_output_null_ppb);
-	tcase_add_test(tc_core, test_allocate_output_null_pcb);
 	tcase_add_test(tc_core, test_get_buffer_on_empty_stream);
 	tcase_add_test(tc_core, test_get_buffer_on_full_stream);
 	tcase_add_test(tc_core, test_set_buffer_on_empty_stream);
