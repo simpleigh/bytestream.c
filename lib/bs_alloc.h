@@ -38,14 +38,14 @@ struct BS {
 };
 
 /**
- * Check BS non-null
+ * Check a pointer is non-null
+ * Use in function headers to return BS_NULL for invalid input.
  */
 #define BS_CHECK_POINTER(bs) if ((bs) == NULL) return BS_NULL;
 
 /**
  * Check BS valid
  * Simple macro to check that a BS has been initialised correctly.
- * Implemented as a macro so it can be optimised away with NDEBUG.
  */
 #define BS_ASSERT_VALID(bs) \
 	assert((bs) != NULL); \

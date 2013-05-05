@@ -85,13 +85,12 @@ size_t bs_size(const BS *bs);
 
 /**
  * Get the internal buffer
- * Retrieves a pointer to the internal buffer held by the byte stream.
- * Passes NULL if the byte stream doesn't have a buffer allocated.
+ * Returns a pointer to the internal buffer held by the byte stream.
+ * Returns NULL if the byte stream doesn't have a buffer allocated.
  * The buffer remains under the control of the byte stream:
  * you should not perform any memory operations on it (e.g. realloc / free).
- * Returns BS_OK if the buffer address is passed correctly
  */
-BSresult bs_get_buffer(const BS *bs, BSbyte **buffer);
+BSbyte *bs_get_buffer(const BS *bs);
 
 /**
  * Set the internal buffer

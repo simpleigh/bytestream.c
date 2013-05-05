@@ -93,17 +93,11 @@ bs_size(const BS *bs)
 	return bs->cbBytes;
 }
 
-BSresult
-bs_get_buffer(const BS *bs, BSbyte **buffer)
+BSbyte *
+bs_get_buffer(const BS *bs)
 {
-	BS_CHECK_POINTER(bs)
-	BS_CHECK_POINTER(buffer)
-
 	BS_ASSERT_VALID(bs)
-
-	*buffer = bs->pbBytes;
-
-	return BS_OK;
+	return bs->pbBytes;
 }
 
 BSresult
@@ -150,7 +144,6 @@ bs_malloc(BS *bs, size_t cbSize)
 {
 	BSbyte *pbNewBytes;
 
-	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 
 	if (cbSize <= bs->cbBuffer) { /* Buffer already long enough */

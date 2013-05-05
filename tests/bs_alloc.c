@@ -148,10 +148,8 @@ START_TEST(test_get_buffer_on_empty_stream)
 {
 	BS *bs = bs_create();
 	BSbyte *buffer;
-	BSresult result;
 
-	result = bs_get_buffer(bs, &buffer);
-	fail_unless(result == BS_OK);
+	buffer = bs_get_buffer(bs);
 	fail_unless(buffer == NULL);
 
 	bs_free(bs);
@@ -162,35 +160,10 @@ START_TEST(test_get_buffer_on_full_stream)
 {
 	BS *bs = bs_create_size(10);
 	BSbyte *buffer;
-	BSresult result;
 
-	result = bs_get_buffer(bs, &buffer);
-	fail_unless(result == BS_OK);
+	buffer = bs_get_buffer(bs);
 	fail_unless(buffer != NULL);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_get_buffer_null_bs)
-{
-	BSbyte *buffer = (BSbyte *) 0xdeadbeef;
-	size_t length;
-	BSresult result;
-
-	result = bs_get_buffer(NULL, &buffer);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_get_buffer_null_buffer)
-{
-	BS *bs = bs_create();
-	size_t length;
-	BSresult result;
-
-	result = bs_get_buffer(bs, NULL);
-	fail_unless(result == BS_NULL);
+	fail_unless(buffer == bs->pbBytes);
 
 	bs_free(bs);
 }
@@ -276,9 +249,7 @@ START_TEST(test_set_get_buffer)
 	result = bs_set_buffer(bs, buffer, 10);
 	fail_unless(result == BS_OK);
 
-	buffer = NULL;
-	result = bs_get_buffer(bs, &buffer);
-	fail_unless(result == BS_OK);
+	buffer = bs_get_buffer(bs);
 	fail_unless(buffer == (BSbyte *) 0xdeadbeef);
 
 	bs_unset_buffer(bs);
@@ -332,8 +303,6 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_allocate_output_null_pcb);
 	tcase_add_test(tc_core, test_get_buffer_on_empty_stream);
 	tcase_add_test(tc_core, test_get_buffer_on_full_stream);
-	tcase_add_test(tc_core, test_get_buffer_null_bs);
-	tcase_add_test(tc_core, test_get_buffer_null_buffer);
 	tcase_add_test(tc_core, test_set_buffer_on_empty_stream);
 	tcase_add_test(tc_core, test_set_buffer_on_full_stream);
 	tcase_add_test(tc_core, test_set_buffer_on_null_bytestream);
