@@ -49,11 +49,10 @@ typedef struct BS BS;
  */
 typedef enum BSresult {
 	BS_OK = 0,
-	BS_INVALID,   /* Invalid input data */
-	BS_NULL,      /* NULL pointer passed as input */
-	BS_MEMORY,    /* Memory allocation problem */
-	BS_OVERFLOW,  /* Integer overflow */
-	BS_TOO_SMALL  /* Supplied buffer too small */
+	BS_INVALID,  /* Invalid input data */
+	BS_NULL,     /* NULL pointer passed as input */
+	BS_MEMORY,   /* Memory allocation problem */
+	BS_OVERFLOW  /* Integer overflow */
 } BSresult;
 
 /**
