@@ -143,7 +143,6 @@ START_TEST(test_combine_functions)
 	BS *bs = bs_create(), *operand = bs_create();
 	BSresult result;
 	char *hex;
-	size_t length;
 
 	result = bs_load_hex(bs, "0123456789abcdef", 16);
 	fail_unless(result == BS_OK);
@@ -155,10 +154,13 @@ START_TEST(test_combine_functions)
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 8);
 
-	result = bs_save_hex(bs, &hex, &length);
+	hex = malloc(bs_size_hex(bs));
+	fail_unless(hex != NULL);
+
+	result = bs_save_hex(bs, hex);
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
-	fail_unless(length == 16);
+	fail_unless(strlen(hex) == 16);
 	fail_unless(strcmp(hex, combine_testcases[_i].output) == 0);
 
 	free(hex);

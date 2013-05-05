@@ -80,33 +80,34 @@ bs_load_hex(BS *bs, const char *hex, size_t length)
 	return BS_OK;
 }
 
+size_t
+bs_size_hex(const BS *bs)
+{
+	BS_ASSERT_VALID(bs)
+
+	return (2 * bs->cbBytes) + 1;
+}
+
 static const char
 hex_encoding_table[] = "0123456789abcdef";
 
 BSresult
-bs_save_hex(const BS *bs, char **hex, size_t *length)
+bs_save_hex(const BS *bs, char *hex)
 {
 	size_t ibStream;
-	BSresult result;
 	BSbyte bByte;
 
 	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(hex)
 	BS_ASSERT_VALID(bs)
-
-	result = bs_malloc_output(
-		2 * bs->cbBytes * sizeof(**hex),
-		(void **) hex,
-		length
-	);
-	if (result != BS_OK) {
-		return result;
-	}
 
 	for (ibStream = 0; ibStream < bs->cbBytes; ibStream++) {
 		bByte = bs->pbBytes[ibStream];
-		(*hex)[2 * ibStream]     = hex_encoding_table[bByte >> 4];
-		(*hex)[2 * ibStream + 1] = hex_encoding_table[bByte & 0xF];
+		hex[2 * ibStream]     = hex_encoding_table[bByte >> 4];
+		hex[2 * ibStream + 1] = hex_encoding_table[bByte & 0xF];
 	}
+
+	hex[2 * ibStream] = '\0';
 
 	return BS_OK;
 }

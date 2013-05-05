@@ -103,7 +103,6 @@ START_TEST(test_walk_functions)
 	BS *bs = bs_create();
 	BSresult result;
 	char *hex;
-	size_t length;
 
 	result = bs_load_hex(bs, walk_testcases[_i].input, 2);
 	fail_unless(result == BS_OK);
@@ -112,10 +111,13 @@ START_TEST(test_walk_functions)
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 1);
 
-	result = bs_save_hex(bs, &hex, &length);
+	hex = malloc(bs_size_hex(bs));
+	fail_unless(hex != NULL);
+
+	result = bs_save_hex(bs, hex);
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
-	fail_unless(length == 2);
+	fail_unless(strlen(hex) == 2);
 	fail_unless(strcmp(hex, walk_testcases[_i].output) == 0);
 
 	free(hex);

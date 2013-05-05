@@ -148,7 +148,7 @@ BSresult bs_load(BS *bs, const BSbyte *data, size_t length);
  * Save data
  * Writes out data from the byte stream.
  * Returns BS_OK if data is saved correctly
- * The supplied buffer must be at least bs_size() bytes long.
+ * DATA must be at least bs_size() bytes long.
  * The bytestream is not touched by this operation.
  */
 BSresult bs_save(const BS *bs, BSbyte *data);
@@ -209,16 +209,21 @@ BSresult bs_stream_empty(BS *bs, BSbyte **data, size_t *length);
 BSresult bs_load_hex(BS *bs, const char *hex, size_t length);
 
 /**
+ * Size a hexadecimal string
+ * Returns the size of the buffer required to write the byte stream as a
+ * hexadecimal string.
+ * The returned size includes space for a terminating null '\0' byte.
+ */
+size_t bs_size_hex(const BS *bs);
+
+/**
  * Save a hexadecimal string
  * Writes the byte stream as a hexadecimal string.
- * Space for the string will be allocated, and should be freed when no longer
- * required.
- * Provides the length of the string excluding the terminating null byte ('\0').
  * Returns BS_OK if data is saved correctly
- * Returns BS_MEMORY if memory cannot be allocated
+ * HEX must be at least bs_size_hex() bytes long.
  * The bytestream is not touched by this operation.
  */
-BSresult bs_save_hex(const BS *bs, char **hex, size_t *length);
+BSresult bs_save_hex(const BS *bs, char *hex);
 
 /**
  * Load a base64-encoded string

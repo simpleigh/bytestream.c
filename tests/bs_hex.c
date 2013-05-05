@@ -106,21 +106,36 @@ END_TEST
 static const char
 test_hex_return[] = "0123456789abcdefabcdef";
 
+START_TEST(test_size)
+{
+	BS *bs = bs_create();
+	size_t cbString = strlen(test_hex_in);
+	BSresult result;
+
+	result = bs_load_hex(bs, test_hex_in, cbString);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size_hex(bs) == cbString + 1);
+
+	bs_free(bs);
+}
+END_TEST
+
 START_TEST(test_save)
 {
 	BS *bs = bs_create();
 	size_t cbString = strlen(test_hex_in);
 	char *hex;
-	size_t length;
 	BSresult result;
 
-	bs_load_hex(bs, test_hex_in, cbString);
+	result = bs_load_hex(bs, test_hex_in, cbString);
+	fail_unless(result == BS_OK);
 
-	result = bs_save_hex(bs, &hex, &length);
+	hex = malloc(bs_size_hex(bs));
+	fail_unless(hex != NULL);
+
+	result = bs_save_hex(bs, hex);
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
-	fail_unless(length == cbString);
-	fail_unless(hex[cbString] == '\0');
 	fail_unless(strlen(hex) == cbString);
 	fail_unless(strcmp(hex, test_hex_return) == 0);
 
@@ -132,34 +147,19 @@ END_TEST
 START_TEST(test_save_null_bs)
 {
 	char *data = (char *) 0xDEADBEEF;
-	size_t length;
 	BSresult result;
 
-	result = bs_save_hex(NULL, &data, &length);
+	result = bs_save_hex(NULL, data);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
 
-START_TEST(test_save_null_data)
+START_TEST(test_save_null_hex)
 {
 	BS *bs = bs_create();
-	size_t length;
 	BSresult result;
 
-	result = bs_save_hex(bs, NULL, &length);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_save_null_length)
-{
-	BS *bs = bs_create();
-	char *data = (char *) 0xDEADBEEF;
-	BSresult result;
-
-	result = bs_save_hex(bs, &data, NULL);
+	result = bs_save_hex(bs, NULL);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
@@ -179,10 +179,10 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_load);
 	tcase_add_test(tc_core, test_load_null_bs);
 	tcase_add_test(tc_core, test_load_null_data);
+	tcase_add_test(tc_core, test_size);
 	tcase_add_test(tc_core, test_save);
 	tcase_add_test(tc_core, test_save_null_bs);
-	tcase_add_test(tc_core, test_save_null_data);
-	tcase_add_test(tc_core, test_save_null_length);
+	tcase_add_test(tc_core, test_save_null_hex);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
