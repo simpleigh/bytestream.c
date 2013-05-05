@@ -120,28 +120,10 @@ bs_stream_flush(
 	return operation(bsOutput, data);
 }
 
-BSresult
-bs_stream_empty(BS *bs, BSbyte **data, size_t *length)
+void
+bs_stream_reset(BS *bs)
 {
-	BSresult result;
-
-	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 
-	if (data != NULL || length != NULL) {
-		result = bs_malloc_output(
-			bs->cbStream * sizeof(BSbyte),
-			(void **) data,
-			length
-		);
-		if (result != BS_OK) {
-			return result;
-		}
-
-		memcpy(*data, bs->pbBytes, bs->cbStream);
-	}
-
 	bs->cbStream = 0;
-
-	return BS_OK;
 }

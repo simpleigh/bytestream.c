@@ -216,7 +216,7 @@ START_TEST(test_flush_null_bs)
 }
 END_TEST
 
-START_TEST(test_empty_count)
+START_TEST(test_reset)
 {
 	struct operation_data data = { 0, 0, "" };
 	BS *bs = bs_create_size(5);
@@ -227,8 +227,7 @@ START_TEST(test_empty_count)
 	fail_unless(data.cCalls == 0);
 	fail_unless(data.cbWritten == 0);
 
-	result = bs_stream_empty(bs, NULL, NULL);
-	fail_unless(result == BS_OK);
+	bs_stream_reset(bs);
 	fail_unless(data.cCalls == 0);
 	fail_unless(data.cbWritten == 0);
 
@@ -236,82 +235,6 @@ START_TEST(test_empty_count)
 	fail_unless(result == BS_OK);
 	fail_unless(data.cCalls == 0);
 	fail_unless(data.cbWritten == 0);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_empty_data)
-{
-	struct operation_data data = { 0, 0, "" };
-	BS *bs = bs_create_size(5);
-	BSbyte *output;
-	size_t length;
-	BSresult result;
-
-	result = bs_stream(bs, stream, 2, operation, &data);
-	fail_unless(result == BS_OK);
-	fail_unless(data.cCalls == 0);
-
-	result = bs_stream_empty(bs, &output, &length);
-	fail_unless(result == BS_OK);
-	fail_unless(data.cCalls == 0);
-	fail_unless(output[0] == '1');
-	fail_unless(output[1] == '2');
-	fail_unless(length == 2);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_empty_no_stream)
-{
-	BS *bs = bs_create_size(5);
-	BSbyte *output;
-	size_t length;
-	BSresult result;
-
-	result = bs_stream_empty(bs, &output, &length);
-	fail_unless(result == BS_OK);
-	fail_unless(output == NULL);
-	fail_unless(length == 0);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_empty_null_bs)
-{
-	BSbyte *output;
-	size_t length;
-	BSresult result;
-
-	result = bs_stream_empty(NULL, &output, &length);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_empty_null_data)
-{
-	BS *bs = bs_create_size(5);
-	size_t length;
-	BSresult result;
-
-	result = bs_stream_empty(bs, NULL, &length);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_empty_null_length)
-{
-	BS *bs = bs_create_size(5);
-	BSbyte *output;
-	BSresult result;
-
-	result = bs_stream_empty(bs, &output, NULL);
-	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
 }
@@ -332,12 +255,7 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_stream_null_data);
 	tcase_add_test(tc_core, test_flush);
 	tcase_add_test(tc_core, test_flush_null_bs);
-	tcase_add_test(tc_core, test_empty_count);
-	tcase_add_test(tc_core, test_empty_data);
-	tcase_add_test(tc_core, test_empty_no_stream);
-	tcase_add_test(tc_core, test_empty_null_bs);
-	tcase_add_test(tc_core, test_empty_null_data);
-	tcase_add_test(tc_core, test_empty_null_length);
+	tcase_add_test(tc_core, test_reset);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

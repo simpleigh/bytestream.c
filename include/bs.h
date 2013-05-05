@@ -186,13 +186,10 @@ BSresult bs_stream_flush(
 
 /**
  * Clear stream state
- * Resets the internal streaming state, and returns any unprocessed bytes.
- * Space for the data will be allocated, and should be freed when no longer
- * required.
+ * Resets the internal streaming state.
  * Returns BS_OK if data is saved correctly
- * Returns BS_MEMORY if memory cannot be allocated
  */
-BSresult bs_stream_empty(BS *bs, BSbyte **data, size_t *length);
+void bs_stream_reset(BS *bs);
 
 /**
  * Load a hexadecimal string
