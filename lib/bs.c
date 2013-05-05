@@ -82,23 +82,13 @@ bs_load(BS *bs, const BSbyte *data, size_t length)
 }
 
 BSresult
-bs_save(const BS *bs, BSbyte **data, size_t *length)
+bs_save(const BS *bs, BSbyte *data)
 {
-	BSresult result;
-
 	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(data)
 	BS_ASSERT_VALID(bs)
 
-	result = bs_malloc_output(
-		bs->cbBytes * sizeof(**data),
-		(void **) data,
-		length
-	);
-	if (result != BS_OK) {
-		return result;
-	}
-
-	memcpy(*data, bs->pbBytes, bs->cbBytes);
+	memcpy(data, bs->pbBytes, bs->cbBytes);
 
 	return BS_OK;
 }

@@ -46,7 +46,11 @@ operation(const BS *bs, void *data)
 	test_data->cCalls++;
 	test_data->cbWritten += bs_size(bs);
 
-	bs_save(bs, (BSbyte **) &stream, &length);
+	stream = malloc(bs_size(bs) + 1);
+	fail_unless(stream != NULL);
+	stream[bs_size(bs)] = '\0';
+
+	bs_save(bs, (BSbyte **) stream);
 	strcat(test_data->szData, stream);
 
 	return BS_OK;

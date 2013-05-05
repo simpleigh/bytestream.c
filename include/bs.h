@@ -49,10 +49,11 @@ typedef struct BS BS;
  */
 typedef enum BSresult {
 	BS_OK = 0,
-	BS_INVALID,  /* Invalid input data */
-	BS_NULL,     /* NULL pointer passed as input */
-	BS_MEMORY,   /* Memory allocation problem */
-	BS_OVERFLOW  /* Integer overflow */
+	BS_INVALID,   /* Invalid input data */
+	BS_NULL,      /* NULL pointer passed as input */
+	BS_MEMORY,    /* Memory allocation problem */
+	BS_OVERFLOW,  /* Integer overflow */
+	BS_TOO_SMALL  /* Supplied buffer too small */
 } BSresult;
 
 /**
@@ -146,13 +147,11 @@ BSresult bs_load(BS *bs, const BSbyte *data, size_t length);
 /**
  * Save data
  * Writes out data from the byte stream.
- * Space for the data will be allocated, and should be freed when no longer
- * required.
  * Returns BS_OK if data is saved correctly
- * Returns BS_MEMORY if memory cannot be allocated
+ * The supplied buffer must be at least bs_size() bytes long.
  * The bytestream is not touched by this operation.
  */
-BSresult bs_save(const BS *bs, BSbyte **data, size_t *length);
+BSresult bs_save(const BS *bs, BSbyte *data);
 
 /**
  * Process a stream of data
