@@ -120,6 +120,14 @@ bs_load_base64(BS *bs, const char *base64, size_t length)
 	return BS_OK;
 }
 
+size_t
+bs_size_base64(const BS *bs)
+{
+	BS_ASSERT_VALID(bs)
+
+	return ((bs->cbBytes + 2) / 3 * 4) + 1;
+}
+
 static const char
 base64_encoding_table[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -154,34 +162,28 @@ write_base64_bytes(const BSbyte *in, size_t length, char *out)
 }
 
 BSresult
-bs_save_base64(const BS *bs, char **base64, size_t *length)
+bs_save_base64(const BS *bs, char *base64)
 {
 	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
-	BSresult result;
 
 	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(base64)
 	BS_ASSERT_VALID(bs)
 
 	cbByteStream = bs->cbBytes;
-	result = bs_malloc_output(
-		((cbByteStream + 2) / 3 * 4) * sizeof(**base64),
-		(void **) base64,
-		length
-	);
-	if (result != BS_OK) {
-		return result;
-	}
 
 	while (ibByteStream < cbByteStream) {
 		write_base64_bytes(
 			bs->pbBytes + ibByteStream,
 			cbByteStream - ibByteStream,
-			*base64 + ibBase64
+			base64 + ibBase64
 		);
 
 		ibByteStream += 3;
 		ibBase64 += 4;
 	}
+
+	base64[ibBase64] = '\0';
 
 	return BS_OK;
 }

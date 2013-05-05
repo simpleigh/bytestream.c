@@ -237,16 +237,24 @@ BSresult bs_save_hex(const BS *bs, char *hex);
 BSresult bs_load_base64(BS *bs, const char *base64, size_t length);
 
 /**
+ * Size a base64-encoded string
+ * Returns the size of the buffer required to write the byte stream as a
+ * base64-encoded string.
+ * The returned size includes space for a terminating null '\0' byte.
+ */
+size_t bs_size_base64(const BS *bs);
+
+/**
  * Save a base64-encoded string
  * Writes the byte stream as a base-64 encoded string.
  * Space for the string will be allocated, and should be freed when no longer
  * required.
  * Provides the length of the string excluding the terminating null byte ('\0').
  * Returns BS_OK if data is saved correctly
- * Returns BS_MEMORY if memory cannot be allocated
+ * BASE64 must be at least bs_size_base64() bytes long.
  * The bytestream is not touched by this operation.
  */
-BSresult bs_save_base64(const BS *bs, char **base64, size_t *length);
+BSresult bs_save_base64(const BS *bs, char *base64);
 
 /**
  * Walks a byte stream
