@@ -77,7 +77,7 @@ bs_create_size(size_t length)
 void
 bs_free(BS *bs)
 {
-	assert(bs != NULL);
+	BS_ASSERT_VALID(bs)
 
 	if ((bs->cbBuffer > 0) && (bs->pbBytes != NULL)) {
 		free(bs->pbBytes);
@@ -88,7 +88,7 @@ bs_free(BS *bs)
 size_t
 bs_size(const BS *bs)
 {
-	assert(bs != NULL);
+	BS_ASSERT_VALID(bs)
 
 	return bs->cbBytes;
 }

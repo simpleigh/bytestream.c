@@ -33,7 +33,6 @@
 void
 bs_zero(BS *bs)
 {
-	assert(bs != NULL);
 	BS_ASSERT_VALID(bs)
 
 	memset(bs->pbBytes, 0, bs->cbBytes);
@@ -42,7 +41,6 @@ bs_zero(BS *bs)
 BSbyte
 bs_get_byte(const BS *bs, size_t index)
 {
-	assert(bs != NULL);
 	BS_ASSERT_VALID(bs)
 	assert(index < bs->cbBytes);
 
@@ -52,7 +50,6 @@ bs_get_byte(const BS *bs, size_t index)
 BSbyte
 bs_set_byte(BS *bs, size_t index, BSbyte byte)
 {
-	assert(bs != NULL);
 	BS_ASSERT_VALID(bs)
 	assert(index < bs->cbBytes);
 
