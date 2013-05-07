@@ -30,7 +30,7 @@
 #include "bs.h"
 
 struct BSencoding {
-	char szName[10];
+	char *szName;
 	BSresult (*fpDecode) (BS *bs, const char *input, size_t length);
 	size_t (*fpSize) (const BS *bs);
 	BSresult (*fpEncode) (const BS *bs, char *output);
