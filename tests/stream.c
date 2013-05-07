@@ -50,7 +50,7 @@ operation(const BS *bs, void *data)
 	fail_unless(stream != NULL);
 	stream[bs_size(bs)] = '\0';
 
-	bs_save(bs, (BSbyte **) stream);
+	bs_save(bs, (BSbyte *) stream);
 	strcat(test_data->szData, stream);
 
 	return BS_OK;
