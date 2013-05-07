@@ -26,6 +26,7 @@
 
 #include "bs.h"
 #include "../bs_internal.h"
+#include "../encodings.h"
 #include <assert.h>
 
 static const unsigned int
