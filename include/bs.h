@@ -205,7 +205,12 @@ void bs_stream_reset(BS *bs);
  * Returns BS_BAD_ENCODING if the specified encoding is not known
  * Do not attempt to use the bytestream if the return value is other than BS_OK.
  */
-BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t length);
+BSresult bs_decode(
+	BS *bs,
+	const char *encoding,
+	const char *input,
+	size_t length
+);
 
 /**
  * Size an encoded string

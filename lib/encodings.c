@@ -29,7 +29,8 @@
 #include "encodings.h"
 #include <string.h>
 
-BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
+BSresult
+bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
 {
 	BS_CHECK_POINTER(encoding)
 
@@ -42,7 +43,8 @@ BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t lengt
 	}
 }
 
-size_t bs_encode_size(const BS *bs, const char *encoding)
+size_t
+bs_encode_size(const BS *bs, const char *encoding)
 {
 	BS_CHECK_POINTER(encoding)
 
@@ -55,7 +57,8 @@ size_t bs_encode_size(const BS *bs, const char *encoding)
 	}
 }
 
-BSresult bs_encode(const BS *bs, const char *encoding, char *output)
+BSresult
+bs_encode(const BS *bs, const char *encoding, char *output)
 {
 	BS_CHECK_POINTER(encoding)
 
