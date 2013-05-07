@@ -29,6 +29,13 @@
 
 #include "bs.h"
 
+struct BSencoding {
+	char szName[10];
+	BSresult (*fpDecode) (BS *bs, const char *input, size_t length);
+	size_t (*fpSize) (const BS *bs);
+	BSresult (*fpEncode) (const BS *bs, char *output);
+};
+
 BSresult bs_decode_hex(BS *bs, const char *hex, size_t length);
 BSresult bs_decode_base64(BS *bs, const char *base64, size_t length);
 
