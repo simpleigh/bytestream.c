@@ -32,7 +32,9 @@
 BSresult
 bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
 {
+	BS_CHECK_POINTER(bs)
 	BS_CHECK_POINTER(encoding)
+	BS_CHECK_POINTER(input)
 
 	if (strcmp(encoding, "base64") == 0) {
 		return bs_decode_base64(bs, input, length);
@@ -46,6 +48,7 @@ bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
 size_t
 bs_encode_size(const BS *bs, const char *encoding)
 {
+	BS_ASSERT_VALID(bs)
 	BS_CHECK_POINTER(encoding)
 
 	if (strcmp(encoding, "base64") == 0) {
@@ -60,7 +63,10 @@ bs_encode_size(const BS *bs, const char *encoding)
 BSresult
 bs_encode(const BS *bs, const char *encoding, char *output)
 {
+	BS_CHECK_POINTER(bs)
+	BS_ASSERT_VALID(bs)
 	BS_CHECK_POINTER(encoding)
+	BS_CHECK_POINTER(output)
 
 	if (strcmp(encoding, "base64") == 0) {
 		return bs_encode_base64(bs, output);

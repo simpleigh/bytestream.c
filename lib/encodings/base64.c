@@ -83,9 +83,6 @@ bs_decode_base64(BS *bs, const char *base64, size_t length)
 	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
 	BSresult result;
 
-	BS_CHECK_POINTER(bs)
-	BS_CHECK_POINTER(base64)
-
 	if (length & 3) {
 		return BS_INVALID;
 	}
@@ -124,8 +121,6 @@ bs_decode_base64(BS *bs, const char *base64, size_t length)
 size_t
 bs_encode_size_base64(const BS *bs)
 {
-	BS_ASSERT_VALID(bs)
-
 	return ((bs->cbBytes + 2) / 3 * 4) + 1;
 }
 
@@ -166,10 +161,6 @@ BSresult
 bs_encode_base64(const BS *bs, char *base64)
 {
 	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
-
-	BS_CHECK_POINTER(bs)
-	BS_CHECK_POINTER(base64)
-	BS_ASSERT_VALID(bs)
 
 	cbByteStream = bs->cbBytes;
 
