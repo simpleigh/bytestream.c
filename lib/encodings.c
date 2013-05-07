@@ -68,7 +68,7 @@ bs_encode_size(const BS *bs, const char *encoding)
 		}
 	}
 
-	return BS_BAD_ENCODING;
+	return 0;
 }
 
 BSresult

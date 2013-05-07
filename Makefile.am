@@ -52,6 +52,7 @@ libbs_la_SOURCES = include/bs.h           \
 TESTS = test_alloc      \
         test_bs         \
         test_stream     \
+        test_encodings  \
         test_hex        \
         test_base64     \
         test_walk       \
@@ -72,6 +73,10 @@ test_bs_LDADD = libbs.la @CHECK_LIBS@
 test_stream_SOURCES = tests/stream.c
 test_stream_CFLAGS = @CHECK_CFLAGS@
 test_stream_LDADD = libbs.la @CHECK_LIBS@
+
+test_encodings_SOURCES = tests/encodings.c
+test_encodings_CFLAGS = @CHECK_CFLAGS@
+test_encodings_LDADD = libbs.la @CHECK_LIBS@
 
 test_hex_SOURCES = tests/encodings/hex.c
 test_hex_CFLAGS = @CHECK_CFLAGS@
