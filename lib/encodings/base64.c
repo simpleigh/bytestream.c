@@ -78,7 +78,7 @@ read_base64_block(const char *in, BSbyte *out)
 }
 
 BSresult
-bs_load_base64(BS *bs, const char *base64, size_t length)
+bs_decode_base64(BS *bs, const char *base64, size_t length)
 {
 	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
 	BSresult result;
@@ -122,7 +122,7 @@ bs_load_base64(BS *bs, const char *base64, size_t length)
 }
 
 size_t
-bs_size_base64(const BS *bs)
+bs_encode_size_base64(const BS *bs)
 {
 	BS_ASSERT_VALID(bs)
 
@@ -163,7 +163,7 @@ write_base64_bytes(const BSbyte *in, size_t length, char *out)
 }
 
 BSresult
-bs_save_base64(const BS *bs, char *base64)
+bs_encode_base64(const BS *bs, char *base64)
 {
 	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
 

@@ -47,7 +47,7 @@ read_hex_digit(char digit)
 }
 
 BSresult
-bs_load_hex(BS *bs, const char *hex, size_t length)
+bs_decode_hex(BS *bs, const char *hex, size_t length)
 {
 	size_t ibHex;
 	BSresult result;
@@ -82,7 +82,7 @@ bs_load_hex(BS *bs, const char *hex, size_t length)
 }
 
 size_t
-bs_size_hex(const BS *bs)
+bs_encode_size_hex(const BS *bs)
 {
 	BS_ASSERT_VALID(bs)
 
@@ -93,7 +93,7 @@ static const char
 hex_encoding_table[] = "0123456789abcdef";
 
 BSresult
-bs_save_hex(const BS *bs, char *hex)
+bs_encode_hex(const BS *bs, char *hex)
 {
 	size_t ibStream;
 	BSbyte bByte;

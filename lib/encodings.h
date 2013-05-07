@@ -29,13 +29,13 @@
 
 #include "bs.h"
 
-BSresult bs_load_hex(BS *bs, const char *hex, size_t length);
-BSresult bs_load_base64(BS *bs, const char *base64, size_t length);
+BSresult bs_decode_hex(BS *bs, const char *hex, size_t length);
+BSresult bs_decode_base64(BS *bs, const char *base64, size_t length);
 
-size_t bs_size_hex(const BS *bs);
-size_t bs_size_base64(const BS *bs);
+size_t bs_encode_size_hex(const BS *bs);
+size_t bs_encode_size_base64(const BS *bs);
 
-BSresult bs_save_hex(const BS *bs, char *hex);
-BSresult bs_save_base64(const BS *bs, char *base64);
+BSresult bs_encode_hex(const BS *bs, char *hex);
+BSresult bs_encode_base64(const BS *bs, char *base64);
 
 #endif /* __ENCODINGS_H */

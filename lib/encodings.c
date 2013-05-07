@@ -34,9 +34,9 @@ BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t lengt
 	BS_CHECK_POINTER(encoding)
 
 	if (strcmp(encoding, "base64") == 0) {
-		return bs_load_base64(bs, input, length);
+		return bs_decode_base64(bs, input, length);
 	} else if (strcmp(encoding, "hex") == 0) {
-		return bs_load_hex(bs, input, length);
+		return bs_decode_hex(bs, input, length);
 	} else {
 		return BS_BAD_ENCODING;
 	}
@@ -47,9 +47,9 @@ size_t bs_encode_size(const BS *bs, const char *encoding)
 	BS_CHECK_POINTER(encoding)
 
 	if (strcmp(encoding, "base64") == 0) {
-		return bs_size_base64(bs);
+		return bs_encode_size_base64(bs);
 	} else if (strcmp(encoding, "hex") == 0) {
-		return bs_size_hex(bs);
+		return bs_encode_size_hex(bs);
 	} else {
 		return BS_BAD_ENCODING;
 	}
@@ -60,9 +60,9 @@ BSresult bs_encode(const BS *bs, const char *encoding, char *output)
 	BS_CHECK_POINTER(encoding)
 
 	if (strcmp(encoding, "base64") == 0) {
-		return bs_save_base64(bs, output);
+		return bs_encode_base64(bs, output);
 	} else if (strcmp(encoding, "hex") == 0) {
-		return bs_save_hex(bs, output);
+		return bs_encode_hex(bs, output);
 	} else {
 		return BS_BAD_ENCODING;
 	}
