@@ -24,8 +24,8 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __BS_ALLOC_H
-#define __BS_ALLOC_H
+#ifndef __BS_INTERNAL_H
+#define __BS_INTERNAL_H
 
 #include "bs.h"
 #include <assert.h>
@@ -69,4 +69,4 @@ struct BS {
  */
 BSresult bs_malloc(BS *bs, size_t cbSize);
 
-#endif /* __BS_ALLOC_H */
+#endif /* __BS_INTERNAL_H */

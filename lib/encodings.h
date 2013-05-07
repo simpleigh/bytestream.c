@@ -24,8 +24,8 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef __BS_ENCODINGS_H
-#define __BS_ENCODINGS_H
+#ifndef __ENCODINGS_H
+#define __ENCODINGS_H
 
 #include "bs.h"
 
@@ -38,4 +38,4 @@ size_t bs_size_base64(const BS *bs);
 BSresult bs_save_hex(const BS *bs, char *hex);
 BSresult bs_save_base64(const BS *bs, char *base64);
 
-#endif /* __BS_ENCODINGS_H */
+#endif /* __ENCODINGS_H */
