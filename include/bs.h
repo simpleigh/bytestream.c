@@ -192,70 +192,37 @@ BSresult bs_stream_flush(
  */
 void bs_stream_reset(BS *bs);
 
+/**
+ * Load an encoded string
+ * Reads an encoded string into the byte stream.
+ * Supported encodings currently include:
+ *  - base64
+ *  - hex
+ * Returns BS_OK if the string is loaded correctly
+ * Returns BS_MEMORY if memory cannot be allocated
+ * Returns BS_INVALID if the input cannot be decoded, e.g. if the length is
+ * invalid or a character is out-of-range
+ * Returns BS_BAD_ENCODING if the specified encoding is not known
+ * Do not attempt to use the bytestream if the return value is other than BS_OK.
+ */
 BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t length);
+
+/**
+ * Size an encoded string
+ * Returns the size of the buffer required to write the byte stream as a string
+ * encoded with the specified ENCODING.
+ * The returned size includes space for a terminating null '\0' byte.
+ */
 size_t bs_encode_size(const BS *bs, const char *encoding);
+
+/**
+ * Save an encoded string
+ * Writes the byte stream as a string with the specified ENCODING.
+ * Returns BS_OK if data is saved correctly
+ * The supplied buffer must be long enough to store the data.
+ * The bytestream is not touched by this operation.
+ */
 BSresult bs_encode(const BS *bs, const char *encoding, char *output);
-
-/**
- * Load a hexadecimal string
- * Reads a hexadecimal string into the byte stream.
- * Each pair of hex digits is read as a single byte.
- * Hex digits may be in upper or lowercase.
- * Returns BS_OK if the string is loaded correctly
- * Returns BS_MEMORY if memory cannot be allocated
- * Returns BS_INVALID if the input length is not even
- * Returns BS_INVALID if an input character is not valid
- * Do not attempt to use the bytestream if the return value is other than BS_OK.
- */
-BSresult bs_load_hex(BS *bs, const char *hex, size_t length);
-
-/**
- * Size a hexadecimal string
- * Returns the size of the buffer required to write the byte stream as a
- * hexadecimal string.
- * The returned size includes space for a terminating null '\0' byte.
- */
-size_t bs_size_hex(const BS *bs);
-
-/**
- * Save a hexadecimal string
- * Writes the byte stream as a hexadecimal string.
- * Returns BS_OK if data is saved correctly
- * HEX must be at least bs_size_hex() bytes long.
- * The bytestream is not touched by this operation.
- */
-BSresult bs_save_hex(const BS *bs, char *hex);
-
-/**
- * Load a base64-encoded string
- * Reads a base64-encoded string.
- * Returns BS_OK if the string is loaded correctly
- * Returns BS_MEMORY if memory cannot be allocated
- * Returns BS_INVALID if the input length is not a multiple of four
- * Returns BS_INVALID if an input character is not valid
- * Do not attempt to use the bytestream if the return value is other than BS_OK.
- */
-BSresult bs_load_base64(BS *bs, const char *base64, size_t length);
-
-/**
- * Size a base64-encoded string
- * Returns the size of the buffer required to write the byte stream as a
- * base64-encoded string.
- * The returned size includes space for a terminating null '\0' byte.
- */
-size_t bs_size_base64(const BS *bs);
-
-/**
- * Save a base64-encoded string
- * Writes the byte stream as a base-64 encoded string.
- * Space for the string will be allocated, and should be freed when no longer
- * required.
- * Provides the length of the string excluding the terminating null byte ('\0').
- * Returns BS_OK if data is saved correctly
- * BASE64 must be at least bs_size_base64() bytes long.
- * The bytestream is not touched by this operation.
- */
-BSresult bs_save_base64(const BS *bs, char *base64);
 
 /**
  * Walks a byte stream

@@ -37,6 +37,7 @@ libbs_la_SOURCES = include/bs.h           \
                    lib/bs_alloc.c         \
                    lib/bs.c               \
                    lib/bs_stream.c        \
+                   lib/bs_encodings.h     \
                    lib/bs_encodings.c     \
                    lib/encodings/hex.c    \
                    lib/encodings/base64.c \

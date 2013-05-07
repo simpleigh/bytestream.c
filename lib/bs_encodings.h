@@ -24,46 +24,18 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#ifndef __BS_ENCODINGS_H
+#define __BS_ENCODINGS_H
+
 #include "bs.h"
-#include "bs_internal.h"
-#include "bs_encodings.h"
-#include <string.h>
 
-BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
-{
-	BS_CHECK_POINTER(encoding)
+BSresult bs_load_hex(BS *bs, const char *hex, size_t length);
+BSresult bs_load_base64(BS *bs, const char *base64, size_t length);
 
-	if (strcmp(encoding, "base64") == 0) {
-		return bs_load_base64(bs, input, length);
-	} else if (strcmp(encoding, "hex") == 0) {
-		return bs_load_hex(bs, input, length);
-	} else {
-		return BS_BAD_ENCODING;
-	}
-}
+size_t bs_size_hex(const BS *bs);
+size_t bs_size_base64(const BS *bs);
 
-size_t bs_encode_size(const BS *bs, const char *encoding)
-{
-	BS_CHECK_POINTER(encoding)
+BSresult bs_save_hex(const BS *bs, char *hex);
+BSresult bs_save_base64(const BS *bs, char *base64);
 
-	if (strcmp(encoding, "base64") == 0) {
-		return bs_size_base64(bs);
-	} else if (strcmp(encoding, "hex") == 0) {
-		return bs_size_hex(bs);
-	} else {
-		return BS_BAD_ENCODING;
-	}
-}
-
-BSresult bs_encode(const BS *bs, const char *encoding, char *output)
-{
-	BS_CHECK_POINTER(encoding)
-
-	if (strcmp(encoding, "base64") == 0) {
-		return bs_save_base64(bs, output);
-	} else if (strcmp(encoding, "hex") == 0) {
-		return bs_save_hex(bs, output);
-	} else {
-		return BS_BAD_ENCODING;
-	}
-}
+#endif /* __BS_ENCODINGS_H */
