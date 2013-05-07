@@ -104,17 +104,17 @@ START_TEST(test_walk_functions)
 	BSresult result;
 	char *hex;
 
-	result = bs_load_hex(bs, walk_testcases[_i].input, 2);
+	result = bs_decode(bs, "hex", walk_testcases[_i].input, 2);
 	fail_unless(result == BS_OK);
 
 	result = walk_testcases[_i].walk_function(bs);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 1);
 
-	hex = malloc(bs_size_hex(bs));
+	hex = malloc(bs_encode_size(bs, "hex"));
 	fail_unless(hex != NULL);
 
-	result = bs_save_hex(bs, hex);
+	result = bs_encode(bs, "hex", hex);
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
 	fail_unless(strlen(hex) == 2);

@@ -144,20 +144,20 @@ START_TEST(test_combine_functions)
 	BSresult result;
 	char *hex;
 
-	result = bs_load_hex(bs, "0123456789abcdef", 16);
+	result = bs_decode(bs, "hex", "0123456789abcdef", 16);
 	fail_unless(result == BS_OK);
 
-	result = bs_load_hex(operand, "aabbcc", 6);
+	result = bs_decode(operand, "hex", "aabbcc", 6);
 	fail_unless(result == BS_OK);
 
 	result = combine_testcases[_i].combine_function(bs, operand);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 8);
 
-	hex = malloc(bs_size_hex(bs));
+	hex = malloc(bs_encode_size(bs, "hex"));
 	fail_unless(hex != NULL);
 
-	result = bs_save_hex(bs, hex);
+	result = bs_encode(bs, "hex", hex);
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
 	fail_unless(strlen(hex) == 16);
