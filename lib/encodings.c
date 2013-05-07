@@ -26,7 +26,7 @@
 
 #include "bs.h"
 #include "bs_internal.h"
-#include "bs_encodings.h"
+#include "encodings.h"
 #include <string.h>
 
 BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t length)

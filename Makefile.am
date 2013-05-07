@@ -33,59 +33,69 @@ AM_CPPFLAGS = -I$(srcdir)/include
 include_HEADERS = include/bs.h
 lib_LTLIBRARIES = libbs.la
 libbs_la_SOURCES = include/bs.h           \
-                   lib/bs_alloc.h         \
-                   lib/bs_alloc.c         \
+                   lib/bs_internal.h      \
+                   lib/alloc.h            \
+                   lib/alloc.c            \
                    lib/bs.c               \
-                   lib/bs_stream.c        \
-                   lib/bs_encodings.h     \
-                   lib/bs_encodings.c     \
+                   lib/stream.c           \
+                   lib/encodings.h        \
+                   lib/encodings.c        \
                    lib/encodings/hex.c    \
                    lib/encodings/base64.c \
-                   lib/bs_walk.c          \
-                   lib/bs_combine.c       \
-                   lib/bs_accumulate.c    \
-                   lib/bs_compare.c
+                   lib/walk.c             \
+                   lib/combine.c          \
+                   lib/accumulate.c       \
+                   lib/compare.c
 
 
 # CHECK target, compiles and runs unit tests
-TESTS = bs_alloc bs bs_stream bs_hex bs_base64 bs_walk bs_combine bs_accumulate bs_compare
+TESTS = test_alloc      \
+        test_bs         \
+        test_stream     \
+        test_hex        \
+        test_base64     \
+        test_walk       \
+        test_combine    \
+        test_accumulate \
+        test_compare
+
 check_PROGRAMS = $(TESTS)
 
-bs_alloc_SOURCES = tests/bs_alloc.c include/bs.h lib/bs_alloc.h
-bs_alloc_CFLAGS = @CHECK_CFLAGS@
-bs_alloc_LDADD = libbs.la @CHECK_LIBS@
+test_alloc_SOURCES = tests/alloc.c
+test_alloc_CFLAGS = @CHECK_CFLAGS@
+test_alloc_LDADD = libbs.la @CHECK_LIBS@
 
-bs_SOURCES = tests/bs.c include/bs.h
-bs_CFLAGS = @CHECK_CFLAGS@
-bs_LDADD = libbs.la @CHECK_LIBS@
+test_bs_SOURCES = tests/bs.c
+test_bs_CFLAGS = @CHECK_CFLAGS@
+test_bs_LDADD = libbs.la @CHECK_LIBS@
 
-bs_stream_SOURCES = tests/bs_stream.c include/bs.h
-bs_stream_CFLAGS = @CHECK_CFLAGS@
-bs_stream_LDADD = libbs.la @CHECK_LIBS@
+test_stream_SOURCES = tests/stream.c
+test_stream_CFLAGS = @CHECK_CFLAGS@
+test_stream_LDADD = libbs.la @CHECK_LIBS@
 
-bs_hex_SOURCES = tests/bs_hex.c include/bs.h
-bs_hex_CFLAGS = @CHECK_CFLAGS@
-bs_hex_LDADD = libbs.la @CHECK_LIBS@
+test_hex_SOURCES = tests/encodings/hex.c
+test_hex_CFLAGS = @CHECK_CFLAGS@
+test_hex_LDADD = libbs.la @CHECK_LIBS@
 
-bs_base64_SOURCES = tests/bs_base64.c include/bs.h
-bs_base64_CFLAGS = @CHECK_CFLAGS@
-bs_base64_LDADD = libbs.la @CHECK_LIBS@
+test_base64_SOURCES = tests/encodings/base64.c
+test_base64_CFLAGS = @CHECK_CFLAGS@
+test_base64_LDADD = libbs.la @CHECK_LIBS@
 
-bs_walk_SOURCES = tests/bs_walk.c include/bs.h
-bs_walk_CFLAGS = @CHECK_CFLAGS@
-bs_walk_LDADD = libbs.la @CHECK_LIBS@
+test_walk_SOURCES = tests/walk.c
+test_walk_CFLAGS = @CHECK_CFLAGS@
+test_walk_LDADD = libbs.la @CHECK_LIBS@
 
-bs_combine_SOURCES = tests/bs_combine.c include/bs.h
-bs_combine_CFLAGS = @CHECK_CFLAGS@
-bs_combine_LDADD = libbs.la @CHECK_LIBS@
+test_combine_SOURCES = tests/combine.c
+test_combine_CFLAGS = @CHECK_CFLAGS@
+test_combine_LDADD = libbs.la @CHECK_LIBS@
 
-bs_accumulate_SOURCES = tests/bs_accumulate.c include/bs.h
-bs_accumulate_CFLAGS = @CHECK_CFLAGS@
-bs_accumulate_LDADD = libbs.la @CHECK_LIBS@
+test_accumulate_SOURCES = tests/accumulate.c
+test_accumulate_CFLAGS = @CHECK_CFLAGS@
+test_accumulate_LDADD = libbs.la @CHECK_LIBS@
 
-bs_compare_SOURCES = tests/bs_compare.c include/bs.h
-bs_compare_CFLAGS = @CHECK_CFLAGS@
-bs_compare_LDADD = libbs.la @CHECK_LIBS@
+test_compare_SOURCES = tests/compare.c
+test_compare_CFLAGS = @CHECK_CFLAGS@
+test_compare_LDADD = libbs.la @CHECK_LIBS@
 
 # COVERAGE target, cleans everything out, compiles and runs tests, builds report
 coverage:
