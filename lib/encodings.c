@@ -31,23 +31,24 @@
 
 static const struct BSencoding rgEncodings[] = {
 	{ "base64", bs_decode_base64, bs_encode_size_base64, bs_encode_base64 },
-	{ "hex",    bs_decode_hex,    bs_encode_size_hex,    bs_encode_hex },
+	{ "hex",    bs_decode_hex,    bs_encode_size_hex,    bs_encode_hex    },
+	{ NULL,     NULL,             NULL,                  NULL             },
 };
 
 BSresult
 bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
 {
-	size_t cEncoding = sizeof(rgEncodings) / sizeof(struct BSencoding),
-	       iEncoding;
+	size_t iEncoding = 0;
 
 	BS_CHECK_POINTER(bs)
 	BS_CHECK_POINTER(encoding)
 	BS_CHECK_POINTER(input)
 
-	for (iEncoding = 0; iEncoding < cEncoding; iEncoding++) {
+	while (rgEncodings[iEncoding].szName != NULL) {
 		if (strcmp(encoding, rgEncodings[iEncoding].szName) == 0) {
 			return rgEncodings[iEncoding].fpDecode(bs, input, length);
 		}
+		iEncoding++;
 	}
 
 	return BS_BAD_ENCODING;
@@ -56,16 +57,16 @@ bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
 size_t
 bs_encode_size(const BS *bs, const char *encoding)
 {
-	size_t cEncoding = sizeof(rgEncodings) / sizeof(struct BSencoding),
-	       iEncoding;
+	size_t iEncoding = 0;
 
 	BS_ASSERT_VALID(bs)
 	BS_CHECK_POINTER(encoding)
 
-	for (iEncoding = 0; iEncoding < cEncoding; iEncoding++) {
+	while (rgEncodings[iEncoding].szName != NULL) {
 		if (strcmp(encoding, rgEncodings[iEncoding].szName) == 0) {
 			return rgEncodings[iEncoding].fpSize(bs);
 		}
+		iEncoding++;
 	}
 
 	return 0;
@@ -74,18 +75,18 @@ bs_encode_size(const BS *bs, const char *encoding)
 BSresult
 bs_encode(const BS *bs, const char *encoding, char *output)
 {
-	size_t cEncoding = sizeof(rgEncodings) / sizeof(struct BSencoding),
-	       iEncoding;
+	size_t iEncoding = 0;
 
 	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 	BS_CHECK_POINTER(encoding)
 	BS_CHECK_POINTER(output)
 
-	for (iEncoding = 0; iEncoding < cEncoding; iEncoding++) {
+	while (rgEncodings[iEncoding].szName != NULL) {
 		if (strcmp(encoding, rgEncodings[iEncoding].szName) == 0) {
 			return rgEncodings[iEncoding].fpEncode(bs, output);
 		}
+		iEncoding++;
 	}
 
 	return BS_BAD_ENCODING;
