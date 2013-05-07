@@ -49,10 +49,11 @@ typedef struct BS BS;
  */
 typedef enum BSresult {
 	BS_OK = 0,
-	BS_INVALID,  /* Invalid input data */
-	BS_NULL,     /* NULL pointer passed as input */
-	BS_MEMORY,   /* Memory allocation problem */
-	BS_OVERFLOW  /* Integer overflow */
+	BS_INVALID,      /* Invalid input data */
+	BS_NULL,         /* NULL pointer passed as input */
+	BS_MEMORY,       /* Memory allocation problem */
+	BS_OVERFLOW,     /* Integer overflow */
+	BS_BAD_ENCODING  /* Unknown encoding scheme */
 } BSresult;
 
 /**
@@ -190,6 +191,10 @@ BSresult bs_stream_flush(
  * Returns BS_OK if data is saved correctly
  */
 void bs_stream_reset(BS *bs);
+
+BSresult bs_decode(BS *bs, const char *encoding, const char *input, size_t length);
+size_t bs_encode_size(const BS *bs, const char *encoding);
+BSresult bs_encode(const BS *bs, const char *encoding, char *output);
 
 /**
  * Load a hexadecimal string

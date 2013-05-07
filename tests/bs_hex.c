@@ -34,7 +34,7 @@ START_TEST(test_load_bad_length)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_hex(bs, "123", 3);
+	result = bs_decode(bs, "hex", "123", 3);
 	fail_unless(result == BS_INVALID);
 
 	bs_free(bs);
@@ -46,7 +46,7 @@ START_TEST(test_load_bad_character)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_hex(bs, "123#", 4);
+	result = bs_decode(bs, "hex", "123#", 4);
 	fail_unless(result == BS_INVALID);
 
 	bs_free(bs);
@@ -69,7 +69,7 @@ START_TEST(test_load)
 
 	cbInput = strlen(test_hex_in);
 	cbOutput = cbInput >> 1;
-	result = bs_load_hex(bs, test_hex_in, cbInput);
+	result = bs_decode(bs, "hex", test_hex_in, cbInput);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == cbOutput);
 
@@ -86,7 +86,7 @@ START_TEST(test_load_null_bs)
 	BSbyte *data = (BSbyte *) 0xDEADBEEF;
 	BSresult result;
 
-	result = bs_load_hex(NULL, data, 5);
+	result = bs_decode(NULL, "hex", data, 5);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
@@ -96,7 +96,7 @@ START_TEST(test_load_null_data)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_hex(bs, NULL, 5);
+	result = bs_decode(bs, "hex", NULL, 5);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
@@ -112,9 +112,9 @@ START_TEST(test_size)
 	size_t cbString = strlen(test_hex_in);
 	BSresult result;
 
-	result = bs_load_hex(bs, test_hex_in, cbString);
+	result = bs_decode(bs, "hex", test_hex_in, cbString);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_size_hex(bs) == cbString + 1);
+	fail_unless(bs_encode_size(bs, "hex") == cbString + 1);
 
 	bs_free(bs);
 }
@@ -127,13 +127,13 @@ START_TEST(test_save)
 	char *hex;
 	BSresult result;
 
-	result = bs_load_hex(bs, test_hex_in, cbString);
+	result = bs_decode(bs, "hex", test_hex_in, cbString);
 	fail_unless(result == BS_OK);
 
-	hex = malloc(bs_size_hex(bs));
+	hex = malloc(bs_encode_size(bs, "hex"));
 	fail_unless(hex != NULL);
 
-	result = bs_save_hex(bs, hex);
+	result = bs_encode(bs, "hex", hex);
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
 	fail_unless(strlen(hex) == cbString);
@@ -149,7 +149,7 @@ START_TEST(test_save_null_bs)
 	char *data = (char *) 0xDEADBEEF;
 	BSresult result;
 
-	result = bs_save_hex(NULL, data);
+	result = bs_encode(NULL, "hex", data);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
@@ -159,7 +159,7 @@ START_TEST(test_save_null_hex)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_save_hex(bs, NULL);
+	result = bs_encode(bs, "hex", NULL);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);

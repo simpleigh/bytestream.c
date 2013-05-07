@@ -56,7 +56,7 @@ START_TEST(test_load)
 	BSresult result;
 	size_t ibByte;
 
-	result = bs_load_base64(bs, base64, 4);
+	result = bs_decode(bs, "base64", base64, 4);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == base64_testcases[_i].cbBytes);
 
@@ -77,7 +77,7 @@ START_TEST(test_load_many)
 	BSbyte expected[] = "easure.";
 	size_t ibByte;
 
-	result = bs_load_base64(bs, "ZWFzdXJlLg==", 12);
+	result = bs_decode(bs, "base64", "ZWFzdXJlLg==", 12);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 7);
 
@@ -94,7 +94,7 @@ START_TEST(test_load_null_bs)
 	BSbyte *data = (BSbyte *) 0xDEADBEEF;
 	BSresult result;
 
-	result = bs_load_base64(NULL, data, 5);
+	result = bs_decode(NULL, "base64", data, 5);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
@@ -104,7 +104,7 @@ START_TEST(test_load_null_data)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_base64(bs, NULL, 5);
+	result = bs_decode(bs, "base64", NULL, 5);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
@@ -116,7 +116,7 @@ START_TEST(test_bad_length)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_base64(bs, "123", 3);
+	result = bs_decode(bs, "base64", "123", 3);
 	fail_unless(result == BS_INVALID);
 }
 END_TEST
@@ -131,7 +131,7 @@ START_TEST(test_bad_chars)
 	BSresult result;
 
 	base64[1] = bad_chars[_i];
-	result = bs_load_base64(bs, base64, 4);
+	result = bs_decode(bs, "base64", base64, 4);
 	fail_unless(result == BS_INVALID);
 
 	bs_free(bs);
@@ -143,9 +143,9 @@ START_TEST(test_size)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load_base64(bs, "ZWFzdXJlLg==", 12);
+	result = bs_decode(bs, "base64", "ZWFzdXJlLg==", 12);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_size_base64(bs) == 13);
+	fail_unless(bs_encode_size(bs, "base64") == 13);
 
 	bs_free(bs);
 }
@@ -158,13 +158,13 @@ START_TEST(test_save)
 	char *base64;
 	BSresult result;
 
-	result = bs_load_base64(bs, base64_testcases[_i].base64, cbString);
+	result = bs_decode(bs, "base64", base64_testcases[_i].base64, cbString);
 	fail_unless(result == BS_OK);
 
-	base64 = malloc(bs_size_base64(bs));
+	base64 = malloc(bs_encode_size(bs, "base64"));
 	fail_unless(base64 != NULL);
 
-	result = bs_save_base64(bs, base64);
+	result = bs_encode(bs, "base64", base64);
 	fail_unless(result == BS_OK);
 	fail_unless(base64 != NULL);
 	fail_unless(strlen(base64) == cbString);
@@ -182,13 +182,13 @@ START_TEST(test_save_many)
 	BSresult result;
 	char expected[] = "ZWFzdXJlLg==";
 
-	result = bs_load_base64(bs, expected, 12);
+	result = bs_decode(bs, "base64", expected, 12);
 	fail_unless(result == BS_OK);
 
-	base64 = malloc(bs_size_base64(bs));
+	base64 = malloc(bs_encode_size(bs, "base64"));
 	fail_unless(base64 != NULL);
 
-	result = bs_save_base64(bs, base64);
+	result = bs_encode(bs, "base64", base64);
 	fail_unless(result == BS_OK);
 	fail_unless(base64 != NULL);
 	fail_unless(strlen(base64) == strlen(expected));
@@ -204,7 +204,7 @@ START_TEST(test_save_null_bs)
 	char *base64 = (char *) 0xDEADBEEF;
 	BSresult result;
 
-	result = bs_save_base64(NULL, base64);
+	result = bs_encode(NULL, "base64", base64);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
@@ -214,7 +214,7 @@ START_TEST(test_save_null_base64)
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_save_base64(bs, NULL);
+	result = bs_encode(bs, "base64", NULL);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);

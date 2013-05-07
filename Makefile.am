@@ -32,16 +32,17 @@ AM_CPPFLAGS = -I$(srcdir)/include
 # Main library
 include_HEADERS = include/bs.h
 lib_LTLIBRARIES = libbs.la
-libbs_la_SOURCES = include/bs.h        \
-                   lib/bs_alloc.h      \
-                   lib/bs_alloc.c      \
-                   lib/bs.c            \
-                   lib/bs_stream.c     \
-                   lib/bs_hex.c        \
-                   lib/bs_base64.c     \
-                   lib/bs_walk.c       \
-                   lib/bs_combine.c    \
-                   lib/bs_accumulate.c \
+libbs_la_SOURCES = include/bs.h           \
+                   lib/bs_alloc.h         \
+                   lib/bs_alloc.c         \
+                   lib/bs.c               \
+                   lib/bs_stream.c        \
+                   lib/bs_encodings.c     \
+                   lib/encodings/hex.c    \
+                   lib/encodings/base64.c \
+                   lib/bs_walk.c          \
+                   lib/bs_combine.c       \
+                   lib/bs_accumulate.c    \
                    lib/bs_compare.c
 
 
