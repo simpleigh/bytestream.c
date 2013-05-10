@@ -63,10 +63,6 @@ read_base64_block(const char *in, BSbyte *out)
 		return BS_INVALID;
 	}
 
-	out[1] = '\0';
-	out[2] = '\0';
-	out[3] = '\0';
-
 	out[0] = in0 << 2 | in1 >> 4;
 	if (in[2] != '=') {
 		out[1] = (in1 & 0xF) << 4 | in2 >> 2;
