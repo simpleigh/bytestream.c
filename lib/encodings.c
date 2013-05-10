@@ -84,7 +84,8 @@ bs_encode(const BS *bs, const char *encoding, char *output)
 
 	while (rgEncodings[iEncoding].szName != NULL) {
 		if (strcmp(encoding, rgEncodings[iEncoding].szName) == 0) {
-			return rgEncodings[iEncoding].fpEncode(bs, output);
+			rgEncodings[iEncoding].fpEncode(bs, output);
+			return BS_OK;
 		}
 		iEncoding++;
 	}

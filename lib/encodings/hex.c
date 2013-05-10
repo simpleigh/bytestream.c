@@ -47,9 +47,9 @@ read_hex_digit(char digit)
 }
 
 BSresult
-bs_decode_hex(BS *bs, const char *hex, size_t length)
+bs_decode_hex(BS *bs, const char *input, size_t length)
 {
-	size_t ibHex;
+	size_t ibInput;
 	BSresult result;
 	BSbyte hi;
 	BSbyte lo;
@@ -63,16 +63,16 @@ bs_decode_hex(BS *bs, const char *hex, size_t length)
 		return result;
 	}
 
-	for (ibHex = 0; ibHex < length; ibHex += 2) {
-		hi = (BSbyte)read_hex_digit(hex[ibHex]);
-		lo = (BSbyte)read_hex_digit(hex[ibHex + 1]);
+	for (ibInput = 0; ibInput < length; ibInput += 2) {
+		hi = (BSbyte)read_hex_digit(input[ibInput]);
+		lo = (BSbyte)read_hex_digit(input[ibInput + 1]);
 
 		if (hi > 15 || lo > 15) {
 			bs_malloc(bs, 0);
 			return BS_INVALID;
 		}
 
-		bs->pbBytes[ibHex >> 1] = (hi << 4) | lo;
+		bs->pbBytes[ibInput >> 1] = (hi << 4) | lo;
 	}
 
 	return BS_OK;
@@ -87,19 +87,17 @@ bs_encode_size_hex(const BS *bs)
 static const char
 hex_encoding_table[] = "0123456789abcdef";
 
-BSresult
-bs_encode_hex(const BS *bs, char *hex)
+void
+bs_encode_hex(const BS *bs, char *output)
 {
 	size_t ibStream;
 	BSbyte bByte;
 
 	for (ibStream = 0; ibStream < bs->cbBytes; ibStream++) {
 		bByte = bs->pbBytes[ibStream];
-		hex[2 * ibStream]     = hex_encoding_table[bByte >> 4];
-		hex[2 * ibStream + 1] = hex_encoding_table[bByte & 0xF];
+		output[2 * ibStream]     = hex_encoding_table[bByte >> 4];
+		output[2 * ibStream + 1] = hex_encoding_table[bByte & 0xF];
 	}
 
-	hex[2 * ibStream] = '\0';
-
-	return BS_OK;
+	output[2 * ibStream] = '\0';
 }

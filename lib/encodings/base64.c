@@ -78,9 +78,9 @@ read_base64_block(const char *in, BSbyte *out)
 }
 
 BSresult
-bs_decode_base64(BS *bs, const char *base64, size_t length)
+bs_decode_base64(BS *bs, const char *input, size_t length)
 {
-	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
+	size_t cbByteStream, ibInput = 0, ibByteStream = 0;
 	BSresult result;
 
 	if (length & 3) {
@@ -88,9 +88,9 @@ bs_decode_base64(BS *bs, const char *base64, size_t length)
 	}
 
 	cbByteStream = (length >> 2) * 3;
-	if (base64[length - 1] == '=') {
+	if (input[length - 1] == '=') {
 		cbByteStream--;
-		if (base64[length - 2] == '=') {
+		if (input[length - 2] == '=') {
 			cbByteStream--;
 		}
 	}
@@ -100,9 +100,9 @@ bs_decode_base64(BS *bs, const char *base64, size_t length)
 		return result;
 	}
 
-	while (ibBase64 < length) {
+	while (ibInput < length) {
 		result = read_base64_block(
-			base64 + ibBase64,
+			input + ibInput,
 			bs->pbBytes + ibByteStream
 		);
 
@@ -112,7 +112,7 @@ bs_decode_base64(BS *bs, const char *base64, size_t length)
 		}
 
 		ibByteStream += 3;
-		ibBase64 += 4;
+		ibInput += 4;
 	}
 
 	return BS_OK;
@@ -157,10 +157,10 @@ write_base64_bytes(const BSbyte *in, size_t length, char *out)
 	}
 }
 
-BSresult
-bs_encode_base64(const BS *bs, char *base64)
+void
+bs_encode_base64(const BS *bs, char *output)
 {
-	size_t cbByteStream, ibBase64 = 0, ibByteStream = 0;
+	size_t cbByteStream, ibOutput = 0, ibByteStream = 0;
 
 	cbByteStream = bs->cbBytes;
 
@@ -168,14 +168,12 @@ bs_encode_base64(const BS *bs, char *base64)
 		write_base64_bytes(
 			bs->pbBytes + ibByteStream,
 			cbByteStream - ibByteStream,
-			base64 + ibBase64
+			output + ibOutput
 		);
 
 		ibByteStream += 3;
-		ibBase64 += 4;
+		ibOutput += 4;
 	}
 
-	base64[ibBase64] = '\0';
-
-	return BS_OK;
+	output[ibOutput] = '\0';
 }

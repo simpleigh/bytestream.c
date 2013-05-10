@@ -33,7 +33,7 @@ struct BSencoding {
 	char *szName;
 	BSresult (*fpDecode) (BS *bs, const char *input, size_t length);
 	size_t (*fpSize) (const BS *bs);
-	BSresult (*fpEncode) (const BS *bs, char *output);
+	void (*fpEncode) (const BS *bs, char *output);
 };
 
 BSresult bs_decode_hex(BS *bs, const char *hex, size_t length);
@@ -42,7 +42,7 @@ BSresult bs_decode_base64(BS *bs, const char *base64, size_t length);
 size_t bs_encode_size_hex(const BS *bs);
 size_t bs_encode_size_base64(const BS *bs);
 
-BSresult bs_encode_hex(const BS *bs, char *hex);
-BSresult bs_encode_base64(const BS *bs, char *base64);
+void bs_encode_hex(const BS *bs, char *hex);
+void bs_encode_base64(const BS *bs, char *base64);
 
 #endif /* __ENCODINGS_H */
