@@ -102,6 +102,7 @@ START_TEST(test_walk_functions)
 {
 	BS *bs = bs_create();
 	BSresult result;
+	size_t size;
 	char *hex;
 
 	result = bs_decode(bs, "hex", walk_testcases[_i].input, 2);
@@ -111,7 +112,10 @@ START_TEST(test_walk_functions)
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 1);
 
-	hex = malloc(bs_encode_size(bs, "hex"));
+	result = bs_encode_size(bs, "hex", &size);
+	fail_unless(result == BS_OK);
+
+	hex = malloc(size);
 	fail_unless(hex != NULL);
 
 	result = bs_encode(bs, "hex", hex);

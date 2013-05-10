@@ -111,10 +111,14 @@ START_TEST(test_size)
 	BS *bs = bs_create();
 	size_t cbString = strlen(test_hex_in);
 	BSresult result;
+	size_t size;
 
 	result = bs_decode(bs, "hex", test_hex_in, cbString);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_encode_size(bs, "hex") == cbString + 1);
+
+	result = bs_encode_size(bs, "hex", &size);
+	fail_unless(result == BS_OK);
+	fail_unless(size == cbString + 1);
 
 	bs_free(bs);
 }
@@ -124,13 +128,17 @@ START_TEST(test_save)
 {
 	BS *bs = bs_create();
 	size_t cbString = strlen(test_hex_in);
-	char *hex;
 	BSresult result;
+	size_t size;
+	char *hex;
 
 	result = bs_decode(bs, "hex", test_hex_in, cbString);
 	fail_unless(result == BS_OK);
 
-	hex = malloc(bs_encode_size(bs, "hex"));
+	result = bs_encode_size(bs, "hex", &size);
+	fail_unless(result == BS_OK);
+
+	hex = malloc(size);
 	fail_unless(hex != NULL);
 
 	result = bs_encode(bs, "hex", hex);

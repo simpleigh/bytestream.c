@@ -54,22 +54,25 @@ bs_decode(BS *bs, const char *encoding, const char *input, size_t length)
 	return BS_BAD_ENCODING;
 }
 
-size_t
-bs_encode_size(const BS *bs, const char *encoding)
+BSresult
+bs_encode_size(const BS *bs, const char *encoding, size_t *size)
 {
 	size_t iEncoding = 0;
 
+	BS_CHECK_POINTER(bs)
 	BS_ASSERT_VALID(bs)
 	BS_CHECK_POINTER(encoding)
+	BS_CHECK_POINTER(size)
 
 	while (rgEncodings[iEncoding].szName != NULL) {
 		if (strcmp(encoding, rgEncodings[iEncoding].szName) == 0) {
-			return rgEncodings[iEncoding].fpSize(bs);
+			*size = rgEncodings[iEncoding].fpSize(bs);
+			return BS_OK;
 		}
 		iEncoding++;
 	}
 
-	return 0;
+	return BS_BAD_ENCODING;
 }
 
 BSresult

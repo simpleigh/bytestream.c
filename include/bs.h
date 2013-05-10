@@ -214,11 +214,13 @@ BSresult bs_decode(
 
 /**
  * Size an encoded string
- * Returns the size of the buffer required to write the byte stream as a string
+ * Passes the size of the buffer required to write the byte stream as a string
  * encoded with the specified ENCODING.
- * The returned size includes space for a terminating null '\0' byte.
+ * The size includes space for a terminating null '\0' byte.
+ * Returns BS_OK
+ * Returns BS_BAD_ENCODING if the specified encoding is not known
  */
-size_t bs_encode_size(const BS *bs, const char *encoding);
+BSresult bs_encode_size(const BS *bs, const char *encoding, size_t *size);
 
 /**
  * Save an encoded string
@@ -226,6 +228,8 @@ size_t bs_encode_size(const BS *bs, const char *encoding);
  * Returns BS_OK if data is saved correctly
  * The supplied buffer must be long enough to store the data.
  * The bytestream is not touched by this operation.
+ * Returns BS_OK if the string is written correctly
+ * Returns BS_BAD_ENCODING if the specified encoding is not known
  */
 BSresult bs_encode(const BS *bs, const char *encoding, char *output);
 

@@ -142,10 +142,14 @@ START_TEST(test_size)
 {
 	BS *bs = bs_create();
 	BSresult result;
+	size_t size;
 
 	result = bs_decode(bs, "base64", "ZWFzdXJlLg==", 12);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_encode_size(bs, "base64") == 13);
+
+	result = bs_encode_size(bs, "base64", &size);
+	fail_unless(result == BS_OK);
+	fail_unless(size == 13);
 
 	bs_free(bs);
 }
@@ -157,11 +161,15 @@ START_TEST(test_save)
 	size_t cbString = 4;
 	char *base64;
 	BSresult result;
+	size_t size;
 
 	result = bs_decode(bs, "base64", base64_testcases[_i].base64, cbString);
 	fail_unless(result == BS_OK);
 
-	base64 = malloc(bs_encode_size(bs, "base64"));
+	result = bs_encode_size(bs, "base64", &size);
+	fail_unless(result == BS_OK);
+
+	base64 = malloc(size);
 	fail_unless(base64 != NULL);
 
 	result = bs_encode(bs, "base64", base64);
@@ -180,12 +188,16 @@ START_TEST(test_save_many)
 	BS *bs = bs_create();
 	char *base64;
 	BSresult result;
+	size_t size;
 	char expected[] = "ZWFzdXJlLg==";
 
 	result = bs_decode(bs, "base64", expected, 12);
 	fail_unless(result == BS_OK);
 
-	base64 = malloc(bs_encode_size(bs, "base64"));
+	result = bs_encode_size(bs, "base64", &size);
+	fail_unless(result == BS_OK);
+
+	base64 = malloc(size);
 	fail_unless(base64 != NULL);
 
 	result = bs_encode(bs, "base64", base64);

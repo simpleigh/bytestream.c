@@ -43,10 +43,11 @@ END_TEST
 START_TEST(test_encode_size_bad_encoding)
 {
 	BS *bs = bs_create();
-	size_t result;
+	size_t size;
+	BSresult result;
 
-	result = bs_encode_size(bs, "notanencoding");
-	fail_unless(result == 0);
+	result = bs_encode_size(bs, "notanencoding", &size);
+	fail_unless(result == BS_BAD_ENCODING);
 
 	bs_free(bs);
 }
