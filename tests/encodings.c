@@ -100,6 +100,26 @@ rgTestcases[] = {
 	{ "base16",    "666F6F626172",     12, "foobar",                   6, "666F6F626172",     13 }, */
 };
 
+struct BSEncodingInvalidTestcase {
+	const char *szEncoding;
+	const char *szInput;
+	size_t cchInput;
+};
+
+static struct BSEncodingInvalidTestcase
+rgInvalidTestcases[] = {
+	{ "hex",    "123",     3 },
+	{ "hex",    "123#",    4 },
+
+	{ "base64", "123",     3 },
+	{ "base64", "A!==",    4 },
+	{ "base64", "A\"==",   4 },
+	{ "base64", "A#==",    4 },
+	{ "base64", "A\0==",   4 },
+	{ "base64", "A\x7f==", 4 },
+	{ "base64", "A\xff==", 4 },
+};
+
 
 /* =================== */
 /* Tests for bs_decode */
@@ -122,6 +142,24 @@ START_TEST(test_decode)
 	fail_unless(
 		memcmp(bs_get_buffer(bs), testcase.rgbBytes, testcase.cbBytes) == 0
 	);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_decode_invalid)
+{
+	struct BSEncodingInvalidTestcase testcase = rgInvalidTestcases[_i];
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_decode(
+		bs,
+		testcase.szEncoding,
+		testcase.szInput,
+		testcase.cchInput
+	);
+	fail_unless(result == BS_INVALID);
 
 	bs_free(bs);
 }
@@ -320,10 +358,13 @@ main(/* int argc, char **argv */)
 	Suite *s = suite_create("Encodings");
 	TCase *tc_core = tcase_create("Core");
 	size_t cTestcases = sizeof(rgTestcases) / sizeof(struct BSEncodingTestcase);
+	size_t cInvalidTestcases = sizeof(rgInvalidTestcases) /
+		sizeof(struct BSEncodingInvalidTestcase);
 	SRunner *sr;
 	int number_failed;
 
 	tcase_add_loop_test(tc_core, test_decode, 0, cTestcases);
+	tcase_add_loop_test(tc_core, test_decode_invalid, 0, cInvalidTestcases);
 	tcase_add_test(tc_core, test_decode_bad_encoding);
 	tcase_add_test(tc_core, test_decode_null_encoding);
 	tcase_add_loop_test(tc_core, test_decode_null_bs, 0, C_ENCODINGS);

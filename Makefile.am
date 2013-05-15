@@ -53,8 +53,6 @@ TESTS = test_alloc      \
         test_bs         \
         test_stream     \
         test_encodings  \
-        test_hex        \
-        test_base64     \
         test_map        \
         test_combine    \
         test_fold       \
@@ -77,14 +75,6 @@ test_stream_LDADD = libbs.la @CHECK_LIBS@
 test_encodings_SOURCES = tests/encodings.c
 test_encodings_CFLAGS = @CHECK_CFLAGS@
 test_encodings_LDADD = libbs.la @CHECK_LIBS@
-
-test_hex_SOURCES = tests/encodings/hex.c
-test_hex_CFLAGS = @CHECK_CFLAGS@
-test_hex_LDADD = libbs.la @CHECK_LIBS@
-
-test_base64_SOURCES = tests/encodings/base64.c
-test_base64_CFLAGS = @CHECK_CFLAGS@
-test_base64_LDADD = libbs.la @CHECK_LIBS@
 
 test_map_SOURCES = tests/map.c
 test_map_CFLAGS = @CHECK_CFLAGS@
