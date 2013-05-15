@@ -37,73 +37,73 @@ static char *rgszEncodings[C_ENCODINGS] = {
 };
 
 struct BSEncodingTestcase {
-	const char *szEncoding;
-	const char *szInput;
-	size_t cchInput;
-	BSbyte *rgbBytes;
-	size_t cbBytes;
-	const char *szOutput;
-	size_t cchOutput;
+	const char *szEncoding; /* What encoding to test */
+	const char *szInput;    /* Input string to decode */
+	size_t cchInput;        /* Input string length */
+	BSbyte *rgbBytes;       /* Expected bytestream contents */
+	size_t cbBytes;         /* Expected bytestream length */
+	const char *szOutput;   /* Expected output string */
+	size_t cchOutput;       /* Expected output length */
 };
 
 static struct BSEncodingTestcase
 rgTestcases[] = {
-	{ "hex",       "",                 0,  "",                         0, "",                 1  },
+	{ "hex",       "",                  0, "",                         0, "",                  1 },
 	{ "hex",       "0123456789",       10, "\x01\x23\x45\x67\x89",     5, "0123456789",       11 },
-	{ "hex",       "abcdef",           6,  "\xab\xcd\xef",             3, "abcdef",           7  },
-	{ "hex",       "ABCDEF",           6,  "\xab\xcd\xef",             3, "abcdef",           7  },
+	{ "hex",       "abcdef",            6, "\xab\xcd\xef",             3, "abcdef",            7 },
+	{ "hex",       "ABCDEF",            6, "\xab\xcd\xef",             3, "abcdef",            7 },
 
-	{ "base64",    "AA==",             4,  "\0",                       1, "AA==",             5  },
-	{ "base64",    "AAA=",             4,  "\0\0",                     2, "AAA=",             5  },
-	{ "base64",    "AAAA",             4,  "\0\0\0",                   3, "AAAA",             5  },
-	{ "base64",    "/w==",             4,  "\xff",                     1, "/w==",             5  },
-	{ "base64",    "//8=",             4,  "\xff\xff",                 2, "//8=",             5  },
-	{ "base64",    "////",             4,  "\xff\xff\xff",             3, "////",             5  },
-	{ "base64",    "AAAu",             4,  "\0\0\x2e",                 3, "AAAu",             5  },
-	{ "base64",    "TWFu",             4,  "Man",                      3, "TWFu",             5  },
-	{ "base64",    "YW55",             4,  "any",                      3, "YW55",             5  },
-	{ "base64",    "l0+/",             4,  "\x97\x4f\xbf",             3, "l0+/",             5  },
-	{ "base64",    "ABCD",             4,  "\x0\x10\x83",              3, "ABCD",             5  },
+	{ "base64",    "AA==",              4, "\0",                       1, "AA==",              5 },
+	{ "base64",    "AAA=",              4, "\0\0",                     2, "AAA=",              5 },
+	{ "base64",    "AAAA",              4, "\0\0\0",                   3, "AAAA",              5 },
+	{ "base64",    "/w==",              4, "\xff",                     1, "/w==",              5 },
+	{ "base64",    "//8=",              4, "\xff\xff",                 2, "//8=",              5 },
+	{ "base64",    "////",              4, "\xff\xff\xff",             3, "////",              5 },
+	{ "base64",    "AAAu",              4, "\0\0\x2e",                 3, "AAAu",              5 },
+	{ "base64",    "TWFu",              4, "Man",                      3, "TWFu",              5 },
+	{ "base64",    "YW55",              4, "any",                      3, "YW55",              5 },
+	{ "base64",    "l0+/",              4, "\x97\x4f\xbf",             3, "l0+/",              5 },
+	{ "base64",    "ABCD",              4, "\x0\x10\x83",              3, "ABCD",              5 },
 	{ "base64",    "ZWFzdXJlLg==",     12, "easure.",                  7, "ZWFzdXJlLg==",     13 },
 
 	/* These next testcases from RFC 4648 */
-	{ "base64",    "FPucA9l+",         8,  "\x14\xfb\x9c\x03\xd9\x7e", 6, "FPucA9l+",         9  },
-	{ "base64",    "FPucA9k=",         8,  "\x14\xfb\x9c\x03\xd9",     5, "FPucA9k=",         9  },
-	{ "base64",    "FPucAw==",         8,  "\x14\xfb\x9c\x03",         4, "FPucAw==",         9  },
-	{ "base64",    "",                 0,  "",                         0, "",                 1  },
-	{ "base64",    "Zg==",             4,  "f",                        1, "Zg==",             5  },
-	{ "base64",    "Zm8=",             4,  "fo",                       2, "Zm8=",             5  },
-	{ "base64",    "Zm9v",             4,  "foo",                      3, "Zm9v",             5  },
-	{ "base64",    "Zm9vYg==",         8,  "foob",                     4, "Zm9vYg==",         9  },
-	{ "base64",    "Zm9vYmE=",         8,  "fooba",                    5, "Zm9vYmE=",         9  },
-	{ "base64",    "Zm9vYmFy",         8,  "foobar",                   6, "Zm9vYmFy",         9  }/*,
-	{ "base32",    "",                 0,  "",                         0, "",                 1  },
-	{ "base32",    "MY======",         8,  "f",                        1, "MY======",         9  },
-	{ "base32",    "MZXQ====",         8,  "fo",                       2, "MZXQ====",         9  },
-	{ "base32",    "MZXW6===",         8,  "foo",                      3, "MZXW6===",         9  },
-	{ "base32",    "MZXW6YQ=",         8,  "foob",                     4, "MZXW6YQ=",         9  },
-	{ "base32",    "MZXW6YTB",         8,  "fooba",                    5, "MZXW6YTB",         9  },
+	{ "base64",    "FPucA9l+",          8, "\x14\xfb\x9c\x03\xd9\x7e", 6, "FPucA9l+",          9 },
+	{ "base64",    "FPucA9k=",          8, "\x14\xfb\x9c\x03\xd9",     5, "FPucA9k=",          9 },
+	{ "base64",    "FPucAw==",          8, "\x14\xfb\x9c\x03",         4, "FPucAw==",          9 },
+	{ "base64",    "",                  0, "",                         0, "",                  1 },
+	{ "base64",    "Zg==",              4, "f",                        1, "Zg==",              5 },
+	{ "base64",    "Zm8=",              4, "fo",                       2, "Zm8=",              5 },
+	{ "base64",    "Zm9v",              4, "foo",                      3, "Zm9v",              5 },
+	{ "base64",    "Zm9vYg==",          8, "foob",                     4, "Zm9vYg==",          9 },
+	{ "base64",    "Zm9vYmE=",          8, "fooba",                    5, "Zm9vYmE=",          9 },
+	{ "base64",    "Zm9vYmFy",          8, "foobar",                   6, "Zm9vYmFy",          9 }/*,
+	{ "base32",    "",                  0, "",                         0, "",                  1 },
+	{ "base32",    "MY======",          8, "f",                        1, "MY======",          9 },
+	{ "base32",    "MZXQ====",          8, "fo",                       2, "MZXQ====",          9 },
+	{ "base32",    "MZXW6===",          8, "foo",                      3, "MZXW6===",          9 },
+	{ "base32",    "MZXW6YQ=",          8, "foob",                     4, "MZXW6YQ=",          9 },
+	{ "base32",    "MZXW6YTB",          8, "fooba",                    5, "MZXW6YTB",          9 },
 	{ "base32",    "MZXW6YTBOI======", 16, "foobar",                   6, "MZXW6YTBOI======", 17 },
-	{ "base32hex", "",                 0,  "",                         0, "",                 1  },
-	{ "base32hex", "CO======",         8,  "f",                        1, "CO======",         9  },
-	{ "base32hex", "CPNG====",         8,  "fo",                       2, "CPNG====",         9  },
-	{ "base32hex", "CPNMU===",         8,  "foo",                      3, "CPNMU===",         9  },
-	{ "base32hex", "CPNMUOG=",         8,  "foob",                     4, "CPNMUOG=",         9  },
-	{ "base32hex", "CPNMUOJ1",         8,  "fooba",                    5, "CPNMUOJ1",         9  },
+	{ "base32hex", "",                  0, "",                         0, "",                  1 },
+	{ "base32hex", "CO======",          8, "f",                        1, "CO======",          9 },
+	{ "base32hex", "CPNG====",          8, "fo",                       2, "CPNG====",          9 },
+	{ "base32hex", "CPNMU===",          8, "foo",                      3, "CPNMU===",          9 },
+	{ "base32hex", "CPNMUOG=",          8, "foob",                     4, "CPNMUOG=",          9 },
+	{ "base32hex", "CPNMUOJ1",          8, "fooba",                    5, "CPNMUOJ1",          9 },
 	{ "base32hex", "CPNMUOJ1E8======", 16, "foobar",                   6, "CPNMUOJ1E8======", 17 },
-	{ "base16",    "",                 0,  "",                         0, "",                 1  },
-	{ "base16",    "66",               2,  "f",                        1, "66",               3  },
-	{ "base16",    "666F",             4,  "fo",                       2, "666F",             5  },
-	{ "base16",    "666F6F",           6,  "foo",                      3, "666F6F",           7  },
-	{ "base16",    "666F6F62",         8,  "foob",                     4, "666F6F62",         9  },
+	{ "base16",    "",                  0, "",                         0, "",                  1 },
+	{ "base16",    "66",                2, "f",                        1, "66",                3 },
+	{ "base16",    "666F",              4, "fo",                       2, "666F",              5 },
+	{ "base16",    "666F6F",            6, "foo",                      3, "666F6F",            7 },
+	{ "base16",    "666F6F62",          8, "foob",                     4, "666F6F62",          9 },
 	{ "base16",    "666F6F6261",       10, "fooba",                    5, "666F6F6261",       11 },
 	{ "base16",    "666F6F626172",     12, "foobar",                   6, "666F6F626172",     13 }, */
 };
 
 struct BSEncodingInvalidTestcase {
-	const char *szEncoding;
-	const char *szInput;
-	size_t cchInput;
+	const char *szEncoding; /* What encoding to test */
+	const char *szInput;    /* Input string to decode */
+	size_t cchInput;        /* Input string length */
 };
 
 static struct BSEncodingInvalidTestcase
