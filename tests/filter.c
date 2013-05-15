@@ -68,10 +68,13 @@ struct BSFilterTestcase {
 
 static struct BSFilterTestcase
 rgTestcases[] = {
-	{ filter_include_all,   "",      0, "",      0 },
-	{ filter_include_all,   "12345", 5, "12345", 5 },
-	{ filter_exclude_all,   "",      0, "",      0 },
-	{ filter_exclude_all,   "12345", 5, "",      0 }
+	{ filter_include_all,   "",           0, "",         0 },
+	{ filter_include_all,   "12345",      5, "12345",    5 },
+	{ filter_exclude_all,   "",           0, "",         0 },
+	{ filter_exclude_all,   "12345",      5, "",         0 },
+	{ bs_filter_whitespace, "\x9\xA\xD ", 4, "",         0 },
+	{ bs_filter_whitespace, "aAzZ09+.",   8, "aAzZ09+.", 8 },
+	{ bs_filter_whitespace, "test str",   8, "teststr",  7 },
 };
 
 START_TEST(test_filter)

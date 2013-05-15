@@ -277,6 +277,12 @@ typedef enum BSfilter {
 BSresult bs_filter(BS *bs, BSfilter (*operation) (BSbyte byte));
 
 /**
+ * Remove whitespace from a bytes stream
+ * Removes ' ', HT, CR and LF characters from the byte stream.
+ */
+BSresult bs_filter_whitespace(BS *bs);
+
+/**
  * Collect a single value from a byte stream
  * Applies OPERATION to the byte stream, passing each byte in turn.
  * A pointer to DATA is passed to the operation so that it can maintain its

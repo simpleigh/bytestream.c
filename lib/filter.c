@@ -51,3 +51,24 @@ bs_filter(BS *bs, BSfilter (*operation) (BSbyte byte))
 
 	return BS_OK;
 }
+
+BSfilter
+filter_whitespace(BSbyte byte)
+{
+	switch (byte) {
+		case 0x09: /* HT */
+		case 0x0A: /* LF */
+		case 0x0D: /* CR */
+		case ' ':
+			return BS_EXCLUDE;
+
+		default:
+			return BS_INCLUDE;
+	}
+}
+
+BSresult
+bs_filter_whitespace(BS *bs)
+{
+	return bs_filter(bs, filter_whitespace);
+}
