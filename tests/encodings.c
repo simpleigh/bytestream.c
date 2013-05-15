@@ -29,43 +29,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-START_TEST(test_decode_bad_encoding)
-{
-	BS *bs = bs_create();
-	BSresult result;
+#define C_ENCODINGS 2
 
-	result = bs_decode(bs, "notanencoding", "input", 5);
-	fail_unless(result == BS_BAD_ENCODING);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_encode_size_bad_encoding)
-{
-	BS *bs = bs_create();
-	size_t size;
-	BSresult result;
-
-	result = bs_encode_size(bs, "notanencoding", &size);
-	fail_unless(result == BS_BAD_ENCODING);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_encode_bad_encoding)
-{
-	BS *bs = bs_create();
-	char *output = (char *) 0xDEADBEEF;
-	BSresult result;
-
-	result = bs_encode(bs, "notanencoding", output);
-	fail_unless(result == BS_BAD_ENCODING);
-
-	bs_free(bs);
-}
-END_TEST
+static char *rgszEncodings[C_ENCODINGS] = {
+	"hex",
+	"base64"
+};
 
 struct BSEncodingTestcase {
 	const char *szEncoding;
@@ -131,6 +100,11 @@ rgTestcases[] = {
 	{ "base16",    "666F6F626172",     12, "foobar",                   6, "666F6F626172",     13 }, */
 };
 
+
+/* =================== */
+/* Tests for bs_decode */
+/* =================== */
+
 START_TEST(test_decode)
 {
 	struct BSEncodingTestcase testcase = rgTestcases[_i];
@@ -153,6 +127,56 @@ START_TEST(test_decode)
 }
 END_TEST
 
+START_TEST(test_decode_bad_encoding)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_decode(bs, "notanencoding", "", 0);
+	fail_unless(result == BS_BAD_ENCODING);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_decode_null_encoding)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_decode(bs, NULL, "", 0);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_decode_null_bs)
+{
+	BSresult result;
+
+	result = bs_decode(NULL, rgszEncodings[_i], "", 0);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_decode_null_data)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_decode(bs, rgszEncodings[_i], NULL, 0);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+
+/* ======================== */
+/* Tests for bs_encode_size */
+/* ======================== */
+
 START_TEST(test_encode_size)
 {
 	struct BSEncodingTestcase testcase = rgTestcases[_i];
@@ -170,6 +194,55 @@ START_TEST(test_encode_size)
 	bs_free(bs);
 }
 END_TEST
+
+START_TEST(test_encode_size_bad_encoding)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode_size(bs, "notanencoding", (size_t *) 0xDEADBEEF);
+	fail_unless(result == BS_BAD_ENCODING);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_encode_size_null_encoding)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode_size(bs, NULL, (size_t *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_encode_size_null_bs)
+{
+	BSresult result;
+
+	result = bs_encode_size(NULL, rgszEncodings[_i], (size_t *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_encode_size_null_size)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode_size(bs, rgszEncodings[_i], NULL);
+	fail_unless(result == BS_NULL);
+
+}
+END_TEST
+
+
+/* =================== */
+/* Tests for bs_encode */
+/* =================== */
 
 START_TEST(test_encode)
 {
@@ -196,6 +269,51 @@ START_TEST(test_encode)
 }
 END_TEST
 
+START_TEST(test_encode_bad_encoding)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode(bs, "notanencoding", (char *) 0xDEADBEEF);
+	fail_unless(result == BS_BAD_ENCODING);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_encode_null_encoding)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode(bs, NULL, (char *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_encode_null_bs)
+{
+	BSresult result;
+
+	result = bs_encode(NULL, rgszEncodings[_i], (char *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_encode_null_output)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode(bs, rgszEncodings[_i], NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 int
 main(/* int argc, char **argv */)
 {
@@ -205,13 +323,23 @@ main(/* int argc, char **argv */)
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_decode_bad_encoding);
-	tcase_add_test(tc_core, test_encode_size_bad_encoding);
-	tcase_add_test(tc_core, test_encode_bad_encoding);
-
 	tcase_add_loop_test(tc_core, test_decode, 0, cTestcases);
+	tcase_add_test(tc_core, test_decode_bad_encoding);
+	tcase_add_test(tc_core, test_decode_null_encoding);
+	tcase_add_loop_test(tc_core, test_decode_null_bs, 0, C_ENCODINGS);
+	tcase_add_loop_test(tc_core, test_decode_null_data, 0, C_ENCODINGS);
+
 	tcase_add_loop_test(tc_core, test_encode_size, 0, cTestcases);
+	tcase_add_test(tc_core, test_encode_size_bad_encoding);
+	tcase_add_test(tc_core, test_encode_size_null_encoding);
+	tcase_add_loop_test(tc_core, test_encode_size_null_bs, 0, C_ENCODINGS);
+	tcase_add_loop_test(tc_core, test_encode_size_null_size, 0, C_ENCODINGS);
+
 	tcase_add_loop_test(tc_core, test_encode, 0, cTestcases);
+	tcase_add_test(tc_core, test_encode_bad_encoding);
+	tcase_add_test(tc_core, test_encode_null_encoding);
+	tcase_add_loop_test(tc_core, test_encode_null_bs, 0, C_ENCODINGS);
+	tcase_add_loop_test(tc_core, test_encode_null_output, 0, C_ENCODINGS);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

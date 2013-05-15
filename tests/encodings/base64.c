@@ -28,28 +28,6 @@
 #include <check.h>
 #include <stdlib.h>
 
-START_TEST(test_load_null_bs)
-{
-	BSbyte *data = (BSbyte *) 0xDEADBEEF;
-	BSresult result;
-
-	result = bs_decode(NULL, "base64", data, 5);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_load_null_data)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_decode(bs, "base64", NULL, 5);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
-
 START_TEST(test_bad_length)
 {
 	BS *bs = bs_create();
@@ -77,28 +55,6 @@ START_TEST(test_bad_chars)
 }
 END_TEST
 
-START_TEST(test_save_null_bs)
-{
-	char *base64 = (char *) 0xDEADBEEF;
-	BSresult result;
-
-	result = bs_encode(NULL, "base64", base64);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_save_null_base64)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_encode(bs, "base64", NULL);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
-
 int
 main(/* int argc, char **argv */)
 {
@@ -109,10 +65,6 @@ main(/* int argc, char **argv */)
 
 	tcase_add_test(tc_core, test_bad_length);
 	tcase_add_loop_test(tc_core, test_bad_chars, 0, 6);
-	tcase_add_test(tc_core, test_load_null_bs);
-	tcase_add_test(tc_core, test_load_null_data);
-	tcase_add_test(tc_core, test_save_null_bs);
-	tcase_add_test(tc_core, test_save_null_base64);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
