@@ -43,9 +43,9 @@ libbs_la_SOURCES = include/bs.h           \
                    lib/encodings/hex.c    \
                    lib/encodings/base64.c \
                    lib/map.c              \
-                   lib/combine.c          \
                    lib/fold.c             \
-                   lib/compare.c
+                   lib/compare.c          \
+                   lib/combine.c
 
 
 # CHECK target, compiles and runs unit tests
@@ -54,9 +54,9 @@ TESTS = test_alloc      \
         test_stream     \
         test_encodings  \
         test_map        \
-        test_combine    \
         test_fold       \
-        test_compare
+        test_compare    \
+        test_combine
 
 check_PROGRAMS = $(TESTS)
 
@@ -80,10 +80,6 @@ test_map_SOURCES = tests/map.c
 test_map_CFLAGS = @CHECK_CFLAGS@
 test_map_LDADD = libbs.la @CHECK_LIBS@
 
-test_combine_SOURCES = tests/combine.c
-test_combine_CFLAGS = @CHECK_CFLAGS@
-test_combine_LDADD = libbs.la @CHECK_LIBS@
-
 test_fold_SOURCES = tests/fold.c
 test_fold_CFLAGS = @CHECK_CFLAGS@
 test_fold_LDADD = libbs.la @CHECK_LIBS@
@@ -91,6 +87,10 @@ test_fold_LDADD = libbs.la @CHECK_LIBS@
 test_compare_SOURCES = tests/compare.c
 test_compare_CFLAGS = @CHECK_CFLAGS@
 test_compare_LDADD = libbs.la @CHECK_LIBS@
+
+test_combine_SOURCES = tests/combine.c
+test_combine_CFLAGS = @CHECK_CFLAGS@
+test_combine_LDADD = libbs.la @CHECK_LIBS@
 
 # COVERAGE target, cleans everything out, compiles and runs tests, builds report
 coverage:

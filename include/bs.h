@@ -258,46 +258,6 @@ BSresult bs_map_lowercase(BS *bs);
 BSresult bs_map_not(BS *bs);
 
 /**
- * Combine two byte streams
- * Applies an operand byte stream based on an operation. OPERAND is duplicated
- * or truncated to match the length of the input BS. Its bytes are then combined
- * with the input BS using the supplied OPERATION.
- * This provides a simple way, for example, to XOR two streams together.
- * Common operations are available through library functions defined below.
- * Returns BS_OK if all bytes are combined successfully
- * The operation should return the combination of BYTE1 and BYTE2.
- */
-BSresult bs_combine(BS *bs, const BS *operand,
-	BSbyte (*operation) (BSbyte byte1, BSbyte byte2));
-
-/**
- * XOR two byte streams
- */
-BSresult bs_combine_xor(BS *bs, const BS *operand);
-
-/**
- * OR two byte streams
- */
-BSresult bs_combine_or(BS *bs, const BS *operand);
-
-/**
- * AND two byte streams
- */
-BSresult bs_combine_and(BS *bs, const BS *operand);
-
-/**
- * Add two byte streams
- * Addition overflows naturally (i.e. 255 + 1 = 0).
- */
-BSresult bs_combine_add(BS *bs, const BS *operand);
-
-/**
- * Subtract two byte streams
- * Subtraction overflows naturally (i.e. 0 - 1 = 255).
- */
-BSresult bs_combine_sub(BS *bs, const BS *operand);
-
-/**
  * Collect a single value from a byte stream
  * Applies OPERATION to the byte stream, passing each byte in turn.
  * A pointer to DATA is passed to the operation so that it can maintain its
@@ -356,3 +316,43 @@ BSresult bs_compare_equal(const BS *bs1, const BS *bs2);
 BSresult bs_compare_hamming(const BS *bs1, const BS *bs2, unsigned int *distance);
 
 #endif /* __BS_H */
+
+/**
+ * Combine two byte streams
+ * Applies an operand byte stream based on an operation. OPERAND is duplicated
+ * or truncated to match the length of the input BS. Its bytes are then combined
+ * with the input BS using the supplied OPERATION.
+ * This provides a simple way, for example, to XOR two streams together.
+ * Common operations are available through library functions defined below.
+ * Returns BS_OK if all bytes are combined successfully
+ * The operation should return the combination of BYTE1 and BYTE2.
+ */
+BSresult bs_combine(BS *bs, const BS *operand,
+	BSbyte (*operation) (BSbyte byte1, BSbyte byte2));
+
+/**
+ * XOR two byte streams
+ */
+BSresult bs_combine_xor(BS *bs, const BS *operand);
+
+/**
+ * OR two byte streams
+ */
+BSresult bs_combine_or(BS *bs, const BS *operand);
+
+/**
+ * AND two byte streams
+ */
+BSresult bs_combine_and(BS *bs, const BS *operand);
+
+/**
+ * Add two byte streams
+ * Addition overflows naturally (i.e. 255 + 1 = 0).
+ */
+BSresult bs_combine_add(BS *bs, const BS *operand);
+
+/**
+ * Subtract two byte streams
+ * Subtraction overflows naturally (i.e. 0 - 1 = 255).
+ */
+BSresult bs_combine_sub(BS *bs, const BS *operand);
