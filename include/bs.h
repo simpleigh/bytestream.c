@@ -234,28 +234,28 @@ BSresult bs_encode_size(const BS *bs, const char *encoding, size_t *size);
 BSresult bs_encode(const BS *bs, const char *encoding, char *output);
 
 /**
- * Walks a byte stream
+ * Map a byte stream
  * Applies an OPERATION to each byte in a byte stream.
  * Common operation are available through library functions defined below.
  * Returns BS_OK if all bytes are processed successfully
  * The OPERATION should return the new value for each byte.
  */
-BSresult bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte));
+BSresult bs_map(BS *bs, BSbyte (*operation) (BSbyte byte));
 
 /**
  * Make characters uppercase
  */
-BSresult bs_walk_uppercase(BS *bs);
+BSresult bs_map_uppercase(BS *bs);
 
 /**
  * Make characters lowercase
  */
-BSresult bs_walk_lowercase(BS *bs);
+BSresult bs_map_lowercase(BS *bs);
 
 /**
  * NOT each byte
  */
-BSresult bs_walk_not(BS *bs);
+BSresult bs_map_not(BS *bs);
 
 /**
  * Combine two byte streams
@@ -298,14 +298,14 @@ BSresult bs_combine_add(BS *bs, const BS *operand);
 BSresult bs_combine_sub(BS *bs, const BS *operand);
 
 /**
- * Accumulate a single value from a byte stream
+ * Collect a single value from a byte stream
  * Applies OPERATION to the byte stream, passing each byte in turn.
  * A pointer to DATA is passed to the operation so that it can maintain its
  * count between calls.
  * Common operations are available through library functions defined below.
  * Returns BS_OK if all bytes are read successfully
  */
-BSresult bs_accumulate(
+BSresult bs_fold(
 	const BS *bs,
 	BSresult (*operation) (BSbyte byte, void *data),
 	void *data
@@ -316,14 +316,14 @@ BSresult bs_accumulate(
  * Adds all bytes together.
  * Returns BS_OVERFLOW if the sum becomes too large
  */
-BSresult bs_accumulate_sum(const BS *bs, unsigned int *sum);
+BSresult bs_fold_sum(const BS *bs, unsigned int *sum);
 
 /**
  * Count bits in a stream
  * Counts all bits which are set in the stream.
  * Returns BS_OVERFLOW if the count becomes too large
  */
-BSresult bs_accumulate_bits(const BS *bs, unsigned int *count);
+BSresult bs_fold_bits(const BS *bs, unsigned int *count);
 
 /**
  * Compare two byte streams

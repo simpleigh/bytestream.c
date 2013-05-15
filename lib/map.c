@@ -28,7 +28,7 @@
 #include "bs_internal.h"
 
 BSresult
-bs_walk(BS *bs, BSbyte (*operation) (BSbyte byte))
+bs_map(BS *bs, BSbyte (*operation) (BSbyte byte))
 {
 	size_t ibByteStream;
 
@@ -61,19 +61,19 @@ not_byte(BSbyte byte)
 }
 
 BSresult
-bs_walk_uppercase(BS *bs)
+bs_map_uppercase(BS *bs)
 {
-	return bs_walk(bs, uppercase_byte);
+	return bs_map(bs, uppercase_byte);
 }
 
 BSresult
-bs_walk_lowercase(BS *bs)
+bs_map_lowercase(BS *bs)
 {
-	return bs_walk(bs, lowercase_byte);
+	return bs_map(bs, lowercase_byte);
 }
 
 BSresult
-bs_walk_not(BS *bs)
+bs_map_not(BS *bs)
 {
-	return bs_walk(bs, not_byte);
+	return bs_map(bs, not_byte);
 }

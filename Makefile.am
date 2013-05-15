@@ -42,9 +42,9 @@ libbs_la_SOURCES = include/bs.h           \
                    lib/encodings.c        \
                    lib/encodings/hex.c    \
                    lib/encodings/base64.c \
-                   lib/walk.c             \
+                   lib/map.c              \
                    lib/combine.c          \
-                   lib/accumulate.c       \
+                   lib/fold.c             \
                    lib/compare.c
 
 
@@ -55,9 +55,9 @@ TESTS = test_alloc      \
         test_encodings  \
         test_hex        \
         test_base64     \
-        test_walk       \
+        test_map        \
         test_combine    \
-        test_accumulate \
+        test_fold       \
         test_compare
 
 check_PROGRAMS = $(TESTS)
@@ -86,17 +86,17 @@ test_base64_SOURCES = tests/encodings/base64.c
 test_base64_CFLAGS = @CHECK_CFLAGS@
 test_base64_LDADD = libbs.la @CHECK_LIBS@
 
-test_walk_SOURCES = tests/walk.c
-test_walk_CFLAGS = @CHECK_CFLAGS@
-test_walk_LDADD = libbs.la @CHECK_LIBS@
+test_map_SOURCES = tests/map.c
+test_map_CFLAGS = @CHECK_CFLAGS@
+test_map_LDADD = libbs.la @CHECK_LIBS@
 
 test_combine_SOURCES = tests/combine.c
 test_combine_CFLAGS = @CHECK_CFLAGS@
 test_combine_LDADD = libbs.la @CHECK_LIBS@
 
-test_accumulate_SOURCES = tests/accumulate.c
-test_accumulate_CFLAGS = @CHECK_CFLAGS@
-test_accumulate_LDADD = libbs.la @CHECK_LIBS@
+test_fold_SOURCES = tests/fold.c
+test_fold_CFLAGS = @CHECK_CFLAGS@
+test_fold_LDADD = libbs.la @CHECK_LIBS@
 
 test_compare_SOURCES = tests/compare.c
 test_compare_CFLAGS = @CHECK_CFLAGS@

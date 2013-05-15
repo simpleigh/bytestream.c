@@ -44,7 +44,7 @@ operation(BSbyte byte)
 	return 0;
 }
 
-START_TEST(test_walk)
+START_TEST(test_map)
 {
 	BS *bs = bs_create();
 	BSresult result;
@@ -52,7 +52,7 @@ START_TEST(test_walk)
 	result = bs_load(bs, byte_values, 10);
 	fail_unless(result == BS_OK);
 
-	result = bs_walk(bs, operation);
+	result = bs_map(bs, operation);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 10);
 	fail_unless(
@@ -63,52 +63,52 @@ START_TEST(test_walk)
 }
 END_TEST
 
-START_TEST(test_walk_null_bs)
+START_TEST(test_map_null_bs)
 {
 	BSresult result;
 
-	result = bs_walk(NULL, operation);
+	result = bs_map(NULL, operation);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
 
-struct walk_testcase_struct {
-	BSresult (*walk_function) (BS *bs);
+struct map_testcase_struct {
+	BSresult (*map_function) (BS *bs);
 	char input[3];
 	char output[3];
 };
 
-static const struct walk_testcase_struct
-walk_testcases[16] = {
-	{ bs_walk_uppercase, "00", "00" },
-	{ bs_walk_uppercase, "61", "41" },
-	{ bs_walk_uppercase, "7a", "5a" },
-	{ bs_walk_uppercase, "ff", "ff" },
-	{ bs_walk_lowercase, "00", "00" },
-	{ bs_walk_lowercase, "41", "61" },
-	{ bs_walk_lowercase, "5a", "7a" },
-	{ bs_walk_lowercase, "ff", "ff" },
-	{ bs_walk_not,       "01", "fe" },
-	{ bs_walk_not,       "23", "dc" },
-	{ bs_walk_not,       "45", "ba" },
-	{ bs_walk_not,       "67", "98" },
-	{ bs_walk_not,       "89", "76" },
-	{ bs_walk_not,       "ab", "54" },
-	{ bs_walk_not,       "cd", "32" },
-	{ bs_walk_not,       "ef", "10" },
+static const struct map_testcase_struct
+map_testcases[16] = {
+	{ bs_map_uppercase, "00", "00" },
+	{ bs_map_uppercase, "61", "41" },
+	{ bs_map_uppercase, "7a", "5a" },
+	{ bs_map_uppercase, "ff", "ff" },
+	{ bs_map_lowercase, "00", "00" },
+	{ bs_map_lowercase, "41", "61" },
+	{ bs_map_lowercase, "5a", "7a" },
+	{ bs_map_lowercase, "ff", "ff" },
+	{ bs_map_not,       "01", "fe" },
+	{ bs_map_not,       "23", "dc" },
+	{ bs_map_not,       "45", "ba" },
+	{ bs_map_not,       "67", "98" },
+	{ bs_map_not,       "89", "76" },
+	{ bs_map_not,       "ab", "54" },
+	{ bs_map_not,       "cd", "32" },
+	{ bs_map_not,       "ef", "10" },
 };
 
-START_TEST(test_walk_functions)
+START_TEST(test_map_functions)
 {
 	BS *bs = bs_create();
 	BSresult result;
 	size_t size;
 	char *hex;
 
-	result = bs_decode(bs, "hex", walk_testcases[_i].input, 2);
+	result = bs_decode(bs, "hex", map_testcases[_i].input, 2);
 	fail_unless(result == BS_OK);
 
-	result = walk_testcases[_i].walk_function(bs);
+	result = map_testcases[_i].map_function(bs);
 	fail_unless(result == BS_OK);
 	fail_unless(bs_size(bs) == 1);
 
@@ -122,24 +122,24 @@ START_TEST(test_walk_functions)
 	fail_unless(result == BS_OK);
 	fail_unless(hex != NULL);
 	fail_unless(strlen(hex) == 2);
-	fail_unless(strcmp(hex, walk_testcases[_i].output) == 0);
+	fail_unless(strcmp(hex, map_testcases[_i].output) == 0);
 
 	free(hex);
 	bs_free(bs);
 }
 END_TEST
 
-static BSresult (*walk_function[3]) (BS *bs) = {
-	bs_walk_uppercase,
-	bs_walk_lowercase,
-	bs_walk_not
+static BSresult (*map_function[3]) (BS *bs) = {
+	bs_map_uppercase,
+	bs_map_lowercase,
+	bs_map_not
 };
 
-START_TEST(test_walk_functions_null)
+START_TEST(test_map_functions_null)
 {
 	BSresult result;
 
-	result = walk_function[_i](NULL);
+	result = map_function[_i](NULL);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
@@ -147,15 +147,15 @@ END_TEST
 int
 main(/* int argc, char **argv */)
 {
-	Suite *s = suite_create("Walking");
+	Suite *s = suite_create("Mapping");
 	TCase *tc_core = tcase_create("Core");
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_walk);
-	tcase_add_test(tc_core, test_walk_null_bs);
-	tcase_add_loop_test(tc_core, test_walk_functions, 0, 16);
-	tcase_add_loop_test(tc_core, test_walk_functions_null, 0, 3);
+	tcase_add_test(tc_core, test_map);
+	tcase_add_test(tc_core, test_map_null_bs);
+	tcase_add_loop_test(tc_core, test_map_functions, 0, 16);
+	tcase_add_loop_test(tc_core, test_map_functions_null, 0, 3);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

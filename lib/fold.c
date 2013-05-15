@@ -29,7 +29,7 @@
 #include <stdlib.h>
 
 BSresult
-bs_accumulate(
+bs_fold(
 	const BS *bs,
 	BSresult (*operation) (BSbyte byte, void *data),
 	void *data
@@ -98,23 +98,23 @@ count_byte(BSbyte byte, void *data)
 }
 
 BSresult
-bs_accumulate_sum(const BS *bs, unsigned int *sum)
+bs_fold_sum(const BS *bs, unsigned int *sum)
 {
 	BS_CHECK_POINTER(bs)
 	BS_CHECK_POINTER(sum)
 
 	*sum = 0;
 
-	return bs_accumulate(bs, sum_byte, sum);
+	return bs_fold(bs, sum_byte, sum);
 }
 
 BSresult
-bs_accumulate_bits(const BS *bs, unsigned int *count)
+bs_fold_bits(const BS *bs, unsigned int *count)
 {
 	BS_CHECK_POINTER(bs)
 	BS_CHECK_POINTER(count)
 
 	*count = 0;
 
-	return bs_accumulate(bs, count_byte, count);
+	return bs_fold(bs, count_byte, count);
 }
