@@ -108,7 +108,7 @@ START_TEST(test_compare_null_bs1)
 	BS *bs2 = bs_create();
 	BSresult result;
 
-	result = bs_compare(NULL, bs2, compare_operation, &result);
+	result = bs_compare(NULL, bs2, compare_operation, (void *) 0xDEADBEEF);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs2);
@@ -120,10 +120,23 @@ START_TEST(test_compare_null_bs2)
 	BS *bs1 = bs_create();
 	BSresult result;
 
-	result = bs_compare(bs1, NULL, compare_operation, &result);
+	result = bs_compare(bs1, NULL, compare_operation, (void *) 0xDEADBEEF);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs1);
+}
+END_TEST
+
+START_TEST(test_compare_null_operation)
+{
+	BS *bs1 = bs_create(), *bs2 = bs_create();
+	BSresult result;
+
+	result = bs_compare(bs1, bs2, NULL, (void *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs1);
+	bs_free(bs2);
 }
 END_TEST
 
@@ -312,6 +325,7 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_compare_differing_lengths);
 	tcase_add_test(tc_core, test_compare_null_bs1);
 	tcase_add_test(tc_core, test_compare_null_bs2);
+	tcase_add_test(tc_core, test_compare_null_operation);
 	tcase_add_test(tc_core, test_equal_zero_length);
 	tcase_add_test(tc_core, test_equal_is_equal);
 	tcase_add_test(tc_core, test_neq_is_neq);

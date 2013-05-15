@@ -100,27 +100,40 @@ START_TEST(test_combine_long_operand)
 }
 END_TEST
 
-START_TEST(test_combine_null_bs1)
+START_TEST(test_combine_null_bs)
 {
-	BS *bs2 = bs_create();
+	BS *operand = bs_create();
 	BSresult result;
 
-	result = bs_combine(NULL, bs2, short_operand_operation);
+	result = bs_combine(NULL, operand, short_operand_operation);
 	fail_unless(result == BS_NULL);
 
-	bs_free(bs2);
+	bs_free(operand);
 }
 END_TEST
 
-START_TEST(test_combine_null_bs2)
+START_TEST(test_combine_null_operand)
 {
-	BS *bs1 = bs_create();
+	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_combine(bs1, NULL, short_operand_operation);
+	result = bs_combine(bs, NULL, short_operand_operation);
 	fail_unless(result == BS_NULL);
 
-	bs_free(bs1);
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_combine_null_operation)
+{
+	BS *bs = bs_create(), *operand = bs_create();
+	BSresult result;
+
+	result = bs_combine(bs, operand, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+	bs_free(operand);
 }
 END_TEST
 
@@ -215,8 +228,9 @@ main(/* int argc, char **argv */)
 
 	tcase_add_test(tc_core, test_combine_short_operand);
 	tcase_add_test(tc_core, test_combine_long_operand);
-	tcase_add_test(tc_core, test_combine_null_bs1);
-	tcase_add_test(tc_core, test_combine_null_bs2);
+	tcase_add_test(tc_core, test_combine_null_bs);
+	tcase_add_test(tc_core, test_combine_null_operand);
+	tcase_add_test(tc_core, test_combine_null_operation);
 	tcase_add_loop_test(tc_core, test_combine_functions, 0, 5);
 	tcase_add_loop_test(tc_core, test_combine_functions_null_bs1, 0, 5);
 	tcase_add_loop_test(tc_core, test_combine_functions_null_bs2, 0, 5);

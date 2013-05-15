@@ -72,6 +72,18 @@ START_TEST(test_map_null_bs)
 }
 END_TEST
 
+START_TEST(test_map_null_operation)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_map(bs, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 struct map_testcase_struct {
 	BSresult (*map_function) (BS *bs);
 	char input[3];
@@ -154,6 +166,7 @@ main(/* int argc, char **argv */)
 
 	tcase_add_test(tc_core, test_map);
 	tcase_add_test(tc_core, test_map_null_bs);
+	tcase_add_test(tc_core, test_map_null_operation);
 	tcase_add_loop_test(tc_core, test_map_functions, 0, 16);
 	tcase_add_loop_test(tc_core, test_map_functions_null, 0, 3);
 

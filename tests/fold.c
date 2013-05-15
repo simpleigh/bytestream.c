@@ -84,8 +84,20 @@ START_TEST(test_fold_null_bs)
 {
 	BSresult result;
 
-	result = bs_fold(NULL, fold_operation, &result);
+	result = bs_fold(NULL, fold_operation, (void *) 0xDEADBEEF);
 	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_fold_null_operation)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_fold(bs, NULL, (void *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
 }
 END_TEST
 
@@ -262,6 +274,7 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_fold);
 	tcase_add_test(tc_core, test_fold_invalid);
 	tcase_add_test(tc_core, test_fold_null_bs);
+	tcase_add_test(tc_core, test_fold_null_operation);
 	tcase_add_test(tc_core, test_sum_starts_zero);
 	tcase_add_loop_test(tc_core, test_sum, 0, 16);
 	tcase_add_test(tc_core, test_sum_long);

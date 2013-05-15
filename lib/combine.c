@@ -38,6 +38,7 @@ bs_combine(
 
 	BS_CHECK_POINTER(bs)
 	BS_CHECK_POINTER(operand)
+	BS_CHECK_POINTER(operation)
 	BS_ASSERT_VALID(bs)
 	BS_ASSERT_VALID(operand)
 

@@ -39,6 +39,7 @@ bs_fold(
 	BSresult result;
 
 	BS_CHECK_POINTER(bs)
+	BS_CHECK_POINTER(operation)
 	BS_ASSERT_VALID(bs)
 
 	for (ibByteStream = 0; ibByteStream < bs->cbBytes; ibByteStream++) {

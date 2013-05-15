@@ -40,6 +40,7 @@ bs_compare(
 
 	BS_CHECK_POINTER(bs1)
 	BS_CHECK_POINTER(bs2)
+	BS_CHECK_POINTER(operation)
 	BS_ASSERT_VALID(bs1)
 	BS_ASSERT_VALID(bs2)
 
