@@ -77,13 +77,30 @@ struct BSEncodingTestcase {
 	size_t cchOutput;
 };
 
-struct BSEncodingTestcase
+static struct BSEncodingTestcase
 rgTestcases[] = {
+	{ "hex",       "",                 0,  "",                         0, "",                 1  },
+	{ "hex",       "0123456789",       10, "\x01\x23\x45\x67\x89",     5, "0123456789",       11 },
+	{ "hex",       "abcdef",           6,  "\xab\xcd\xef",             3, "abcdef",           7  },
+	{ "hex",       "ABCDEF",           6,  "\xab\xcd\xef",             3, "abcdef",           7  },
+
+	{ "base64",    "AA==",             4,  "\0",                       1, "AA==",             5  },
+	{ "base64",    "AAA=",             4,  "\0\0",                     2, "AAA=",             5  },
+	{ "base64",    "AAAA",             4,  "\0\0\0",                   3, "AAAA",             5  },
+	{ "base64",    "/w==",             4,  "\xff",                     1, "/w==",             5  },
+	{ "base64",    "//8=",             4,  "\xff\xff",                 2, "//8=",             5  },
+	{ "base64",    "////",             4,  "\xff\xff\xff",             3, "////",             5  },
+	{ "base64",    "AAAu",             4,  "\0\0\x2e",                 3, "AAAu",             5  },
+	{ "base64",    "TWFu",             4,  "Man",                      3, "TWFu",             5  },
+	{ "base64",    "YW55",             4,  "any",                      3, "YW55",             5  },
+	{ "base64",    "l0+/",             4,  "\x97\x4f\xbf",             3, "l0+/",             5  },
+	{ "base64",    "ABCD",             4,  "\x0\x10\x83",              3, "ABCD",             5  },
+	{ "base64",    "ZWFzdXJlLg==",     12, "easure.",                  7, "ZWFzdXJlLg==",     13 },
+
+	/* These next testcases from RFC 4648 */
 	{ "base64",    "FPucA9l+",         8,  "\x14\xfb\x9c\x03\xd9\x7e", 6, "FPucA9l+",         9  },
 	{ "base64",    "FPucA9k=",         8,  "\x14\xfb\x9c\x03\xd9",     5, "FPucA9k=",         9  },
 	{ "base64",    "FPucAw==",         8,  "\x14\xfb\x9c\x03",         4, "FPucAw==",         9  },
-
-	/* These next testcases from RFC 4648 */
 	{ "base64",    "",                 0,  "",                         0, "",                 1  },
 	{ "base64",    "Zg==",             4,  "f",                        1, "Zg==",             5  },
 	{ "base64",    "Zm8=",             4,  "fo",                       2, "Zm8=",             5  },
