@@ -258,6 +258,25 @@ BSresult bs_map_lowercase(BS *bs);
 BSresult bs_map_not(BS *bs);
 
 /**
+ * Filter operation result ENUM
+ * Filtering operations return values to indicate whether a byte should be
+ * retained or removed from the stream.
+ */
+typedef enum BSfilter {
+	BS_INCLUDE = 0,
+	BS_EXCLUDE
+} BSfilter;
+
+/**
+ * Filter out unwanted bytes from a byte stream
+ * Applies OPERATION to each byte in the byte stream, removing the byte if the
+ * result is false.
+ * Common operations are available through library functions defined below.
+ * Returns BS_OK if all bytes are read successfully
+ */
+BSresult bs_filter(BS *bs, BSfilter (*operation) (BSbyte byte));
+
+/**
  * Collect a single value from a byte stream
  * Applies OPERATION to the byte stream, passing each byte in turn.
  * A pointer to DATA is passed to the operation so that it can maintain its

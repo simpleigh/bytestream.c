@@ -43,6 +43,7 @@ libbs_la_SOURCES = include/bs.h           \
                    lib/encodings/hex.c    \
                    lib/encodings/base64.c \
                    lib/map.c              \
+                   lib/filter.c           \
                    lib/fold.c             \
                    lib/compare.c          \
                    lib/combine.c
@@ -54,6 +55,7 @@ TESTS = test_alloc      \
         test_stream     \
         test_encodings  \
         test_map        \
+        test_filter     \
         test_fold       \
         test_compare    \
         test_combine
@@ -79,6 +81,10 @@ test_encodings_LDADD = libbs.la @CHECK_LIBS@
 test_map_SOURCES = tests/map.c
 test_map_CFLAGS = @CHECK_CFLAGS@
 test_map_LDADD = libbs.la @CHECK_LIBS@
+
+test_filter_SOURCES = tests/filter.c
+test_filter_CFLAGS = @CHECK_CFLAGS@
+test_filter_LDADD = libbs.la @CHECK_LIBS@
 
 test_fold_SOURCES = tests/fold.c
 test_fold_CFLAGS = @CHECK_CFLAGS@
