@@ -71,7 +71,7 @@ sum_byte(BSbyte byte, void *data)
 }
 
 static BSresult
-count_byte(BSbyte byte, void *data)
+bitcount_byte(BSbyte byte, void *data)
 {
 	unsigned int *piCount = (unsigned int *) data;
 	unsigned int iOriginalCount;
@@ -109,12 +109,12 @@ bs_fold_sum(const BS *bs, unsigned int *sum)
 }
 
 BSresult
-bs_fold_bits(const BS *bs, unsigned int *count)
+bs_fold_bitcount(const BS *bs, unsigned int *count)
 {
 	BS_CHECK_POINTER(bs)
 	BS_CHECK_POINTER(count)
 
 	*count = 0;
 
-	return bs_fold(bs, count_byte, count);
+	return bs_fold(bs, bitcount_byte, count);
 }

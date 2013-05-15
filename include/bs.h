@@ -323,7 +323,7 @@ BSresult bs_fold_sum(const BS *bs, unsigned int *sum);
  * Counts all bits which are set in the stream.
  * Returns BS_OVERFLOW if the count becomes too large
  */
-BSresult bs_fold_bits(const BS *bs, unsigned int *count);
+BSresult bs_fold_bitcount(const BS *bs, unsigned int *count);
 
 /**
  * Compare two byte streams

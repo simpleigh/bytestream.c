@@ -92,7 +92,7 @@ END_TEST
 struct fold_test_case {
 	BSbyte byte;
 	unsigned int sum;
-	unsigned int bits;
+	unsigned int bitcount;
 };
 
 static struct fold_test_case
@@ -183,68 +183,68 @@ START_TEST(test_sum_null_sum)
 }
 END_TEST
 
-START_TEST(test_bits_starts_zero)
+START_TEST(test_bitcount_starts_zero)
 {
 	BS *bs = bs_create();
-	unsigned int bits = 999;
+	unsigned int bitcount = 999;
 	BSresult result;
 
-	result = bs_fold_bits(bs, &bits);
+	result = bs_fold_bitcount(bs, &bitcount);
 	fail_unless(result == BS_OK);
-	fail_unless(bits == 0);
+	fail_unless(bitcount == 0);
 
 	bs_free(bs);
 }
 END_TEST
 
-START_TEST(test_bits)
+START_TEST(test_bitcount)
 {
 	BS *bs = bs_create_size(1);
-	unsigned int bits;
+	unsigned int bitcount;
 	BSresult result;
 
 	bs_set_byte(bs, 0, fold_tests[_i].byte);
 
-	result = bs_fold_bits(bs, &bits);
+	result = bs_fold_bitcount(bs, &bitcount);
 	fail_unless(result == BS_OK);
-	fail_unless(bits == fold_tests[_i].bits);
+	fail_unless(bitcount == fold_tests[_i].bitcount);
 
 	bs_free(bs);
 }
 END_TEST
 
-START_TEST(test_bits_long)
+START_TEST(test_bitcount_long)
 {
 	BS *bs = bs_create();
-	unsigned int bits;
+	unsigned int bitcount;
 	BSresult result;
 
 	bs_load(bs, (BSbyte *) "Test input", 10);
 
-	result = bs_fold_bits(bs, &bits);
+	result = bs_fold_bitcount(bs, &bitcount);
 	fail_unless(result == BS_OK);
-	fail_unless(bits == 38);
+	fail_unless(bitcount == 38);
 
 	bs_free(bs);
 }
 END_TEST
 
-START_TEST(test_bits_null_bs)
+START_TEST(test_bitcount_null_bs)
 {
-	unsigned int bits;
+	unsigned int bitcount;
 	BSresult result;
 
-	result = bs_fold_bits(NULL, &bits);
+	result = bs_fold_bitcount(NULL, &bitcount);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
 
-START_TEST(test_bits_null_sum)
+START_TEST(test_bitcount_null_sum)
 {
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_fold_bits(bs, NULL);
+	result = bs_fold_bitcount(bs, NULL);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
@@ -267,11 +267,11 @@ main(/* int argc, char **argv */)
 	tcase_add_test(tc_core, test_sum_long);
 	tcase_add_test(tc_core, test_sum_null_bs);
 	tcase_add_test(tc_core, test_sum_null_sum);
-	tcase_add_test(tc_core, test_bits_starts_zero);
-	tcase_add_loop_test(tc_core, test_bits, 0, 16);
-	tcase_add_test(tc_core, test_bits_long);
-	tcase_add_test(tc_core, test_bits_null_bs);
-	tcase_add_test(tc_core, test_bits_null_sum);
+	tcase_add_test(tc_core, test_bitcount_starts_zero);
+	tcase_add_loop_test(tc_core, test_bitcount, 0, 16);
+	tcase_add_test(tc_core, test_bitcount_long);
+	tcase_add_test(tc_core, test_bitcount_null_bs);
+	tcase_add_test(tc_core, test_bitcount_null_sum);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
