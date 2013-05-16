@@ -32,6 +32,11 @@
 #define UNUSED(x) (void)(x)
 #endif
 
+
+/* =============================== */
+/* Tiny functions used for testing */
+/* =============================== */
+
 static BSfilter
 include_all(BSbyte byte)
 {
@@ -58,12 +63,25 @@ filter_exclude_all(BS *bs)
 	return bs_filter(bs, exclude_all);
 }
 
+
+/* ========= */
+/* Testcases */
+/* ========= */
+
+#define C_FILTERS 3
+
+static BSresult (*rgfFilters[C_FILTERS])(BS *bs) = {
+	filter_include_all,
+	filter_exclude_all,
+	bs_filter_whitespace,
+};
+
 struct BSFilterTestcase {
 	BSresult (*pfFilter)(BS *bs); /* Function to test */
-	BSbyte *rgbInput;                  /* Starting bytestream contents */
-	size_t cbInput;                    /* Starting bytestream length */
-	const BSbyte *rgbOutput;           /* Expected bytestream contents */
-	size_t cbOutput;                   /* Expected bytestream length */
+	BSbyte *rgbInput;             /* Starting bytestream contents */
+	size_t cbInput;               /* Starting bytestream length */
+	const BSbyte *rgbOutput;      /* Expected bytestream contents */
+	size_t cbOutput;              /* Expected bytestream length */
 };
 
 static struct BSFilterTestcase
@@ -77,7 +95,12 @@ rgTestcases[] = {
 	{ bs_filter_whitespace, "test str",   8, "teststr",  7 },
 };
 
-START_TEST(test_filter)
+
+/* ============== */
+/* Testcase tests */
+/* ============== */
+
+START_TEST(test_filters)
 {
 	struct BSFilterTestcase testcase = rgTestcases[_i];
 	BS *bs = bs_create();
@@ -97,7 +120,22 @@ START_TEST(test_filter)
 }
 END_TEST
 
-START_TEST(test_filter_null_bs)
+START_TEST(test_filters_null_bs)
+{
+	BSresult (*pfFilter)(BS *bs) = rgfFilters[_i];
+	BSresult result;
+
+	result = pfFilter(NULL);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+
+/* ==================== */
+/* NULL parameter tests */
+/* ==================== */
+
+START_TEST(test_generic_filter_null_bs)
 {
 	BSresult result;
 
@@ -106,7 +144,7 @@ START_TEST(test_filter_null_bs)
 }
 END_TEST
 
-START_TEST(test_filter_null_operation)
+START_TEST(test_generic_filter_null_operation)
 {
 	BS *bs = bs_create();
 	BSresult result;
@@ -127,9 +165,10 @@ main(/* int argc, char **argv */)
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_loop_test(tc_core, test_filter, 0, cTestcases);
-	tcase_add_test(tc_core, test_filter_null_bs);
-	tcase_add_test(tc_core, test_filter_null_operation);
+	tcase_add_loop_test(tc_core, test_filters, 0, cTestcases);
+	tcase_add_loop_test(tc_core, test_filters_null_bs, 0, C_FILTERS);
+	tcase_add_test(tc_core, test_generic_filter_null_bs);
+	tcase_add_test(tc_core, test_generic_filter_null_operation);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
