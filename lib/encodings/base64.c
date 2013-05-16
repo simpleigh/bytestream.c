@@ -29,8 +29,13 @@
 #include "../encodings.h"
 #include <assert.h>
 
+
+/* ====== */
+/* Decode */
+/* ====== */
+
 static const unsigned int
-base64_decoding_table[] = {
+rgBase64Decoding[] = {
 	                                            62, 99, 99, 99, 63,
 	52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 99, 99, 99, 77, 99, 99,
 	99,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
@@ -40,24 +45,24 @@ base64_decoding_table[] = {
 };
 
 static BSbyte
-read_base64_digit(char digit)
+read_base64_digit(char digit, const unsigned int rgDecoding[])
 {
 	if ((digit < 43) || (digit > 122)) {
 		return 99;
 	}
 
-	return base64_decoding_table[digit - 43];
+	return rgDecoding[digit - 43];
 }
 
 static BSresult
-read_base64_block(const char *in, BSbyte *out)
+read_base64_block(const char *in, BSbyte *out, const unsigned int rgDecoding[])
 {
 	BSbyte in0, in1, in2, in3;
 
-	in0 = read_base64_digit(in[0]);
-	in1 = read_base64_digit(in[1]);
-	in2 = read_base64_digit(in[2]);
-	in3 = read_base64_digit(in[3]);
+	in0 = read_base64_digit(in[0], rgDecoding);
+	in1 = read_base64_digit(in[1], rgDecoding);
+	in2 = read_base64_digit(in[2], rgDecoding);
+	in3 = read_base64_digit(in[3], rgDecoding);
 
 	if ((in0 == 99) || (in1 == 99) || (in2 == 99) || (in3 == 99)) {
 		return BS_INVALID;
@@ -73,8 +78,13 @@ read_base64_block(const char *in, BSbyte *out)
 	return BS_OK;
 }
 
-BSresult
-bs_decode_base64(BS *bs, const char *input, size_t length)
+static BSresult
+read_base64_string(
+	BS *bs,
+	const char *input,
+	size_t length,
+	const unsigned int rgDecoding[]
+)
 {
 	size_t cbByteStream, ibInput = 0, ibByteStream = 0;
 	BSresult result;
@@ -99,7 +109,8 @@ bs_decode_base64(BS *bs, const char *input, size_t length)
 	while (ibInput < length) {
 		result = read_base64_block(
 			input + ibInput,
-			bs->pbBytes + ibByteStream
+			bs->pbBytes + ibByteStream,
+			rgDecoding
 		);
 
 		if (result != BS_OK) {
@@ -114,47 +125,68 @@ bs_decode_base64(BS *bs, const char *input, size_t length)
 	return BS_OK;
 }
 
+BSresult
+bs_decode_base64(BS *bs, const char *input, size_t length)
+{
+	return read_base64_string(bs, input, length, rgBase64Decoding);
+}
+
+
+/* ==== */
+/* Size */
+/* ==== */
+
 size_t
 bs_encode_size_base64(const BS *bs)
 {
 	return ((bs->cbBytes + 2) / 3 * 4) + 1;
 }
 
+
+/* ====== */
+/* Encode */
+/* ====== */
+
 static const char
-base64_encoding_table[] =
+rgBase64Encoding[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 static void
-write_base64_bytes(const BSbyte *in, size_t length, char *out)
+write_base64_bytes(
+	const BSbyte *in,
+	size_t length,
+	char *out,
+	const char rgEncoding[]
+)
 {
 	assert(length > 0);
 
 	switch (length) {
 	case 1:
-		out[0] = base64_encoding_table[in[0] >> 2];
-		out[1] = base64_encoding_table[(in[0] & 0x3) << 4];
+		out[0] = rgEncoding[in[0] >> 2];
+		out[1] = rgEncoding[(in[0] & 0x3) << 4];
 		out[2] = '=';
 		out[3] = '=';
 		break;
 
 	case 2:
-		out[0] = base64_encoding_table[in[0] >> 2];
-		out[1] = base64_encoding_table[(in[0] & 0x3) << 4 | in[1] >> 4];
-		out[2] = base64_encoding_table[(in[1] & 0xF) << 2];
+		out[0] = rgEncoding[in[0] >> 2];
+		out[1] = rgEncoding[(in[0] & 0x3) << 4 | in[1] >> 4];
+		out[2] = rgEncoding[(in[1] & 0xF) << 2];
 		out[3] = '=';
 		break;
 
 	default:
-		out[0] = base64_encoding_table[in[0] >> 2];
-		out[1] = base64_encoding_table[(in[0] & 0x3) << 4 | in[1] >> 4];
-		out[2] = base64_encoding_table[(in[1] & 0xF) << 2 | in[2] >> 6];
-		out[3] = base64_encoding_table[in[2] & 0x3F];
+		out[0] = rgEncoding[in[0] >> 2];
+		out[1] = rgEncoding[(in[0] & 0x3) << 4 | in[1] >> 4];
+		out[2] = rgEncoding[(in[1] & 0xF) << 2 | in[2] >> 6];
+		out[3] = rgEncoding[in[2] & 0x3F];
 		break;
 	}
 }
 
-void
-bs_encode_base64(const BS *bs, char *output)
+static void
+write_base64_string(const BS *bs, char *output, const char rgEncoding[])
 {
 	size_t cbByteStream, ibOutput = 0, ibByteStream = 0;
 
@@ -164,7 +196,8 @@ bs_encode_base64(const BS *bs, char *output)
 		write_base64_bytes(
 			bs->pbBytes + ibByteStream,
 			cbByteStream - ibByteStream,
-			output + ibOutput
+			output + ibOutput,
+			rgEncoding
 		);
 
 		ibByteStream += 3;
@@ -172,4 +205,10 @@ bs_encode_base64(const BS *bs, char *output)
 	}
 
 	output[ibOutput] = '\0';
+}
+
+void
+bs_encode_base64(const BS *bs, char *output)
+{
+	write_base64_string(bs, output, rgBase64Encoding);
 }
