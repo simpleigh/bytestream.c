@@ -86,9 +86,7 @@ struct BSFilterTestcase {
 
 static struct BSFilterTestcase
 rgTestcases[] = {
-	{ filter_include_all,   "",           0, "",         0 },
 	{ filter_include_all,   "12345",      5, "12345",    5 },
-	{ filter_exclude_all,   "",           0, "",         0 },
 	{ filter_exclude_all,   "12345",      5, "",         0 },
 	{ bs_filter_whitespace, "\x9\xA\xD ", 4, "",         0 },
 	{ bs_filter_whitespace, "aAzZ09+.",   8, "aAzZ09+.", 8 },
@@ -115,6 +113,20 @@ START_TEST(test_filters)
 	fail_unless(
 		memcmp(bs_get_buffer(bs), testcase.rgbOutput, testcase.cbOutput) == 0
 	);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_filters_empty_bs)
+{
+	BSresult (*pfFilter)(BS *bs) = rgfFilters[_i];
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = pfFilter(bs);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 0);
 
 	bs_free(bs);
 }
@@ -156,6 +168,7 @@ START_TEST(test_generic_filter_null_operation)
 }
 END_TEST
 
+
 int
 main(/* int argc, char **argv */)
 {
@@ -165,8 +178,10 @@ main(/* int argc, char **argv */)
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_loop_test(tc_core, test_filters, 0, cTestcases);
-	tcase_add_loop_test(tc_core, test_filters_null_bs, 0, C_FILTERS);
+	tcase_add_loop_test(tc_core, test_filters,          0, cTestcases);
+	tcase_add_loop_test(tc_core, test_filters_empty_bs, 0, C_FILTERS);
+	tcase_add_loop_test(tc_core, test_filters_null_bs,  0, C_FILTERS);
+
 	tcase_add_test(tc_core, test_generic_filter_null_bs);
 	tcase_add_test(tc_core, test_generic_filter_null_operation);
 

@@ -28,51 +28,135 @@
 #include <check.h>
 #include <stdlib.h>
 
-static BSbyte
-byte_values[10] = { 0, 1, 2, 1, 1, 1, 2, 2, 2, 2 };
 
-static unsigned int
-byte_counts[3] = { 0, 0, 0 };
-
-static unsigned int
-byte_counts_target[3] = { 1, 4, 5 };
+/* =============================== */
+/* Tiny functions used for testing */
+/* =============================== */
 
 static BSbyte
-operation(BSbyte byte)
+noop_byte(BSbyte byte)
 {
-	byte_counts[byte]++;
-	return 0;
+	return byte;
 }
 
-START_TEST(test_map)
+static BSbyte
+increment_byte(BSbyte byte)
 {
+	return byte + 1;
+}
+
+static BSresult
+map_increment(BS *bs)
+{
+	return bs_map(bs, increment_byte);
+}
+
+static BSresult
+map_noop(BS *bs)
+{
+	return bs_map(bs, noop_byte);
+}
+
+
+/* ========= */
+/* Testcases */
+/* ========= */
+
+#define C_MAPS 5
+
+static BSresult (*rgfMaps[C_MAPS])(BS *bs) = {
+	map_noop,
+	map_increment,
+	bs_map_uppercase,
+	bs_map_lowercase,
+	bs_map_not
+};
+
+struct BSMapTestcase {
+	BSresult (*pfMap)(BS *bs); /* Function to test */
+	BSbyte *rgbInput;          /* Starting bytestream contents */
+	size_t cbInput;            /* Starting bytestream length */
+	const BSbyte *rgbOutput;   /* Expected bytestream contents */
+};
+
+static struct BSMapTestcase
+rgTestcases[] = {
+	{ map_noop,         "\0\x7F\xFF",            3, "\0\x7F\xFF"           },
+	{ map_noop,         "@[`{+,AZaz09",         12, "@[`{+,AZaz09"         },
+	{ map_increment,    "00000",                 5, "11111"                },
+	{ map_increment,    "11111",                 5, "22222"                },
+	{ bs_map_uppercase, "\0\x7F\xFF",            3, "\0\x7F\xFF"           },
+	{ bs_map_uppercase, "@[`{+,AZaz09",         12, "@[`{+,AZAZ09"         },
+	{ bs_map_lowercase, "\0\x7F\xFF",            3, "\0\x7F\xFF"           },
+	{ bs_map_lowercase, "@[`{+,AZaz09",         12, "@[`{+,azaz09"         },
+	{ bs_map_not,       "\x01\x23\x45\x67\x89",  5, "\xFE\xDC\xBA\x98\x76" },
+	{ bs_map_not,       "\xAB\xCD\xEF",          3, "\x54\x32\x10"         },
+};
+
+
+/* ============== */
+/* Testcase tests */
+/* ============== */
+
+START_TEST(test_maps)
+{
+	struct BSMapTestcase testcase = rgTestcases[_i];
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_load(bs, byte_values, 10);
+	result = bs_load(bs, testcase.rgbInput, testcase.cbInput);
 	fail_unless(result == BS_OK);
 
-	result = bs_map(bs, operation);
+	result = testcase.pfMap(bs);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 10);
+	fail_unless(bs_size(bs) == testcase.cbInput);
 	fail_unless(
-		memcmp(byte_counts, byte_counts_target, 3) == 0
+		memcmp(bs_get_buffer(bs), testcase.rgbOutput, testcase.cbInput) == 0
 	);
 
 	bs_free(bs);
 }
 END_TEST
 
-START_TEST(test_map_null_bs)
+START_TEST(test_maps_empty_bs)
 {
+	BSresult (*pfMap)(BS *bs) = rgfMaps[_i];
+	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_map(NULL, operation);
+	result = pfMap(bs);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == 0);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_maps_null_bs)
+{
+	BSresult (*pfMap)(BS *bs) = rgfMaps[_i];
+	BSresult result;
+
+	result = pfMap(NULL);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
 
-START_TEST(test_map_null_operation)
+
+/* ==================== */
+/* NULL parameter tests */
+/* ==================== */
+
+START_TEST(test_generic_map_null_bs)
+{
+	BSresult result;
+
+	result = bs_map(NULL, (BSbyte (*)(BSbyte)) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_generic_map_null_operation)
 {
 	BS *bs = bs_create();
 	BSresult result;
@@ -84,91 +168,22 @@ START_TEST(test_map_null_operation)
 }
 END_TEST
 
-struct map_testcase_struct {
-	BSresult (*map_function) (BS *bs);
-	char input[3];
-	char output[3];
-};
-
-static const struct map_testcase_struct
-map_testcases[16] = {
-	{ bs_map_uppercase, "00", "00" },
-	{ bs_map_uppercase, "61", "41" },
-	{ bs_map_uppercase, "7a", "5a" },
-	{ bs_map_uppercase, "ff", "ff" },
-	{ bs_map_lowercase, "00", "00" },
-	{ bs_map_lowercase, "41", "61" },
-	{ bs_map_lowercase, "5a", "7a" },
-	{ bs_map_lowercase, "ff", "ff" },
-	{ bs_map_not,       "01", "fe" },
-	{ bs_map_not,       "23", "dc" },
-	{ bs_map_not,       "45", "ba" },
-	{ bs_map_not,       "67", "98" },
-	{ bs_map_not,       "89", "76" },
-	{ bs_map_not,       "ab", "54" },
-	{ bs_map_not,       "cd", "32" },
-	{ bs_map_not,       "ef", "10" },
-};
-
-START_TEST(test_map_functions)
-{
-	BS *bs = bs_create();
-	BSresult result;
-	size_t size;
-	char *hex;
-
-	result = bs_decode(bs, "hex", map_testcases[_i].input, 2);
-	fail_unless(result == BS_OK);
-
-	result = map_testcases[_i].map_function(bs);
-	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 1);
-
-	result = bs_encode_size(bs, "hex", &size);
-	fail_unless(result == BS_OK);
-
-	hex = malloc(size);
-	fail_unless(hex != NULL);
-
-	result = bs_encode(bs, "hex", hex);
-	fail_unless(result == BS_OK);
-	fail_unless(hex != NULL);
-	fail_unless(strlen(hex) == 2);
-	fail_unless(strcmp(hex, map_testcases[_i].output) == 0);
-
-	free(hex);
-	bs_free(bs);
-}
-END_TEST
-
-static BSresult (*map_function[3]) (BS *bs) = {
-	bs_map_uppercase,
-	bs_map_lowercase,
-	bs_map_not
-};
-
-START_TEST(test_map_functions_null)
-{
-	BSresult result;
-
-	result = map_function[_i](NULL);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
 
 int
 main(/* int argc, char **argv */)
 {
 	Suite *s = suite_create("Mapping");
 	TCase *tc_core = tcase_create("Core");
+	size_t cTestcases = sizeof(rgTestcases) / sizeof(struct BSMapTestcase);
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_map);
-	tcase_add_test(tc_core, test_map_null_bs);
-	tcase_add_test(tc_core, test_map_null_operation);
-	tcase_add_loop_test(tc_core, test_map_functions, 0, 16);
-	tcase_add_loop_test(tc_core, test_map_functions_null, 0, 3);
+	tcase_add_loop_test(tc_core, test_maps,          0, cTestcases);
+	tcase_add_loop_test(tc_core, test_maps_empty_bs, 0, C_MAPS);
+	tcase_add_loop_test(tc_core, test_maps_null_bs,  0, C_MAPS);
+
+	tcase_add_test(tc_core, test_generic_map_null_bs);
+	tcase_add_test(tc_core, test_generic_map_null_operation);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
