@@ -32,33 +32,9 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-static unsigned int
-byte_counts_target[3] = { 1, 4, 5 };
-
-static BSresult
-fold_operation(BSbyte byte, void *data)
-{
-	unsigned int *pbCounts = (unsigned int *) data;
-	pbCounts[byte]++;
-	return BS_OK;
-}
-
-START_TEST(test_fold)
-{
-	BS *bs = bs_create();
-	BSresult result;
-	unsigned int byte_counts[3] = { 0, 0, 0 };
-
-	result = bs_load(bs, "\x0\x1\x2\x1\x1\x1\x2\x2\x2\x2", 10);
-	fail_unless(result == BS_OK);
-
-	result = bs_fold(bs, fold_operation, &byte_counts);
-	fail_unless(result == BS_OK);
-	fail_unless(memcmp(byte_counts, byte_counts_target, 3 * sizeof(int)) == 0);
-
-	bs_free(bs);
-}
-END_TEST
+/* =============================== */
+/* Tiny functions used for testing */
+/* =============================== */
 
 static BSresult
 fold_bad_operation(BSbyte byte, void *data)
@@ -68,28 +44,181 @@ fold_bad_operation(BSbyte byte, void *data)
 	return 999;
 }
 
-START_TEST(test_fold_invalid)
+
+/* ========= */
+/* Testcases */
+/* ========= */
+
+struct BSFoldType {
+	BSresult (*pfFold)(const BS *, unsigned int *); /* Function to test */
+	unsigned int initial;                           /* Initial value */
+};
+
+static struct BSFoldType
+rgFoldTypes[] = {
+	{ bs_fold_sum,      0 },
+	{ bs_fold_bitcount, 0 },
+};
+
+struct BSFoldTestcase {
+	BSresult (*pfFold)(const BS *, unsigned int *); /* Function to test */
+	BSbyte *rgbInput;                               /* Starting bytestream contents */
+	size_t cbInput;                                 /* Starting bytestream length */
+	unsigned int output;                            /* Expected output */
+};
+
+
+static struct BSFoldTestcase
+rgTestcases[] = {
+	{ bs_fold_sum,      "\0\1",        2,    1 },
+	{ bs_fold_sum,      "\1\0",        2,    1 },
+	{ bs_fold_sum,      "\x00",        1,    0 },
+	{ bs_fold_sum,      "\x01",        1,    1 },
+	{ bs_fold_sum,      "\x02",        1,    2 },
+	{ bs_fold_sum,      "\x04",        1,    4 },
+	{ bs_fold_sum,      "\x08",        1,    8 },
+	{ bs_fold_sum,      "\x10",        1,   16 },
+	{ bs_fold_sum,      "\x20",        1,   32 },
+	{ bs_fold_sum,      "\x40",        1,   64 },
+	{ bs_fold_sum,      "\x80",        1,  128 },
+	{ bs_fold_sum,      "\x03",        1,    3 },
+	{ bs_fold_sum,      "\x07",        1,    7 },
+	{ bs_fold_sum,      "\x0F",        1,   15 },
+	{ bs_fold_sum,      "\x1F",        1,   31 },
+	{ bs_fold_sum,      "\x3F",        1,   63 },
+	{ bs_fold_sum,      "\x7F",        1,  127 },
+	{ bs_fold_sum,      "\xFF",        1,  255 },
+	{ bs_fold_sum,      "Test input", 10, 1008 },
+	{ bs_fold_bitcount, "\0\1",        2,    1 },
+	{ bs_fold_bitcount, "\1\0",        2,    1 },
+	{ bs_fold_bitcount, "\x00",        1,    0 },
+	{ bs_fold_bitcount, "\x01",        1,    1 },
+	{ bs_fold_bitcount, "\x02",        1,    1 },
+	{ bs_fold_bitcount, "\x04",        1,    1 },
+	{ bs_fold_bitcount, "\x08",        1,    1 },
+	{ bs_fold_bitcount, "\x10",        1,    1 },
+	{ bs_fold_bitcount, "\x20",        1,    1 },
+	{ bs_fold_bitcount, "\x40",        1,    1 },
+	{ bs_fold_bitcount, "\x80",        1,    1 },
+	{ bs_fold_bitcount, "\x03",        1,    2 },
+	{ bs_fold_bitcount, "\x07",        1,    3 },
+	{ bs_fold_bitcount, "\x0F",        1,    4 },
+	{ bs_fold_bitcount, "\x1F",        1,    5 },
+	{ bs_fold_bitcount, "\x3F",        1,    6 },
+	{ bs_fold_bitcount, "\x7F",        1,    7 },
+	{ bs_fold_bitcount, "\xFF",        1,    8 },
+	{ bs_fold_bitcount, "Test input", 10,   38 },
+};
+
+
+/* ============== */
+/* Testcase tests */
+/* ============== */
+
+START_TEST(test_folds)
+{
+	struct BSFoldTestcase testcase = rgTestcases[_i];
+	BS *bs = bs_create();
+	BSresult result;
+	unsigned int output;
+
+	result = bs_load(bs, testcase.rgbInput, testcase.cbInput);
+	fail_unless(result == BS_OK);
+
+	result = testcase.pfFold(bs, &output);
+	fail_unless(result == BS_OK);
+	fail_unless(output == testcase.output);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_folds_empty_bs)
+{
+	struct BSFoldType fold = rgFoldTypes[_i];
+	BS *bs = bs_create();
+	BSresult result;
+	unsigned int output;
+
+	result = fold.pfFold(bs, &output);
+	fail_unless(result == BS_OK);
+	fail_unless(output == fold.initial);
+
+	bs_free(bs);
+}
+END_TEST
+
+START_TEST(test_folds_null_bs)
+{
+	struct BSFoldType fold = rgFoldTypes[_i];
+	BSresult result;
+
+	result = fold.pfFold(NULL, (unsigned int *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_folds_null_output)
+{
+	struct BSFoldType fold = rgFoldTypes[_i];
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = fold.pfFold(bs, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+
+/* =========== */
+/* Other tests */
+/* =========== */
+
+START_TEST(test_fold_bad_operation)
 {
 	BS *bs = bs_create_size(1);
 	BSresult result;
 
-	result = bs_fold(bs, fold_bad_operation, &result);
+	result = bs_fold(bs, fold_bad_operation, (void *) 0xDEADBEEF);
 	fail_unless(result == 999);
 
 	bs_free(bs);
 }
 END_TEST
 
-START_TEST(test_fold_null_bs)
+START_TEST(test_fold_bad_operation_empty_bs)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_fold(bs, fold_bad_operation, (void *) 0xDEADBEEF);
+	fail_unless(result == BS_OK);
+
+	bs_free(bs);
+}
+END_TEST
+
+
+/* ==================== */
+/* NULL parameter tests */
+/* ==================== */
+
+START_TEST(test_generic_fold_null_bs)
 {
 	BSresult result;
 
-	result = bs_fold(NULL, fold_operation, (void *) 0xDEADBEEF);
+	result = bs_fold(
+		NULL,
+		(BSresult (*)(BSbyte, void *)) 0xDEADBEEF,
+		(void *) 0xDEADBEEF
+	);
 	fail_unless(result == BS_NULL);
 }
 END_TEST
 
-START_TEST(test_fold_null_operation)
+START_TEST(test_generic_fold_null_operation)
 {
 	BS *bs = bs_create();
 	BSresult result;
@@ -101,190 +230,27 @@ START_TEST(test_fold_null_operation)
 }
 END_TEST
 
-struct fold_test_case {
-	BSbyte byte;
-	unsigned int sum;
-	unsigned int bitcount;
-};
-
-static struct fold_test_case
-fold_tests[16] = {
-	{ '\x00',   0, 0 },
-	{ '\x01',   1, 1 },
-	{ '\x02',   2, 1 },
-	{ '\x04',   4, 1 },
-	{ '\x08',   8, 1 },
-	{ '\x10',  16, 1 },
-	{ '\x20',  32, 1 },
-	{ '\x40',  64, 1 },
-	{ '\x80', 128, 1 },
-	{ '\x03',   3, 2 },
-	{ '\x07',   7, 3 },
-	{ '\x0F',  15, 4 },
-	{ '\x1F',  31, 5 },
-	{ '\x3F',  63, 6 },
-	{ '\x7F', 127, 7 },
-	{ '\xFF', 255, 8 },
-};
-
-START_TEST(test_sum_starts_zero)
-{
-	BS *bs = bs_create();
-	unsigned int sum = 999;
-	BSresult result;
-
-	result = bs_fold_sum(bs, &sum);
-	fail_unless(result == BS_OK);
-	fail_unless(sum == 0);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_sum)
-{
-	BS *bs = bs_create_size(1);
-	unsigned int sum;
-	BSresult result;
-
-	bs_set_byte(bs, 0, fold_tests[_i].byte);
-
-	result = bs_fold_sum(bs, &sum);
-	fail_unless(result == BS_OK);
-	fail_unless(sum == fold_tests[_i].sum);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_sum_long)
-{
-	BS *bs = bs_create();
-	unsigned int sum;
-	BSresult result;
-
-	bs_load(bs, (BSbyte *) "Test input", 10);
-
-	result = bs_fold_sum(bs, &sum);
-	fail_unless(result == BS_OK);
-	fail_unless(sum == 1008);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_sum_null_bs)
-{
-	unsigned int sum;
-	BSresult result;
-
-	result = bs_fold_sum(NULL, &sum);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_sum_null_sum)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_fold_sum(bs, NULL);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_bitcount_starts_zero)
-{
-	BS *bs = bs_create();
-	unsigned int bitcount = 999;
-	BSresult result;
-
-	result = bs_fold_bitcount(bs, &bitcount);
-	fail_unless(result == BS_OK);
-	fail_unless(bitcount == 0);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_bitcount)
-{
-	BS *bs = bs_create_size(1);
-	unsigned int bitcount;
-	BSresult result;
-
-	bs_set_byte(bs, 0, fold_tests[_i].byte);
-
-	result = bs_fold_bitcount(bs, &bitcount);
-	fail_unless(result == BS_OK);
-	fail_unless(bitcount == fold_tests[_i].bitcount);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_bitcount_long)
-{
-	BS *bs = bs_create();
-	unsigned int bitcount;
-	BSresult result;
-
-	bs_load(bs, (BSbyte *) "Test input", 10);
-
-	result = bs_fold_bitcount(bs, &bitcount);
-	fail_unless(result == BS_OK);
-	fail_unless(bitcount == 38);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_bitcount_null_bs)
-{
-	unsigned int bitcount;
-	BSresult result;
-
-	result = bs_fold_bitcount(NULL, &bitcount);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_bitcount_null_sum)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_fold_bitcount(bs, NULL);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
 
 int
 main(/* int argc, char **argv */)
 {
 	Suite *s = suite_create("Folding");
 	TCase *tc_core = tcase_create("Core");
+	size_t cTestcases = sizeof(rgTestcases) / sizeof(struct BSFoldTestcase);
+	size_t cFoldTypes = sizeof(rgFoldTypes) / sizeof(struct BSFoldType);
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_fold);
-	tcase_add_test(tc_core, test_fold_invalid);
-	tcase_add_test(tc_core, test_fold_null_bs);
-	tcase_add_test(tc_core, test_fold_null_operation);
-	tcase_add_test(tc_core, test_sum_starts_zero);
-	tcase_add_loop_test(tc_core, test_sum, 0, 16);
-	tcase_add_test(tc_core, test_sum_long);
-	tcase_add_test(tc_core, test_sum_null_bs);
-	tcase_add_test(tc_core, test_sum_null_sum);
-	tcase_add_test(tc_core, test_bitcount_starts_zero);
-	tcase_add_loop_test(tc_core, test_bitcount, 0, 16);
-	tcase_add_test(tc_core, test_bitcount_long);
-	tcase_add_test(tc_core, test_bitcount_null_bs);
-	tcase_add_test(tc_core, test_bitcount_null_sum);
+	tcase_add_loop_test(tc_core, test_folds,             0, cTestcases);
+	tcase_add_loop_test(tc_core, test_folds_empty_bs,    0, cFoldTypes);
+	tcase_add_loop_test(tc_core, test_folds_null_bs,     0, cFoldTypes);
+	tcase_add_loop_test(tc_core, test_folds_null_output, 0, cFoldTypes);
+
+	tcase_add_test(tc_core, test_fold_bad_operation);
+	tcase_add_test(tc_core, test_fold_bad_operation_empty_bs);
+
+	tcase_add_test(tc_core, test_generic_fold_null_bs);
+	tcase_add_test(tc_core, test_generic_fold_null_operation);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
