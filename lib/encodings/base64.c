@@ -34,14 +34,31 @@
 /* Decode */
 /* ====== */
 
+/**
+ * These tables are used to convert an ASCII character to its base64 value
+ *  99 = invalid character
+ *  77 = padding ('=')
+ */
 static const unsigned int
 rgBase64Decoding[] = {
-	                                            62, 99, 99, 99, 63,
-	52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 99, 99, 99, 77, 99, 99,
-	99,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
-	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 99, 99, 99, 99, 99,
-	99, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-	41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+/*       0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F */
+/* 2 */                                              62, 99, 99, 99, 63,
+/* 3 */  52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 99, 99, 99, 77, 99, 99,
+/* 4 */  99,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+/* 5 */  15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 99, 99, 99, 99, 99,
+/* 6 */  99, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+/* 7 */  41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+};
+
+static const unsigned int
+rgBase64UrlDecoding[] = {
+/*       0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F */
+/* 2 */                                              99, 99, 62, 99, 99,
+/* 3 */  52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 99, 99, 99, 77, 99, 99,
+/* 4 */  99,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+/* 5 */  15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 99, 99, 99, 99, 63,
+/* 6 */  99, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+/* 7 */  41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
 };
 
 static BSbyte
@@ -131,6 +148,12 @@ bs_decode_base64(BS *bs, const char *input, size_t length)
 	return read_base64_string(bs, input, length, rgBase64Decoding);
 }
 
+BSresult
+bs_decode_base64url(BS *bs, const char *input, size_t length)
+{
+	return read_base64_string(bs, input, length, rgBase64UrlDecoding);
+}
+
 
 /* ==== */
 /* Size */
@@ -150,6 +173,10 @@ bs_encode_size_base64(const BS *bs)
 static const char
 rgBase64Encoding[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+static const char
+rgBase64UrlEncoding[] =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
 static void
 write_base64_bytes(
@@ -211,4 +238,10 @@ void
 bs_encode_base64(const BS *bs, char *output)
 {
 	write_base64_string(bs, output, rgBase64Encoding);
+}
+
+void
+bs_encode_base64url(const BS *bs, char *output)
+{
+	write_base64_string(bs, output, rgBase64UrlEncoding);
 }

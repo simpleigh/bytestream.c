@@ -30,9 +30,10 @@
 #include <string.h>
 
 static const struct BSencoding rgEncodings[] = {
-	{ "base64", bs_decode_base64, bs_encode_size_base64, bs_encode_base64 },
-	{ "hex",    bs_decode_hex,    bs_encode_size_hex,    bs_encode_hex    },
-	{ NULL,     NULL,             NULL,                  NULL             },
+	{ "hex",       bs_decode_hex,       bs_encode_size_hex,    bs_encode_hex       },
+	{ "base64",    bs_decode_base64,    bs_encode_size_base64, bs_encode_base64    },
+	{ "base64url", bs_decode_base64url, bs_encode_size_base64, bs_encode_base64url },
+	{ NULL,        NULL,                NULL,                  NULL                }
 };
 
 BSresult

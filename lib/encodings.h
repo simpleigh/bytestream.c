@@ -36,13 +36,15 @@ struct BSencoding {
 	void (*fpEncode) (const BS *bs, char *output);
 };
 
-BSresult bs_decode_hex(BS *bs, const char *hex, size_t length);
-BSresult bs_decode_base64(BS *bs, const char *base64, size_t length);
+BSresult bs_decode_hex       (BS *bs, const char *input, size_t length);
+BSresult bs_decode_base64    (BS *bs, const char *input, size_t length);
+BSresult bs_decode_base64url (BS *bs, const char *input, size_t length);
 
-size_t bs_encode_size_hex(const BS *bs);
-size_t bs_encode_size_base64(const BS *bs);
+size_t bs_encode_size_hex    (const BS *bs);
+size_t bs_encode_size_base64 (const BS *bs);
 
-void bs_encode_hex(const BS *bs, char *hex);
-void bs_encode_base64(const BS *bs, char *base64);
+void bs_encode_hex       (const BS *bs, char *hex);
+void bs_encode_base64    (const BS *bs, char *hex);
+void bs_encode_base64url (const BS *bs, char *hex);
 
 #endif /* __ENCODINGS_H */

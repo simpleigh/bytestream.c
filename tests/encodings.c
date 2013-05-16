@@ -29,11 +29,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define C_ENCODINGS 2
+#define C_ENCODINGS 3
 
 static char *rgszEncodings[C_ENCODINGS] = {
 	"hex",
-	"base64"
+	"base64",
+	"base64url",
 };
 
 struct BSEncodingTestcase {
@@ -65,6 +66,19 @@ rgTestcases[] = {
 	{ "base64",    "l0+/",              4, "\x97\x4f\xbf",             3, "l0+/",              5 },
 	{ "base64",    "ABCD",              4, "\x0\x10\x83",              3, "ABCD",              5 },
 	{ "base64",    "ZWFzdXJlLg==",     12, "easure.",                  7, "ZWFzdXJlLg==",     13 },
+
+	{ "base64url", "AA==",              4, "\0",                       1, "AA==",              5 },
+	{ "base64url", "AAA=",              4, "\0\0",                     2, "AAA=",              5 },
+	{ "base64url", "AAAA",              4, "\0\0\0",                   3, "AAAA",              5 },
+	{ "base64url", "_w==",              4, "\xff",                     1, "_w==",              5 },
+	{ "base64url", "__8=",              4, "\xff\xff",                 2, "__8=",              5 },
+	{ "base64url", "____",              4, "\xff\xff\xff",             3, "____",              5 },
+	{ "base64url", "AAAu",              4, "\0\0\x2e",                 3, "AAAu",              5 },
+	{ "base64url", "TWFu",              4, "Man",                      3, "TWFu",              5 },
+	{ "base64url", "YW55",              4, "any",                      3, "YW55",              5 },
+	{ "base64url", "l0-_",              4, "\x97\x4f\xbf",             3, "l0-_",              5 },
+	{ "base64url", "ABCD",              4, "\x0\x10\x83",              3, "ABCD",              5 },
+	{ "base64url", "ZWFzdXJlLg==",     12, "easure.",                  7, "ZWFzdXJlLg==",     13 },
 
 	/* These next testcases from RFC 4648 */
 	{ "base64",    "FPucA9l+",          8, "\x14\xfb\x9c\x03\xd9\x7e", 6, "FPucA9l+",          9 },
