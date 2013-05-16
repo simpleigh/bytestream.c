@@ -64,7 +64,7 @@ map_noop(BS *bs)
 
 #define C_MAPS 5
 
-static BSresult (*rgfMaps[C_MAPS])(BS *bs) = {
+static BSresult (*rgfMaps[C_MAPS])(BS *) = {
 	map_noop,
 	map_increment,
 	bs_map_uppercase,
@@ -73,10 +73,10 @@ static BSresult (*rgfMaps[C_MAPS])(BS *bs) = {
 };
 
 struct BSMapTestcase {
-	BSresult (*pfMap)(BS *bs); /* Function to test */
-	BSbyte *rgbInput;          /* Starting bytestream contents */
-	size_t cbInput;            /* Starting bytestream length */
-	const BSbyte *rgbOutput;   /* Expected bytestream contents */
+	BSresult (*pfMap)(BS *); /* Function to test */
+	BSbyte *rgbInput;        /* Starting bytestream contents */
+	size_t cbInput;          /* Starting bytestream length */
+	const BSbyte *rgbOutput; /* Expected bytestream contents */
 };
 
 static struct BSMapTestcase
@@ -120,7 +120,7 @@ END_TEST
 
 START_TEST(test_maps_empty_bs)
 {
-	BSresult (*pfMap)(BS *bs) = rgfMaps[_i];
+	BSresult (*pfMap)(BS *) = rgfMaps[_i];
 	BS *bs = bs_create();
 	BSresult result;
 
@@ -134,7 +134,7 @@ END_TEST
 
 START_TEST(test_maps_null_bs)
 {
-	BSresult (*pfMap)(BS *bs) = rgfMaps[_i];
+	BSresult (*pfMap)(BS *) = rgfMaps[_i];
 	BSresult result;
 
 	result = pfMap(NULL);

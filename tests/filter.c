@@ -70,18 +70,18 @@ filter_exclude_all(BS *bs)
 
 #define C_FILTERS 3
 
-static BSresult (*rgfFilters[C_FILTERS])(BS *bs) = {
+static BSresult (*rgfFilters[C_FILTERS])(BS *) = {
 	filter_include_all,
 	filter_exclude_all,
 	bs_filter_whitespace,
 };
 
 struct BSFilterTestcase {
-	BSresult (*pfFilter)(BS *bs); /* Function to test */
-	BSbyte *rgbInput;             /* Starting bytestream contents */
-	size_t cbInput;               /* Starting bytestream length */
-	const BSbyte *rgbOutput;      /* Expected bytestream contents */
-	size_t cbOutput;              /* Expected bytestream length */
+	BSresult (*pfFilter)(BS *); /* Function to test */
+	BSbyte *rgbInput;           /* Starting bytestream contents */
+	size_t cbInput;             /* Starting bytestream length */
+	const BSbyte *rgbOutput;    /* Expected bytestream contents */
+	size_t cbOutput;            /* Expected bytestream length */
 };
 
 static struct BSFilterTestcase
@@ -120,7 +120,7 @@ END_TEST
 
 START_TEST(test_filters_empty_bs)
 {
-	BSresult (*pfFilter)(BS *bs) = rgfFilters[_i];
+	BSresult (*pfFilter)(BS *) = rgfFilters[_i];
 	BS *bs = bs_create();
 	BSresult result;
 
@@ -134,7 +134,7 @@ END_TEST
 
 START_TEST(test_filters_null_bs)
 {
-	BSresult (*pfFilter)(BS *bs) = rgfFilters[_i];
+	BSresult (*pfFilter)(BS *) = rgfFilters[_i];
 	BSresult result;
 
 	result = pfFilter(NULL);
