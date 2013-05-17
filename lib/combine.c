@@ -42,6 +42,10 @@ bs_combine(
 	BS_ASSERT_VALID(bs)
 	BS_ASSERT_VALID(operand)
 
+	if (bs_size(operand) == 0) {
+		return BS_INVALID;
+	}
+
 	while (ibByteStream < bs->cbBytes) {
 		bs->pbBytes[ibByteStream] = operation(
 			bs->pbBytes[ibByteStream],

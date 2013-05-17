@@ -28,35 +28,102 @@
 #include <check.h>
 #include <stdlib.h>
 
-static unsigned int
-short_operand_counts[3] = { 0, 0, 0 };
+#ifndef UNUSED
+#define UNUSED(x) (void)(x)
+#endif
 
-static unsigned int
-short_operand_counts_target[3] = { 2, 2, 1 };
+
+/* =============================== */
+/* Tiny functions used for testing */
+/* =============================== */
 
 static BSbyte
-short_operand_operation(BSbyte byte1, BSbyte byte2)
+overwrite_byte(BSbyte byte1, BSbyte byte2)
 {
-	short_operand_counts[byte2]++;
-	return 0;
+	UNUSED(byte1);
+	return byte2;
 }
 
-START_TEST(test_combine_short_operand)
+static BSresult
+combine_overwrite(BS *bs, const BS *operand)
 {
-	BS *bs = bs_create_size(5);
-	BS *operand = bs_create_size(3);
-	size_t ibOperand;
+	return bs_combine(bs, operand, overwrite_byte);
+}
+
+
+/* ========= */
+/* Testcases */
+/* ========= */
+
+#define C_COMBINATIONS 6
+
+static BSresult (*rgfCombinations[C_COMBINATIONS])(BS *, const BS *) = {
+	combine_overwrite,
+	bs_combine_xor,
+	bs_combine_or,
+	bs_combine_and,
+	bs_combine_add,
+	bs_combine_sub,
+};
+
+struct BSCombineTestcase {
+	BSresult (*pfCombine)(BS *, const BS *); /* Function to test */
+	const BSbyte *rgbInput;                  /* Starting bytestream contents */
+	size_t cbInput;                          /* Starting bytestream length */
+	const BSbyte *rgbOperand;                /* Starting operand contents */
+	size_t cbOperand;                        /* Starting operand length */
+	const BSbyte *rgbOutput;                 /* Expected bytestream contents */
+};
+
+static struct BSCombineTestcase
+rgTestcases[] = {
+	{ combine_overwrite, "        ",                         8, "1",                1, "11111111"                         },
+	{ combine_overwrite, "        ",                         8, "1 ",               2, "1 1 1 1 "                         },
+	{ combine_overwrite, "        ",                         8, "1  ",              3, "1  1  1 "                         },
+	{ combine_overwrite, "        ",                         8, "1   ",             4, "1   1   "                         },
+	{ combine_overwrite, "    ",                             4, "12345678",         8, "1234"                             },
+	{ bs_combine_xor,    "\x00\x00\x01\x01",                 4, "\x00\x01\x00\x01", 4, "\x00\x01\x01\x00"                 },
+	{ bs_combine_xor,    "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8, "\xAA\xBB\xCC",     3, "\xAB\x98\x89\xCD\x32\x67\x67\x54" },
+	{ bs_combine_or,     "\x00\x00\x01\x01",                 4, "\x00\x01\x00\x01", 4, "\x00\x01\x01\x01"                 },
+	{ bs_combine_or,     "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8, "\xAA\xBB\xCC",     3, "\xAB\xBB\xCD\xEF\xBB\xEF\xEF\xFF" },
+	{ bs_combine_and,    "\x00\x00\x01\x01",                 4, "\x00\x01\x00\x01", 4, "\x00\x00\x00\x01"                 },
+	{ bs_combine_and,    "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8, "\xAA\xBB\xCC",     3, "\x00\x23\x44\x22\x89\x88\x88\xAB" },
+	{ bs_combine_add,    "1234",                             4, "\x01",             1, "2345"                             },
+	{ bs_combine_add,    "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8, "\xAA\xBB\xCC",     3, "\xAB\xDE\x11\x11\x44\x77\x77\xAA" },
+	{ bs_combine_sub,    "2345",                             4, "\x01",             1, "1234"                             },
+	{ bs_combine_sub,    "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8, "\xAA\xBB\xCC",     3, "\x57\x68\x79\xBD\xCE\xDF\x23\x34" },
+};
+
+
+/* ============== */
+/* Testcase tests */
+/* ============== */
+
+START_TEST(test_combinations)
+{
+	struct BSCombineTestcase testcase = rgTestcases[_i];
+	BS *bs      = bs_create();
+	BS *operand = bs_create();
 	BSresult result;
 
-	for (ibOperand = 0; ibOperand < 3; ibOperand++) {
-		bs_set_byte(operand, ibOperand, (BSbyte) ibOperand);
-	}
-
-	result = bs_combine(bs, operand, short_operand_operation);
+	result = bs_load(bs, testcase.rgbInput, testcase.cbInput);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 5);
+
+	result = bs_load(operand, testcase.rgbOperand, testcase.cbOperand);
+	fail_unless(result == BS_OK);
+
+	result = testcase.pfCombine(bs, operand);
+	fail_unless(result == BS_OK);
+	fail_unless(bs_size(bs) == testcase.cbInput);
 	fail_unless(
-		memcmp(short_operand_counts, short_operand_counts_target, 3) == 0
+		memcmp(bs_get_buffer(bs), testcase.rgbOutput, testcase.cbInput) == 0
+	);
+	fail_unless(
+		memcmp(
+			bs_get_buffer(operand),
+			testcase.rgbOperand,
+			testcase.cbOperand
+		) == 0
 	);
 
 	bs_free(bs);
@@ -64,67 +131,111 @@ START_TEST(test_combine_short_operand)
 }
 END_TEST
 
-static unsigned int
-long_operand_counts[5] = { 0, 0, 0, 0, 0 };
-
-static unsigned int
-long_operand_counts_target[5] = { 1, 1, 1, 0, 0};
-
-static BSbyte
-long_operand_operation(BSbyte byte1, BSbyte byte2)
+START_TEST(test_combinations_empty_bs)
 {
-	long_operand_counts[byte2]++;
-	return 0;
-}
-
-START_TEST(test_combine_long_operand)
-{
-	BS *bs = bs_create_size(3);
-	BS *operand = bs_create_size(5);
-	size_t ibOperand;
+	BSresult (*pfCombine)(BS *, const BS *) = rgfCombinations[_i];
+	BS *bs = bs_create(), *operand = bs_create_size(5);
 	BSresult result;
 
-	for (ibOperand = 0; ibOperand < 3; ibOperand++) {
-		bs_set_byte(operand, ibOperand, (BSbyte) ibOperand);
-	}
-
-	result = bs_combine(bs, operand, long_operand_operation);
+	result = pfCombine(bs, operand);
 	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 3);
-	fail_unless(
-		memcmp(long_operand_counts, long_operand_counts_target, 5) == 0
-	);
+	fail_unless(bs_size(bs) == 0);
 
 	bs_free(bs);
 	bs_free(operand);
 }
 END_TEST
 
-START_TEST(test_combine_null_bs)
+START_TEST(test_combinations_empty_operand)
+{
+	BSresult (*pfCombine)(BS *, const BS *) = rgfCombinations[_i];
+	BS *bs = bs_create(), *operand = bs_create();
+	BSresult result;
+
+	result = bs_load(bs, (BSbyte *) "test", 4);
+	fail_unless(result == BS_OK);
+
+	result = pfCombine(bs, operand);
+	fail_unless(result == BS_INVALID);
+	fail_unless(bs_size(bs) == 4);
+	fail_unless(memcmp(bs_get_buffer(bs), "test", 4) == 0);
+
+	bs_free(bs);
+	bs_free(operand);
+}
+END_TEST
+
+START_TEST(test_combinations_empty_parameters)
+{
+	BSresult (*pfCombine)(BS *, const BS *) = rgfCombinations[_i];
+	BS *bs = bs_create(), *operand = bs_create();
+	BSresult result;
+
+	result = pfCombine(bs, operand);
+	fail_unless(result == BS_INVALID);
+	fail_unless(bs_size(bs) == 0);
+
+	bs_free(bs);
+	bs_free(operand);
+}
+END_TEST
+
+START_TEST(test_combinations_null_bs)
+{
+	BSresult (*pfCombine)(BS *, const BS *) = rgfCombinations[_i];
+	BS *operand = bs_create();
+	BSresult result;
+
+	result = pfCombine(NULL, operand);
+	fail_unless(result == BS_NULL);
+
+	bs_free(operand);
+}
+END_TEST
+
+START_TEST(test_combinations_null_operand)
+{
+	BSresult (*pfCombine)(BS *, const BS *) = rgfCombinations[_i];
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = pfCombine(bs, NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
+
+/* ==================== */
+/* NULL parameter tests */
+/* ==================== */
+
+START_TEST(test_generic_combination_null_bs)
 {
 	BS *operand = bs_create();
 	BSresult result;
 
-	result = bs_combine(NULL, operand, short_operand_operation);
+	result = bs_combine(NULL, operand, (BSbyte (*)(BSbyte, BSbyte)) 0xDEADBEEF);
 	fail_unless(result == BS_NULL);
 
 	bs_free(operand);
 }
 END_TEST
 
-START_TEST(test_combine_null_operand)
+START_TEST(test_generic_combination_null_operand)
 {
 	BS *bs = bs_create();
 	BSresult result;
 
-	result = bs_combine(bs, NULL, short_operand_operation);
+	result = bs_combine(bs, NULL, (BSbyte (*)(BSbyte, BSbyte)) 0xDEADBEEF);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
 }
 END_TEST
 
-START_TEST(test_combine_null_operation)
+START_TEST(test_generic_combination_null_operation)
 {
 	BS *bs = bs_create(), *operand = bs_create();
 	BSresult result;
@@ -137,103 +248,26 @@ START_TEST(test_combine_null_operation)
 }
 END_TEST
 
-struct combine_testcase_struct {
-	BSresult (*combine_function) (BS *bs, const BS *operand);
-	char output[17];
-};
-
-static const struct combine_testcase_struct
-combine_testcases[5] = {
-	{ bs_combine_xor, "ab9889cd32676754" },
-	{ bs_combine_or,  "abbbcdefbbefefff" },
-	{ bs_combine_and, "00234422898888ab" },
-	{ bs_combine_add, "abde1111447777aa" },
-	{ bs_combine_sub, "576879bdcedf2334" },
-};
-
-START_TEST(test_combine_functions)
-{
-	BS *bs = bs_create(), *operand = bs_create();
-	BSresult result;
-	size_t size;
-	char *hex;
-
-	result = bs_decode(bs, "hex", "0123456789abcdef", 16);
-	fail_unless(result == BS_OK);
-
-	result = bs_decode(operand, "hex", "aabbcc", 6);
-	fail_unless(result == BS_OK);
-
-	result = combine_testcases[_i].combine_function(bs, operand);
-	fail_unless(result == BS_OK);
-	fail_unless(bs_size(bs) == 8);
-
-	result = bs_encode_size(bs, "hex", &size);
-	fail_unless(result == BS_OK);
-
-	hex = malloc(size);
-	fail_unless(hex != NULL);
-
-	result = bs_encode(bs, "hex", hex);
-	fail_unless(result == BS_OK);
-	fail_unless(hex != NULL);
-	fail_unless(strlen(hex) == 16);
-	fail_unless(strcmp(hex, combine_testcases[_i].output) == 0);
-
-	free(hex);
-	bs_free(bs);
-	bs_free(operand);
-}
-END_TEST
-
-static BSresult (*combine_functions[5]) (BS *bs, const BS *operand) = {
-	bs_combine_xor,
-	bs_combine_or,
-	bs_combine_and,
-	bs_combine_add,
-	bs_combine_sub
-};
-
-START_TEST(test_combine_functions_null_bs1)
-{
-	BS *bs2 = bs_create();
-	BSresult result;
-
-	result = combine_functions[_i](NULL, bs2);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs2);
-}
-END_TEST
-
-START_TEST(test_combine_functions_null_bs2)
-{
-	BS *bs1 = bs_create();
-	BSresult result;
-
-	result = combine_functions[_i](bs1, NULL);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs1);
-}
-END_TEST
 
 int
 main(/* int argc, char **argv */)
 {
 	Suite *s = suite_create("Combinations");
 	TCase *tc_core = tcase_create("Core");
+	size_t cTestcases = sizeof(rgTestcases) / sizeof(struct BSCombineTestcase);
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_test(tc_core, test_combine_short_operand);
-	tcase_add_test(tc_core, test_combine_long_operand);
-	tcase_add_test(tc_core, test_combine_null_bs);
-	tcase_add_test(tc_core, test_combine_null_operand);
-	tcase_add_test(tc_core, test_combine_null_operation);
-	tcase_add_loop_test(tc_core, test_combine_functions, 0, 5);
-	tcase_add_loop_test(tc_core, test_combine_functions_null_bs1, 0, 5);
-	tcase_add_loop_test(tc_core, test_combine_functions_null_bs2, 0, 5);
+	tcase_add_loop_test(tc_core, test_combinations,                  0, cTestcases);
+	tcase_add_loop_test(tc_core, test_combinations_empty_bs,         0, C_COMBINATIONS);
+	tcase_add_loop_test(tc_core, test_combinations_empty_operand,    0, C_COMBINATIONS);
+	tcase_add_loop_test(tc_core, test_combinations_empty_parameters, 0, C_COMBINATIONS);
+	tcase_add_loop_test(tc_core, test_combinations_null_bs,          0, C_COMBINATIONS);
+	tcase_add_loop_test(tc_core, test_combinations_null_operand,     0, C_COMBINATIONS);
+
+	tcase_add_test(tc_core, test_generic_combination_null_bs);
+	tcase_add_test(tc_core, test_generic_combination_null_operand);
+	tcase_add_test(tc_core, test_generic_combination_null_operation);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);

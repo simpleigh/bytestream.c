@@ -350,6 +350,7 @@ BSresult bs_compare_hamming(const BS *bs1, const BS *bs2, unsigned int *distance
  * This provides a simple way, for example, to XOR two streams together.
  * Common operations are available through library functions defined below.
  * Returns BS_OK if all bytes are combined successfully
+ * Returns BS_INVALID for zero-length operand
  * The operation should return the combination of BYTE1 and BYTE2.
  */
 BSresult bs_combine(BS *bs, const BS *operand,
