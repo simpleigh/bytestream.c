@@ -103,7 +103,7 @@ coverage:
 	$(MAKE) V=0 clean
 	$(MAKE) V=0 CFLAGS='-g -fprofile-arcs -ftest-coverage'
 	$(MAKE) V=0 check
-	gcov --object-directory .libs lib/*
+	find lib -name '*.c' | xargs gcov --object-directory .libs
 # TODO can we make the above line less fragile?
 
 
