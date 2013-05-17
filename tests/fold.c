@@ -128,6 +128,9 @@ START_TEST(test_folds)
 	result = testcase.pfFold(bs, &output);
 	fail_unless(result == BS_OK);
 	fail_unless(output == testcase.output);
+	fail_unless(
+		memcmp(bs_get_buffer(bs), testcase.rgbInput, testcase.cbInput) == 0
+	);
 
 	bs_free(bs);
 }
