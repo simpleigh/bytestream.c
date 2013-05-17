@@ -29,6 +29,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+/* ========= */
+/* Testcases */
+/* ========= */
+
 #define C_ENCODINGS 3
 
 static char *rgszEncodings[C_ENCODINGS] = {
@@ -51,39 +56,39 @@ static struct BSEncodingTestcase
 rgTestcases[] = {
 	{ "hex",       "",                  0, "",                         0, "",                  1 },
 	{ "hex",       "0123456789",       10, "\x01\x23\x45\x67\x89",     5, "0123456789",       11 },
-	{ "hex",       "abcdef",            6, "\xab\xcd\xef",             3, "abcdef",            7 },
-	{ "hex",       "ABCDEF",            6, "\xab\xcd\xef",             3, "abcdef",            7 },
+	{ "hex",       "abcdef",            6, "\xAB\xCD\xEF",             3, "abcdef",            7 },
+	{ "hex",       "ABCDEF",            6, "\xAB\xCD\xEF",             3, "abcdef",            7 },
 
 	{ "base64",    "AA==",              4, "\0",                       1, "AA==",              5 },
 	{ "base64",    "AAA=",              4, "\0\0",                     2, "AAA=",              5 },
 	{ "base64",    "AAAA",              4, "\0\0\0",                   3, "AAAA",              5 },
-	{ "base64",    "/w==",              4, "\xff",                     1, "/w==",              5 },
-	{ "base64",    "//8=",              4, "\xff\xff",                 2, "//8=",              5 },
-	{ "base64",    "////",              4, "\xff\xff\xff",             3, "////",              5 },
-	{ "base64",    "AAAu",              4, "\0\0\x2e",                 3, "AAAu",              5 },
+	{ "base64",    "/w==",              4, "\xFF",                     1, "/w==",              5 },
+	{ "base64",    "//8=",              4, "\xFF\xFF",                 2, "//8=",              5 },
+	{ "base64",    "////",              4, "\xFF\xFF\xFF",             3, "////",              5 },
+	{ "base64",    "AAAu",              4, "\0\0\x2E",                 3, "AAAu",              5 },
 	{ "base64",    "TWFu",              4, "Man",                      3, "TWFu",              5 },
 	{ "base64",    "YW55",              4, "any",                      3, "YW55",              5 },
-	{ "base64",    "l0+/",              4, "\x97\x4f\xbf",             3, "l0+/",              5 },
+	{ "base64",    "l0+/",              4, "\x97\x4F\xbF",             3, "l0+/",              5 },
 	{ "base64",    "ABCD",              4, "\x0\x10\x83",              3, "ABCD",              5 },
 	{ "base64",    "ZWFzdXJlLg==",     12, "easure.",                  7, "ZWFzdXJlLg==",     13 },
 
 	{ "base64url", "AA==",              4, "\0",                       1, "AA==",              5 },
 	{ "base64url", "AAA=",              4, "\0\0",                     2, "AAA=",              5 },
 	{ "base64url", "AAAA",              4, "\0\0\0",                   3, "AAAA",              5 },
-	{ "base64url", "_w==",              4, "\xff",                     1, "_w==",              5 },
-	{ "base64url", "__8=",              4, "\xff\xff",                 2, "__8=",              5 },
-	{ "base64url", "____",              4, "\xff\xff\xff",             3, "____",              5 },
-	{ "base64url", "AAAu",              4, "\0\0\x2e",                 3, "AAAu",              5 },
+	{ "base64url", "_w==",              4, "\xFF",                     1, "_w==",              5 },
+	{ "base64url", "__8=",              4, "\xFF\xFF",                 2, "__8=",              5 },
+	{ "base64url", "____",              4, "\xFF\xFF\xFF",             3, "____",              5 },
+	{ "base64url", "AAAu",              4, "\0\0\x2E",                 3, "AAAu",              5 },
 	{ "base64url", "TWFu",              4, "Man",                      3, "TWFu",              5 },
 	{ "base64url", "YW55",              4, "any",                      3, "YW55",              5 },
-	{ "base64url", "l0-_",              4, "\x97\x4f\xbf",             3, "l0-_",              5 },
+	{ "base64url", "l0-_",              4, "\x97\x4F\xbF",             3, "l0-_",              5 },
 	{ "base64url", "ABCD",              4, "\x0\x10\x83",              3, "ABCD",              5 },
 	{ "base64url", "ZWFzdXJlLg==",     12, "easure.",                  7, "ZWFzdXJlLg==",     13 },
 
 	/* These next testcases from RFC 4648 */
-	{ "base64",    "FPucA9l+",          8, "\x14\xfb\x9c\x03\xd9\x7e", 6, "FPucA9l+",          9 },
-	{ "base64",    "FPucA9k=",          8, "\x14\xfb\x9c\x03\xd9",     5, "FPucA9k=",          9 },
-	{ "base64",    "FPucAw==",          8, "\x14\xfb\x9c\x03",         4, "FPucAw==",          9 },
+	{ "base64",    "FPucA9l+",          8, "\x14\xFB\x9C\x03\xD9\x7E", 6, "FPucA9l+",          9 },
+	{ "base64",    "FPucA9k=",          8, "\x14\xFB\x9C\x03\xD9",     5, "FPucA9k=",          9 },
+	{ "base64",    "FPucAw==",          8, "\x14\xFB\x9C\x03",         4, "FPucAw==",          9 },
 	{ "base64",    "",                  0, "",                         0, "",                  1 },
 	{ "base64",    "Zg==",              4, "f",                        1, "Zg==",              5 },
 	{ "base64",    "Zm8=",              4, "fo",                       2, "Zm8=",              5 },
@@ -130,8 +135,8 @@ rgInvalidTestcases[] = {
 	{ "base64", "A\"==",   4 },
 	{ "base64", "A#==",    4 },
 	{ "base64", "A\0==",   4 },
-	{ "base64", "A\x7f==", 4 },
-	{ "base64", "A\xff==", 4 },
+	{ "base64", "A\x7F==", 4 },
+	{ "base64", "A\xFF==", 4 },
 };
 
 
@@ -179,6 +184,27 @@ START_TEST(test_decode_invalid)
 }
 END_TEST
 
+START_TEST(test_decode_null_bs)
+{
+	BSresult result;
+
+	result = bs_decode(NULL, rgszEncodings[_i], "", 0);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_decode_null_data)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_decode(bs, rgszEncodings[_i], NULL, 0);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 START_TEST(test_decode_bad_encoding)
 {
 	BS *bs = bs_create();
@@ -197,27 +223,6 @@ START_TEST(test_decode_null_encoding)
 	BSresult result;
 
 	result = bs_decode(bs, NULL, "", 0);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_decode_null_bs)
-{
-	BSresult result;
-
-	result = bs_decode(NULL, rgszEncodings[_i], "", 0);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_decode_null_data)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_decode(bs, rgszEncodings[_i], NULL, 0);
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
@@ -247,6 +252,26 @@ START_TEST(test_encode_size)
 }
 END_TEST
 
+START_TEST(test_encode_size_null_bs)
+{
+	BSresult result;
+
+	result = bs_encode_size(NULL, rgszEncodings[_i], (size_t *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_encode_size_null_size)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode_size(bs, rgszEncodings[_i], NULL);
+	fail_unless(result == BS_NULL);
+
+}
+END_TEST
+
 START_TEST(test_encode_size_bad_encoding)
 {
 	BS *bs = bs_create();
@@ -268,26 +293,6 @@ START_TEST(test_encode_size_null_encoding)
 	fail_unless(result == BS_NULL);
 
 	bs_free(bs);
-}
-END_TEST
-
-START_TEST(test_encode_size_null_bs)
-{
-	BSresult result;
-
-	result = bs_encode_size(NULL, rgszEncodings[_i], (size_t *) 0xDEADBEEF);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_encode_size_null_size)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_encode_size(bs, rgszEncodings[_i], NULL);
-	fail_unless(result == BS_NULL);
-
 }
 END_TEST
 
@@ -321,6 +326,27 @@ START_TEST(test_encode)
 }
 END_TEST
 
+START_TEST(test_encode_null_bs)
+{
+	BSresult result;
+
+	result = bs_encode(NULL, rgszEncodings[_i], (char *) 0xDEADBEEF);
+	fail_unless(result == BS_NULL);
+}
+END_TEST
+
+START_TEST(test_encode_null_output)
+{
+	BS *bs = bs_create();
+	BSresult result;
+
+	result = bs_encode(bs, rgszEncodings[_i], NULL);
+	fail_unless(result == BS_NULL);
+
+	bs_free(bs);
+}
+END_TEST
+
 START_TEST(test_encode_bad_encoding)
 {
 	BS *bs = bs_create();
@@ -345,26 +371,6 @@ START_TEST(test_encode_null_encoding)
 }
 END_TEST
 
-START_TEST(test_encode_null_bs)
-{
-	BSresult result;
-
-	result = bs_encode(NULL, rgszEncodings[_i], (char *) 0xDEADBEEF);
-	fail_unless(result == BS_NULL);
-}
-END_TEST
-
-START_TEST(test_encode_null_output)
-{
-	BS *bs = bs_create();
-	BSresult result;
-
-	result = bs_encode(bs, rgszEncodings[_i], NULL);
-	fail_unless(result == BS_NULL);
-
-	bs_free(bs);
-}
-END_TEST
 
 int
 main(/* int argc, char **argv */)
@@ -377,24 +383,24 @@ main(/* int argc, char **argv */)
 	SRunner *sr;
 	int number_failed;
 
-	tcase_add_loop_test(tc_core, test_decode, 0, cTestcases);
-	tcase_add_loop_test(tc_core, test_decode_invalid, 0, cInvalidTestcases);
+	tcase_add_loop_test(tc_core, test_decode,           0, cTestcases);
+	tcase_add_loop_test(tc_core, test_decode_invalid,   0, cInvalidTestcases);
+	tcase_add_loop_test(tc_core, test_decode_null_bs,   0, C_ENCODINGS);
+	tcase_add_loop_test(tc_core, test_decode_null_data, 0, C_ENCODINGS);
 	tcase_add_test(tc_core, test_decode_bad_encoding);
 	tcase_add_test(tc_core, test_decode_null_encoding);
-	tcase_add_loop_test(tc_core, test_decode_null_bs, 0, C_ENCODINGS);
-	tcase_add_loop_test(tc_core, test_decode_null_data, 0, C_ENCODINGS);
 
-	tcase_add_loop_test(tc_core, test_encode_size, 0, cTestcases);
+	tcase_add_loop_test(tc_core, test_encode_size,           0, cTestcases);
+	tcase_add_loop_test(tc_core, test_encode_size_null_bs,   0, C_ENCODINGS);
+	tcase_add_loop_test(tc_core, test_encode_size_null_size, 0, C_ENCODINGS);
 	tcase_add_test(tc_core, test_encode_size_bad_encoding);
 	tcase_add_test(tc_core, test_encode_size_null_encoding);
-	tcase_add_loop_test(tc_core, test_encode_size_null_bs, 0, C_ENCODINGS);
-	tcase_add_loop_test(tc_core, test_encode_size_null_size, 0, C_ENCODINGS);
 
-	tcase_add_loop_test(tc_core, test_encode, 0, cTestcases);
+	tcase_add_loop_test(tc_core, test_encode,             0, cTestcases);
+	tcase_add_loop_test(tc_core, test_encode_null_bs,     0, C_ENCODINGS);
+	tcase_add_loop_test(tc_core, test_encode_null_output, 0, C_ENCODINGS);
 	tcase_add_test(tc_core, test_encode_bad_encoding);
 	tcase_add_test(tc_core, test_encode_null_encoding);
-	tcase_add_loop_test(tc_core, test_encode_null_bs, 0, C_ENCODINGS);
-	tcase_add_loop_test(tc_core, test_encode_null_output, 0, C_ENCODINGS);
 
 	suite_add_tcase(s, tc_core);
 	sr = srunner_create(s);
