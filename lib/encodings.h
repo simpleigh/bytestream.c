@@ -27,7 +27,7 @@
 #ifndef __ENCODINGS_H
 #define __ENCODINGS_H
 
-#include "bs.h"
+#include "libbs.h"
 
 struct BSencoding {
 	char *szName;

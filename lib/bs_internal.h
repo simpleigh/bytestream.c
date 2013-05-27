@@ -27,7 +27,7 @@
 #ifndef __BS_INTERNAL_H
 #define __BS_INTERNAL_H
 
-#include "bs.h"
+#include "libbs.h"
 #include <assert.h>
 
 struct BS {

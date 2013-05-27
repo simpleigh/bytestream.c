@@ -30,9 +30,9 @@ AM_CPPFLAGS = -I$(srcdir)/include
 
 
 # Main library
-include_HEADERS = include/bs.h
+include_HEADERS = include/libbs.h
 lib_LTLIBRARIES = libbs.la
-libbs_la_SOURCES = include/bs.h           \
+libbs_la_SOURCES = include/libbs.h        \
                    lib/bs_internal.h      \
                    lib/alloc.h            \
                    lib/alloc.c            \
