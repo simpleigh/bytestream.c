@@ -29,6 +29,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * An individual byte
  * Bytes are stored unsigned, i.e. they may range from 0-255.
@@ -382,3 +386,7 @@ BSresult bs_combine_add(BS *bs, const BS *operand);
  * Subtraction overflows naturally (i.e. 0 - 1 = 255).
  */
 BSresult bs_combine_sub(BS *bs, const BS *operand);
+
+#ifdef __cplusplus
+}
+#endif
