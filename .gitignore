@@ -4,6 +4,7 @@ m4/
 
 .cproject
 .project
+.settings
 
 aclocal.m4
 config.h
