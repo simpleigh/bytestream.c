@@ -104,16 +104,15 @@ coverage:
 	$(MAKE) V=0 clean
 	$(MAKE) V=0 CFLAGS='-g -fprofile-arcs -ftest-coverage'
 	$(MAKE) V=0 check
-	find lib -name '*.c' | xargs gcov --object-directory .libs
+	find lib -name '*.c' | xargs gcov --object-directory lib/.libs
 # TODO can we make the above line less fragile?
 
 
 # COVERAGE-CLEAN target
 coverage-clean:
-	-rm *.gcov
-	-rm *.gcno
-	-rm .libs/*.gcno
-	-rm .libs/*.gcda
+	find -type f -name '*.gcda' -delete
+	find -type f -name '*.gcno' -delete
+	find -type f -name '*.gcov' -delete
 
 
 # DIST target
