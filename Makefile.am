@@ -27,6 +27,7 @@
 # Global configuration
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -I$(srcdir)/include
+AUTOMAKE_OPTIONS = subdir-objects
 
 
 # Main library

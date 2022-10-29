@@ -29,17 +29,20 @@ AC_CONFIG_SRCDIR([lib/bs.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_PROG_AR
 LT_INIT
 
 # Checks for programs.
+AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
 
 # Checks for libraries.
-
-# This macro is defined in check.m4 and tests if check.h and
-# libcheck.a are installed in your system. It sets CHECK_CFLAGS and
-# CHECK_LIBS accordingly.
-AM_PATH_CHECK()
+PKG_CHECK_MODULES([CHECK], [check >= 0.10.0])
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -50,6 +53,8 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([memset])
 
 # Output files
 AC_CONFIG_HEADERS([config.h])
